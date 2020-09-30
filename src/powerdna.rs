@@ -1,3 +1,16 @@
+use libpowerdna_sys::DQ_AI201_MODEFIFO;
+use libpowerdna_sys::DQ_LN_STREAMING;
+use libpowerdna_sys::DQ_LN_CLCKSRC0;
+use libpowerdna_sys::DQ_LN_IRQEN;
+use libpowerdna_sys::DQ_LN_GETRAW;
+use libpowerdna_sys::DQ_LN_ACTIVE;
+use libpowerdna_sys::DQ_LN_ENABLED;
+use libpowerdna_sys::DqAcbInitOps;
+use libpowerdna_sys::DQ_LNCL_TIMESTAMP;
+use libpowerdna_sys::DQ_ACB_DATA_RAW;
+use libpowerdna_sys::DQ_ACB_DIRECTION_INPUT;
+use libpowerdna_sys::DQ_ACBMODE_CYCLE;
+use libpowerdna_sys::DQACBCFG;
 use libpowerdna_sys::DqAcbDestroy;
 use libpowerdna_sys::pDQBCB;
 use libpowerdna_sys::DQ_SS0IN;
@@ -22,6 +35,7 @@ use libpowerdna_sys::DqCleanUpDAQLib;
 use libpowerdna_sys::DqInitDAQLib;
 
 const TIMEOUT: u32 = 200;
+const CFG201: u32 = DQ_LN_ENABLED | DQ_LN_ACTIVE | DQ_LN_GETRAW | DQ_LN_IRQEN | DQ_LN_CLCKSRC0 | DQ_LN_STREAMING | DQ_AI201_MODEFIFO;
 
 pub struct Daq {
     pub handle: i32,
@@ -69,6 +83,8 @@ impl Drop for Daq {
     fn drop(&mut self) {
         let code;
         
+        self.boards.clear();
+
         unsafe {
             code = DqCloseIOM(self.handle);
         }
@@ -84,6 +100,7 @@ pub struct Ai201 {
     dev_n: u8,
     dqe: pDQE,
     bcb: pDQBCB,
+    channels: Vec<u32>,
 }
 
 impl Ai201 {
@@ -100,7 +117,7 @@ impl Ai201 {
         }
         
         if result_code < 0 {
-            return Err(format!("Failed to read device status. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
+            return Err(format!("DqCmdReadStatus failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
         }
 
         if status_buffer[STS_FW as usize] & STS_FW_OPER_MODE != 0 {
@@ -110,16 +127,45 @@ impl Ai201 {
         }
 
         if result_code < 0 {
-            return Err(format!("Failed to read device status. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
+            return Err(format!("DqCmdSetMode failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
         }
 
         let mut bcb: pDQBCB = null_mut();
 
         unsafe {
-            DqAcbCreate(dqe, handle, dev_n as u32, DQ_SS0IN, &mut bcb);
+            result_code = DqAcbCreate(dqe, handle, dev_n as u32, DQ_SS0IN, &mut bcb);
         }
 
-        // DqAcbInitOps
+        if result_code < 0 {
+            return Err(format!("DqAcbCreate failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
+        }
+
+        let mut channels: Vec<u32> = (0..26).collect();
+        channels[24] = 24;
+        channels[25] = DQ_LNCL_TIMESTAMP;
+
+        let mut acb_cfg = DQACBCFG::empty();
+
+        acb_cfg.samplesz = 16;  // size of single reading
+        acb_cfg.scansz = 26;  // size of 
+        acb_cfg.framesize = 1000;  // frame size TODO
+        acb_cfg.frames = 4;  // # of frames TODO
+        acb_cfg.mode = DQ_ACBMODE_CYCLE;
+        acb_cfg.samplesz = 16;
+        acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW | DQ_ACB_DATA_RAW;
+
+        let mut card_cfg = CFG201;
+        let mut actual_freq = freq as f32;
+        let mut num_channels = 26;
+
+        unsafe {
+            result_code = DqAcbInitOps(bcb, &mut card_cfg, null_mut(), null_mut(), &mut actual_freq, null_mut(), &mut num_channels, channels.as_mut_ptr(), null_mut(), &mut acb_cfg);
+        }
+
+        if result_code < 0 {
+            return Err(format!("DqAcbInitOps failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
+        }
+
         // DqeSetEvent
         // -- DqConvFillConvData
         // -- DqConvFillConvData
@@ -130,6 +176,7 @@ impl Ai201 {
             dev_n,
             dqe,
             bcb,
+            channels,
         })
     }
 
@@ -211,6 +258,32 @@ impl Drop for DqEngine {
 
         unsafe {
             DqCleanUpDAQLib();
+        }
+    }
+}
+
+trait Empty {
+    fn empty() -> Self;
+}
+
+impl Empty for DQACBCFG {
+    fn empty() -> Self {
+        Self {
+            dirflags: 0,
+            eucoeff: 0.0,
+            euconvert: None,
+            euoffset: 0.0,
+            frames: 0,
+            framesize: 0,
+            hostringsz: 0,
+            hwbufsize: 0,
+            maxpktsize: 0,
+            mode: 0,
+            ppevent: 0,
+            samplesz: 0,
+            scansz: 0,
+            valuesz: 0,
+            wtrmark: 0,
         }
     }
 }
