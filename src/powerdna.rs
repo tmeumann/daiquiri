@@ -1,3 +1,4 @@
+use libpowerdna_sys::DqeEnable;
 use libpowerdna_sys::pDATACONV;
 use libpowerdna_sys::DqConvGetDataConv;
 use libpowerdna_sys::DqConvFillConvData;
@@ -84,6 +85,29 @@ impl Daq {
                 Ok(())
             },
             Err(s) => Err(s),
+        }
+    }
+
+    pub fn stream(&mut self) {
+        let mut bcb = self.boards[0].bcb;
+        let mut result_code;
+
+        unsafe {
+            result_code = DqeEnable(1, &mut bcb, 1, 0);
+        }
+
+        if result_code < 0 {
+            eprintln!("DqeEnable -> true failed.");
+        }
+
+        // iterate over values here
+
+        unsafe {
+            result_code = DqeEnable(0, &mut bcb, 1, 0);
+        }
+
+        if result_code < 0 {
+            eprintln!("DqeEnable -> false failed.");
         }
     }
 }
@@ -209,17 +233,11 @@ impl Ai201 {
             channels,
         })
     }
-
-    fn stream(&mut self, freq: u32) {
-        // DqeEnable -> true
-        // DqeEnable -> false
-    }
 }
 
 impl Drop for Ai201 {
     fn drop(&mut self) {
         let result_code;
-        // DqeEnable -> FALSE
         unsafe {
             result_code = DqAcbDestroy(self.bcb);
         }
