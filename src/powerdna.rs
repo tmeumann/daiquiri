@@ -1,3 +1,12 @@
+use libpowerdna_sys::pDATACONV;
+use libpowerdna_sys::DqConvGetDataConv;
+use libpowerdna_sys::DqConvFillConvData;
+use libpowerdna_sys::DQ_eBufferDone;
+use libpowerdna_sys::DQ_ePacketOOB;
+use libpowerdna_sys::DQ_eBufferError;
+use libpowerdna_sys::DQ_ePacketLost;
+use libpowerdna_sys::DQ_eFrameDone;
+use libpowerdna_sys::DqeSetEvent;
 use libpowerdna_sys::DQ_AI201_MODEFIFO;
 use libpowerdna_sys::DQ_LN_STREAMING;
 use libpowerdna_sys::DQ_LN_CLCKSRC0;
@@ -166,10 +175,31 @@ impl Ai201 {
             return Err(format!("DqAcbInitOps failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
         }
 
-        // DqeSetEvent
-        // -- DqConvFillConvData
-        // -- DqConvFillConvData
-        // DqeEnable
+        unsafe {
+            result_code = DqeSetEvent(bcb, DQ_eFrameDone | DQ_ePacketLost | DQ_eBufferError | DQ_ePacketOOB | DQ_eBufferDone)
+        }
+
+        if result_code < 0 {
+            return Err(format!("DqeSetEvent failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
+        }
+
+        unsafe {
+            result_code = DqConvFillConvData(handle, dev_n as i32, DQ_SS0IN as i32, channels.as_mut_ptr(), num_channels);
+        }
+
+        if result_code < 0 {
+            return Err(format!("DqConvFillConvData failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
+        }
+
+        let mut pdc: pDATACONV = null_mut();
+
+        unsafe {
+            result_code = DqConvGetDataConv(handle, dev_n as i32, &mut pdc);
+        }
+
+        if result_code < 0 {
+            return Err(format!("DqConvGetDataConv failed. Handle: {} Device number: {} Code: {}", handle, dev_n, result_code));
+        }
 
         Ok(Ai201 {
             handle,
@@ -181,7 +211,8 @@ impl Ai201 {
     }
 
     fn stream(&mut self, freq: u32) {
-        
+        // DqeEnable -> true
+        // DqeEnable -> false
     }
 }
 
