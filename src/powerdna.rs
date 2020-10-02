@@ -1,3 +1,11 @@
+use std::sync::Arc;
+use std::sync::atomic::Ordering::SeqCst;
+use std::sync::atomic::AtomicBool;
+use libpowerdna_sys::DqConvRaw2ScalePdc;
+use libpowerdna_sys::DqAcbGetScansCopy;
+use libpowerdna_sys::DQ_TIMEOUT_ERROR;
+use libpowerdna_sys::DQ_EVENT_ERROR;
+use libpowerdna_sys::DqeWaitForEvent;
 use libpowerdna_sys::DqeEnable;
 use libpowerdna_sys::pDATACONV;
 use libpowerdna_sys::DqConvGetDataConv;
@@ -43,14 +51,18 @@ use libpowerdna_sys::DqStartDQEngine;
 use std::ffi::CString;
 use libpowerdna_sys::DqCleanUpDAQLib;
 use libpowerdna_sys::DqInitDAQLib;
+use std::convert::TryInto;
 
 const TIMEOUT: u32 = 200;
+const EVENT_TIMEOUT: i32 = 1000;
 const CFG201: u32 = DQ_LN_ENABLED | DQ_LN_ACTIVE | DQ_LN_GETRAW | DQ_LN_IRQEN | DQ_LN_CLCKSRC0 | DQ_LN_STREAMING | DQ_AI201_MODEFIFO;
+
+
 
 pub struct Daq {
     pub handle: i32,
     dqe: pDQE,
-    boards: Vec<Ai201>,
+    stream: Option<SignalStream>,
 }
 
 impl Daq {
@@ -71,43 +83,20 @@ impl Daq {
         } else {
             Ok(Daq{
                 handle,
-                boards: Vec::new(),
                 dqe,
+                stream: None,
             })
         }
     }
 
-    pub fn configure_inputs(&mut self, devices: Vec<u8>, freq: u32) -> Result<(), String> {
-        self.boards.clear();
+    pub fn stream(&mut self, devices: Vec<u8>, freq: u32, stop: Arc<AtomicBool>) -> Result<&mut Option<SignalStream>, String> {
+        self.stream = None;
         match devices.into_iter().map(|dev_n| { Ai201::new(self.dqe, self.handle, dev_n, freq) }).collect() {
             Ok(boards) => {
-                self.boards = boards;
-                Ok(())
+                self.stream = Some(SignalStream::new(boards, stop));
+                Ok(&mut self.stream)
             },
             Err(s) => Err(s),
-        }
-    }
-
-    pub fn stream(&mut self) {
-        let mut bcb = self.boards[0].bcb;
-        let mut result_code;
-
-        unsafe {
-            result_code = DqeEnable(1, &mut bcb, 1, 0);
-        }
-
-        if result_code < 0 {
-            eprintln!("DqeEnable -> true failed.");
-        }
-
-        // iterate over values here
-
-        unsafe {
-            result_code = DqeEnable(0, &mut bcb, 1, 0);
-        }
-
-        if result_code < 0 {
-            eprintln!("DqeEnable -> false failed.");
         }
     }
 }
@@ -116,7 +105,7 @@ impl Drop for Daq {
     fn drop(&mut self) {
         let code;
         
-        self.boards.clear();
+        self.stream = None;
 
         unsafe {
             code = DqCloseIOM(self.handle);
@@ -128,12 +117,133 @@ impl Drop for Daq {
     }
 }
 
+
+
+// TODO keep reference to boards, not config values
+pub struct SignalStream {
+    boards: Vec<Ai201>,
+    raw_buffer: Vec<u16>,
+    stop: Arc<AtomicBool>,
+}
+
+impl SignalStream {
+    fn new(boards: Vec<Ai201>, stop: Arc<AtomicBool>) -> SignalStream {
+        let result_code;
+
+        let Ai201 { mut bcb, acb_cfg, .. } = boards[0];
+
+        unsafe {
+            result_code = DqeEnable(1, &mut bcb, 1, 0);
+        }
+
+        if result_code < 0 {
+            eprintln!("DqeEnable -> true failed.");
+        }
+
+        let buffer_size = (acb_cfg.framesize * acb_cfg.frames * acb_cfg.scansz).try_into().unwrap();
+        let raw_buffer = vec![0; buffer_size];  // TODO replace 'as' type coercion with safer options
+
+        return SignalStream {
+            boards,
+            raw_buffer,
+            stop,
+        }
+    }
+}
+
+impl Iterator for SignalStream {
+    type Item = Vec<f64>;
+
+    fn next(&mut self) -> std::option::Option<<Self as std::iter::Iterator>::Item> {
+        if self.stop.load(SeqCst) {
+            return None;
+        };
+
+        let Ai201 { bcb, acb_cfg, channels, pdc, .. } = &mut self.boards[0];
+
+        let mut result_code = DQ_TIMEOUT_ERROR;
+        let mut events: u32 = 0;
+        
+        while result_code == DQ_TIMEOUT_ERROR || events & DQ_eFrameDone == 0 {
+            unsafe {
+                result_code = DqeWaitForEvent(bcb, 1, 0, EVENT_TIMEOUT, &mut events);
+            }
+
+            if result_code == DQ_EVENT_ERROR {
+                eprintln!("Error in DqeWaitForEvent()");
+                return None;
+            }
+    
+            if events & (DQ_ePacketLost|DQ_eBufferError|DQ_ePacketOOB) != 0 {  // TODO recover from errors
+                if events & DQ_ePacketLost != 0 {
+                    eprintln!("AI:DQ_ePacketLost");
+                }
+                if events & DQ_eBufferError != 0 {
+                    eprintln!("AI:DQ_eBufferError");
+                }
+                if events & DQ_ePacketOOB != 0 {
+                    eprintln!("AI:DQ_ePacketOOB");
+                }
+                return None;
+            }
+        }
+
+        let framesize: u32 = acb_cfg.framesize;
+        let mut received_scans: u32 = 0;
+        let mut remaining_scans: u32 = 0;
+
+        let buffer_size = (acb_cfg.framesize * acb_cfg.frames * acb_cfg.scansz).try_into().unwrap();
+        let buffer_ptr = self.raw_buffer.as_mut_ptr() as *mut i8;
+        
+        unsafe {
+            // TODO experiment with DqAcbGetScans to avoid copy
+           result_code = DqAcbGetScansCopy(*bcb, buffer_ptr, framesize, framesize, &mut received_scans, &mut remaining_scans);
+        }
+
+        if result_code < 0 {
+            eprintln!("DqAcbGetScansCopy failed.");
+            return None;
+        }
+
+        let chans = channels.len() as u32;
+        let mut scaled_buffer = vec![0.0; buffer_size];
+
+        unsafe {
+            result_code = DqConvRaw2ScalePdc(*pdc, channels.as_mut_ptr(), chans, received_scans * chans, buffer_ptr, scaled_buffer.as_mut_ptr());
+        }
+
+        if result_code < 0 {
+            eprintln!("DqConvRaw2ScalePdc failed.");
+            return None;
+        }
+
+        Some(scaled_buffer)
+    }
+}
+
+impl Drop for SignalStream {
+    fn drop(&mut self) {
+        let result_code;
+
+        unsafe {
+            result_code = DqeEnable(0, &mut self.boards[0].bcb, 1, 0);
+        }
+
+        self.boards.clear();
+
+        if result_code < 0 {
+            eprintln!("DqeEnable -> false failed.");
+        }
+    }
+}
+
+
+
 pub struct Ai201 {
-    handle: i32,
-    dev_n: u8,
-    dqe: pDQE,
     bcb: pDQBCB,
     channels: Vec<u32>,
+    pdc: pDATACONV,
+    acb_cfg: DQACBCFG,
 }
 
 impl Ai201 {
@@ -226,11 +336,10 @@ impl Ai201 {
         }
 
         Ok(Ai201 {
-            handle,
-            dev_n,
-            dqe,
             bcb,
             channels,
+            pdc,
+            acb_cfg,
         })
     }
 }
@@ -247,6 +356,8 @@ impl Drop for Ai201 {
         }
     }
 }
+
+
 
 pub struct DqEngine {
     dqe: pDQE,
@@ -310,6 +421,8 @@ impl Drop for DqEngine {
         }
     }
 }
+
+
 
 trait Empty {
     fn empty() -> Self;
