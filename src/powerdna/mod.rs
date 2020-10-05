@@ -53,10 +53,12 @@ use libpowerdna_sys::DqCleanUpDAQLib;
 use libpowerdna_sys::DqInitDAQLib;
 use std::convert::TryInto;
 
+#[macro_use]
+pub mod results;
+
 const TIMEOUT: u32 = 200;
 const EVENT_TIMEOUT: i32 = 1000;
 const CFG201: u32 = DQ_LN_ENABLED | DQ_LN_ACTIVE | DQ_LN_GETRAW | DQ_LN_IRQEN | DQ_LN_CLCKSRC0 | DQ_LN_STREAMING | DQ_AI201_MODEFIFO;
-
 
 
 pub struct Daq {
@@ -73,6 +75,11 @@ impl Daq {
         
         let ip_ptr = CString::new(ip.as_str()).expect("Failed to allocate memory for IP address.").into_raw();
         
+        // match parse_err!(DqOpenIOM(ip_ptr, DQ_UDP_DAQ_PORT as u16, TIMEOUT, &mut handle, config)) {
+        //     Ok(_) => {},
+        //     Err(_) => eprintln!("floop"),
+        // };
+
         unsafe {
             open_code = DqOpenIOM(ip_ptr, DQ_UDP_DAQ_PORT as u16, TIMEOUT, &mut handle, config);
             let _ = CString::from_raw(ip_ptr);  // reclaims memory
