@@ -14,9 +14,9 @@ fn main() {
         r.store(true, Ordering::SeqCst);
     }).expect("Error setting Ctrl-C handler");
 
-    let mut engine = DqEngine::new(1000).expect("Failed to initialise DqEngine.");
-    let daq = engine.open_daq(String::from(IP)).expect("Failed to open DAQ.");
-    let stream = daq.stream(vec![0], 1000, stop).expect("Failed to configure IO boards.").as_mut().unwrap();
+    let mut engine = DqEngine::new(1000).expect("Failed to initialise DqEngine");
+    let daq = engine.open_daq(String::from(IP)).expect("Failed to open DAQ");
+    let stream = daq.stream(vec![0], 1000, stop).expect("Failed to configure IO boards").as_mut().unwrap();
     for frame in stream {
         for i in 0..1000 {
             let start = i * 26;

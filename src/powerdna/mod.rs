@@ -70,6 +70,10 @@ pub enum DaqError {
         #[from]
         source: PowerDnaError,
     },
+    #[error("DAQ already in use.")]
+    DaqInUseError,
+    #[error("Unknown error.")]
+    UnknownError,
 }
 
 
@@ -331,19 +335,15 @@ impl DqEngine {
         )
     }
 
-    pub fn open_daq(&mut self, ip: String) -> Result<&mut Daq, String> {
+    pub fn open_daq(&mut self, ip: String) -> Result<&mut Daq, DaqError> {
         if self.daqs.contains_key(&ip) {
-            Err(format!("IP already in use. IP: {}", ip))
+            Err(DaqError::DaqInUseError)
         } else {
-            match Daq::new(&ip, self.dqe) {
-                Ok(daq) => {
-                    self.daqs.insert(ip.clone(), daq);
-                    match self.daqs.get_mut(&ip) {
-                        Some(daq) => Ok(daq),
-                        None => Err(format!("Something weird happened. IP: {}", ip)),
-                    }
-                },
-                Err(code) => Err(format!("Failed to connect to {}. Code: {}", ip, code))
+            let daq = Daq::new(&ip, self.dqe)?;
+            self.daqs.insert(ip.clone(), daq);
+            match self.daqs.get_mut(&ip) {
+                Some(daq) => Ok(daq),
+                None => Err(DaqError::UnknownError),
             }
         }
     }
