@@ -1,3 +1,5 @@
+use std::error::Error;
+use std::fmt::Display;
 use libpowerdna_sys::DQ_EVENT_ERROR;
 use libpowerdna_sys::DQ_TIMEOUT_ERROR;
 use libpowerdna_sys::DQ_CRC_CHECK_FAILED;
@@ -42,6 +44,7 @@ use libpowerdna_sys::DQ_NOERROR;
 use enum_primitive::*;
 
 enum_from_primitive! {
+    #[derive(Debug)]
     #[repr(i32)]
     pub enum PowerDnaError {
         IllegalEntry = DQ_ILLEGAL_ENTRY,
@@ -77,10 +80,21 @@ enum_from_primitive! {
         CmdAccessDenied = DQ_CMD_ACCESSDENIED,
         DeviceLocked = DQ_DEVLOCKED,
         CrcCheckFailed = DQ_CRC_CHECK_FAILED,
+        Unknown = 0,
     }
 }
 
+impl Display for PowerDnaError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+        write!(f, "{}", *self)
+    }
+}
+
+impl Error for PowerDnaError {}
+
+
 enum_from_primitive! {
+    #[derive(Debug)]
     #[repr(u32)]
     pub enum PowerDnaSuccess {
         NoError = DQ_NOERROR,
@@ -90,6 +104,7 @@ enum_from_primitive! {
         DataNotExist = DQ_DATA_NOTEXIST,
         DeviceStarted = DQ_DEV_STARTED,
         DeviceStopped = DQ_DEV_STOPPED,
+        Unknown = 1000,
     }
 }
 
@@ -105,9 +120,9 @@ macro_rules! parse_err {
                 code = $f;
             }
             if code < 0 {
-                Err(PowerDnaError::from_i32(code))
+                Err(PowerDnaError::from_i32(code).unwrap_or(PowerDnaError::Unknown))
             } else {
-                Ok(PowerDnaSuccess::from_u32(code as u32))
+                Ok(PowerDnaSuccess::from_u32(code as u32).unwrap_or(PowerDnaSuccess::Unknown))
             }
         }
     }

@@ -10,3 +10,4 @@ edition = "2018"
 libpowerdna-sys = { git = "ssh://git@gitlab.com/ati-software-dev/powerdna-rust.git" }
 ctrlc = "^3.1.6"
 enum_primitive = "^0.1.1"
+thiserror = "^1.0.20"
