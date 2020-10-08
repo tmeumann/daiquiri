@@ -11,3 +11,7 @@ libpowerdna-sys = { git = "ssh://git@gitlab.com/ati-software-dev/powerdna-rust.g
 ctrlc = "^3.1.6"
 enum_primitive = "^0.1.1"
 thiserror = "^1.0.20"
+tokio = { version = "^0.2.22", features = ["full"] }
+warp = "^0.2.5"
+serde = { version = "^1.0.116", features = ["derive"] }
+uuid = "0.8.1"
