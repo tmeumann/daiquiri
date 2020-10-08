@@ -1,3 +1,8 @@
+use std::rc::Rc;
+use std::sync::PoisonError;
+use std::sync::Mutex;
+use std::thread::JoinHandle;
+use std::thread::spawn;
 use std::mem::ManuallyDrop;
 use uuid::Uuid;
 use libpowerdna_sys::DQ_AI201_GAIN_1_100;
@@ -122,11 +127,11 @@ impl Daq {
         }
     }
 
-    fn configure_stream(&mut self, dqe: pDQE, device: u8, freq: u32, stop: Arc<AtomicBool>) -> Result<&mut Option<SignalStream>, DaqError> {
+    fn configure_stream(&mut self, dqe: pDQE, device: u8, freq: u32) -> Result<(), DaqError> {
         self.stream = None;
         let board = Ai201::new(dqe, &self.handle, device, freq)?;
-        self.stream = Some(SignalStream::new(board, stop)?);
-        Ok(&mut self.stream)
+        self.stream = Some(SignalStream::new(board)?);
+        Ok(())
     }
 
     fn start_stream(&mut self) -> Result<(), DaqError> {
@@ -156,74 +161,22 @@ impl Drop for Daq {
     }
 }
 
-
-
-// TODO keep reference to boards, not config values
-pub struct SignalStream {
-    board: Ai201,
-    buffer_size: usize,
-    raw_buffer: Vec<u16>,
-    stop: Arc<AtomicBool>,
-}
-
-impl SignalStream {
-    fn new(board: Ai201, stop: Arc<AtomicBool>) -> Result<SignalStream, DaqError> {
-        let Ai201 { mut bcb, acb_cfg, .. } = board;
-        let buffer_size: usize;
-
-        match (acb_cfg.framesize * acb_cfg.frames * acb_cfg.scansz).try_into() {
-            Err(_) => {
-                return Err(DaqError::BufferError);
-            },
-            Ok(val) => {
-                buffer_size = val;
-            }
-        };
-        let raw_buffer = vec![0; buffer_size];
-
-        Ok(SignalStream {
-            board,
-            buffer_size,
-            raw_buffer,
-            stop,
-        })
-    }
-
-    fn start(&mut self) -> Result<(), DaqError> {
-        parse_err!(DqeEnable(1, &mut self.board.bcb, 1, 0))?;
-        Ok(())
-    }
-
-    fn stop(&mut self) -> Result<(), DaqError> {
-        parse_err!(DqeEnable(0, &mut self.board.bcb, 1, 0))?;
-        Ok(())
-    }
-}
-
-impl Iterator for SignalStream {
-    type Item = Vec<f64>;  // TODO return error values?
-
-    fn next(&mut self) -> std::option::Option<<Self as std::iter::Iterator>::Item> {
-        if self.stop.load(SeqCst) {
-            return None;
-        };
-
-        let Ai201 { bcb, acb_cfg, channels, pdc, .. } = &mut self.board;
-
+fn pubber(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize) {
+    while !stop.load(SeqCst) {
         let mut events: u32 = 0;
         
         while events & DQ_eFrameDone == 0 {
-            match parse_err!(DqeWaitForEvent(bcb, 1, 0, EVENT_TIMEOUT, &mut events)) {
+            match parse_err!(DqeWaitForEvent(&board.bcb, 1, 0, EVENT_TIMEOUT, &mut events)) {
                 Err(PowerDnaError::TimeoutError) => {
                     continue;
                 },
                 Err(err) => {
                     eprintln!("DqeWaitForEvent failed. Error: {:?}", err);
-                    return None;
+                    break;
                 },
                 Ok(_) => {},
             };
-    
+
             if events & (DQ_ePacketLost|DQ_eBufferError|DQ_ePacketOOB) != 0 {  // TODO recover from errors
                 if events & DQ_ePacketLost != 0 {
                     eprintln!("AI:DQ_ePacketLost");
@@ -234,47 +187,103 @@ impl Iterator for SignalStream {
                 if events & DQ_ePacketOOB != 0 {
                     eprintln!("AI:DQ_ePacketOOB");
                 }
-                return None;
+                break;
             }
         }
 
-        let framesize: u32 = acb_cfg.framesize;
+        let framesize: u32 = board.acb_cfg.framesize;
         let mut received_scans: u32 = 0;
         let mut remaining_scans: u32 = 0;
 
-        let buffer_ptr = self.raw_buffer.as_mut_ptr() as *mut i8;
+        let buffer_ptr = raw_buffer.as_mut_ptr() as *mut i8;
         
-        match parse_err!(DqAcbGetScansCopy(*bcb, buffer_ptr, framesize, framesize, &mut received_scans, &mut remaining_scans)) {
+        match parse_err!(DqAcbGetScansCopy(board.bcb, buffer_ptr, framesize, framesize, &mut received_scans, &mut remaining_scans)) {
             Err(err) => {
                 eprintln!("DqAcbGetScansCopy failed. Error: {:?}", err);
-                return None;
+                break;
             },
             Ok(_) => {},
         };
 
-        let chans = channels.len() as u32;
-        let mut scaled_buffer = vec![0.0; self.buffer_size];
+        let chans = board.channels.len() as u32;
+        let mut scaled_buffer = vec![0.0; buffer_size];
 
-        match parse_err!(DqConvRaw2ScalePdc(*pdc, channels.as_mut_ptr(), chans, received_scans * chans, buffer_ptr, scaled_buffer.as_mut_ptr())) {
+        match parse_err!(DqConvRaw2ScalePdc(board.pdc, board.channels.as_ptr(), chans, received_scans * chans, buffer_ptr, scaled_buffer.as_mut_ptr())) {
             Err(err) => {
                 eprintln!("DqConvRaw2ScalePdc failed. Error: {:?}", err);
-                return None;
+                break;
             },
             Ok(_) => {},
         };
 
-        Some(scaled_buffer)
+        for i in 0..1000 {
+            let start = i * 26;
+            let end = start + 24; // ignore time stamps
+            let slice = &scaled_buffer[start..end];
+            for val in slice {
+                print!("{:.4} ", val);
+            }
+            println!();
+        }
+    }
+}
+
+// TODO keep reference to boards, not config values
+pub struct SignalStream {
+    board: Arc<Ai201>,
+    buffer_size: usize,
+    stop: Arc<AtomicBool>,
+}
+
+impl SignalStream {
+    fn new(board: Ai201) -> Result<SignalStream, DaqError> {
+        let Ai201 { mut bcb, acb_cfg, .. } = board;
+
+        let buffer_size: usize = match (acb_cfg.framesize * acb_cfg.frames * acb_cfg.scansz).try_into() {
+            Err(_) => {
+                return Err(DaqError::BufferError);
+            },
+            Ok(val) => val,
+        };
+        let raw_buffer = vec![0; buffer_size];
+
+        let board = Arc::new(board);
+        let pboard = Arc::clone(&board);
+        let stop = Arc::new(AtomicBool::new(false));
+        let pstop = stop.clone();
+
+        let pubber = spawn(move || {
+            pubber(pboard, pstop, raw_buffer, buffer_size)
+        });
+
+        Ok(SignalStream {
+            board,
+            buffer_size,
+            stop,
+        })
+    }
+
+    fn start(&mut self) -> Result<(), DaqError> {
+        parse_err!(DqeEnable(1, &self.board.bcb, 1, 0))?;
+        Ok(())
+    }
+
+    fn stop(&mut self) -> Result<(), DaqError> {
+        parse_err!(DqeEnable(0, &self.board.bcb, 1, 0))?;
+        Ok(())
     }
 }
 
 impl Drop for SignalStream {
     fn drop(&mut self) {
-        match parse_err!(DqeEnable(0, &mut self.board.bcb, 1, 0)) {
+        match self.stop() {
             Err(err) => {
                 eprintln!("DqeEnable -> false failed. Error: {:?}", err);
             },
             Ok(_) => {},
         };
+        self.stop.store(true, SeqCst);
+        // self.pubber.join();
     }
 }
 
@@ -339,6 +348,9 @@ impl Ai201 {
     }
 }
 
+unsafe impl Send for Ai201 {}
+unsafe impl Sync for Ai201 {}
+
 impl Drop for Ai201 {
     fn drop(&mut self) {
         match parse_err!(DqAcbDestroy(self.bcb)) {
@@ -376,11 +388,8 @@ impl DqEngine {
         )
     }
 
-    pub fn configure_stream(&mut self, device: u8, freq: u32, stop: Arc<AtomicBool>) -> Result<&mut SignalStream, DaqError> {
-        match self.daq.configure_stream(self.dqe, device, freq, stop)? {
-            Some(stream) => Ok(stream),
-            None => Err(DaqError::UnknownError),
-        }
+    pub fn configure_stream(&mut self, device: u8, freq: u32) -> Result<(), DaqError> {
+        self.daq.configure_stream(self.dqe, device, freq)
     }
 
     pub fn start_stream(&mut self) -> Result<(), DaqError> {

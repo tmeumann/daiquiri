@@ -26,23 +26,18 @@ type SharedEngine = Arc<Mutex<DqEngine>>;
 
 #[tokio::main]
 async fn main() {
-    let stop = Arc::new(AtomicBool::new(false));
-    let r = stop.clone();
-    ctrlc::set_handler(move || {
-        r.store(true, Ordering::SeqCst);
-    }).expect("Error setting Ctrl-C handler");
 
     let e = Arc::new(Mutex::new(DqEngine::new(String::from(IP), 1000).expect("Failed to initialise DqEngine")));
     
     let prepare = warp::path("prepare")
         .and(with_engine(Arc::clone(&e)))
-        .and(with_stop(stop))
-        .map(move |shared_engine: SharedEngine, stopper: Arc<AtomicBool>| {
+        .map(move |shared_engine: SharedEngine| {
             let mut engine = match shared_engine.lock() {
                 Ok(eng) => eng,
                 Err(_) => return warp::reply(),  // TODO 500
             };
-            engine.configure_stream(0, 1000, stopper);
+            engine.configure_stream(0, 1000);
+            drop(engine);
             warp::reply()
         });
     
@@ -54,6 +49,7 @@ async fn main() {
                 Err(_) => return warp::reply(),  // TODO 500
             };
             engine.start_stream();
+            drop(engine);
             warp::reply()
             // return start timestamp
         });
@@ -66,6 +62,7 @@ async fn main() {
                 Err(_) => return warp::reply(),  // TODO 500
             };
             engine.stop_stream();
+            drop(engine);
             warp::reply()
             // return stop timestamp
         });
@@ -94,14 +91,3 @@ fn with_engine(engine: SharedEngine) -> impl Filter<Extract = (SharedEngine,), E
 fn with_stop(stop: Arc<AtomicBool>) -> impl Filter<Extract = (Arc<AtomicBool>,), Error = std::convert::Infallible> + Clone {
     warp::any().map(move || Arc::clone(&stop))
 }
-
-// fn prepare(daq: Arc<Mutex<Daq>>) {
-//     let daq = Arc::clone(&daq);
-//     warp::path("prepare")
-//         .and(warp::body::json())
-//         .map(move |config: StreamConfig| {
-            
-//             // let stream = daq.stream(vec![0], 1000, stop).expect("Failed to configure IO boards").as_mut().unwrap();
-//             warp::reply()
-//         })
-// }
