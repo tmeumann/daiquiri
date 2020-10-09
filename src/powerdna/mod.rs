@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use std::rc::Rc;
 use std::sync::PoisonError;
 use std::sync::Mutex;
@@ -162,6 +163,11 @@ impl Drop for Daq {
 }
 
 fn pubber(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize) {
+    let ctx = zmq::Context::new();
+
+    let socket = ctx.socket(zmq::PUB).unwrap();
+    socket.bind("tcp://*:5555").expect("failed binding publisher");
+    
     while !stop.load(SeqCst) {
         let mut events: u32 = 0;
         
@@ -206,9 +212,9 @@ fn pubber(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, bu
         };
 
         let chans = board.channels.len() as u32;
-        let mut scaled_buffer = vec![0.0; buffer_size];
+        let mut scaled_buffer: Vec<u8> = vec![0; buffer_size * size_of::<f64>()];
 
-        match parse_err!(DqConvRaw2ScalePdc(board.pdc, board.channels.as_ptr(), chans, received_scans * chans, buffer_ptr, scaled_buffer.as_mut_ptr())) {
+        match parse_err!(DqConvRaw2ScalePdc(board.pdc, board.channels.as_ptr(), chans, received_scans * chans, buffer_ptr, scaled_buffer.as_mut_ptr() as *mut f64)) {
             Err(err) => {
                 eprintln!("DqConvRaw2ScalePdc failed. Error: {:?}", err);
                 break;
@@ -217,13 +223,11 @@ fn pubber(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, bu
         };
 
         for i in 0..1000 {
-            let start = i * 26;
-            let end = start + 24; // ignore time stamps
+            let start = i * size_of::<f64>() * 26;
+            let end = start + size_of::<f64>() * 24; // ignore time stamps
             let slice = &scaled_buffer[start..end];
-            for val in slice {
-                print!("{:.4} ", val);
-            }
-            println!();
+            socket.send("V", zmq::SNDMORE).unwrap();
+            socket.send(slice, 0).unwrap();
         }
     }
 }
