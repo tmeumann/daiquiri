@@ -61,12 +61,10 @@ pub struct ChannelConfig {
 }
 
 fn publish(socket: Socket, rx: Receiver<(String, Vec<u8>)>) {
-    println!("Publish thread started.");
     loop {
         let (topic, data) = match rx.recv() {
             Ok(val) => val,
             Err(_) => {
-                println!("Channel closed, publish thread packing up...");
                 break;
             },
         };
@@ -84,9 +82,7 @@ pub fn initialise() -> Result<Arc<HashMap<String, SignalStream>>, ConfigError> {
     
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);
-    println!("About to parse...");
     let config: HashMap<String, StreamConfig> = serde_json::from_reader(reader)?;
-    println!("Parsed");
 
     // TODO validate config -- no repeated stream names, IPs, etc.
 
@@ -100,8 +96,6 @@ pub fn initialise() -> Result<Arc<HashMap<String, SignalStream>>, ConfigError> {
     std::thread::spawn(move || {
         publish(socket, rx)
     });
-
-    println!("Streams: {}", config.len());
 
     let streams = config.iter()
         .map(|(name, stream_config)| {

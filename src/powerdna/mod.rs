@@ -326,8 +326,6 @@ impl Ai201 {
         
         let pdc = daq.get_data_converter(*device, &channel_list)?;
 
-        println!("Finished setting up board {}", board_config.device);
-
         Ok(Ai201 {
             bcb,
             channels: channel_list,
