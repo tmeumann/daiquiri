@@ -303,9 +303,9 @@ impl Ai201 {
             };
             *id as u32 | (gain_mask << 8)
         }).collect();
-        // TODO potential bug here -- sort out these weird timestamp channels
-        channel_list.push(channels.len() as u32);
-        channel_list.push(DQ_LNCL_TIMESTAMP);
+        // TODO sort out these weird timestamp channels
+        // channel_list.push(channels.len() as u32);
+        // channel_list.push(DQ_LNCL_TIMESTAMP);
 
         let mut acb_cfg = DQACBCFG::empty();
 
@@ -314,7 +314,7 @@ impl Ai201 {
         acb_cfg.framesize = 1000;  // frame size TODO
         acb_cfg.frames = 4;  // # of frames TODO
         acb_cfg.mode = DQ_ACBMODE_CYCLE;
-        acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW | DQ_ACB_DATA_TSCOPY;
+        acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW; // | DQ_ACB_DATA_TSCOPY;
 
         let mut card_cfg = CFG201;
         let mut actual_freq = freq as f32;
@@ -336,7 +336,7 @@ impl Ai201 {
     }
 
     fn buffer_size(&self) -> Result<usize, DaqError> {
-        match (self.acb_cfg.framesize * self.acb_cfg.frames * self.acb_cfg.scansz).try_into() {
+        match (self.acb_cfg.framesize * self.acb_cfg.scansz).try_into() {
             Err(_) => Err(DaqError::BufferError),
             Ok(val) => Ok(val),
         }
