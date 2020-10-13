@@ -1,11 +1,9 @@
+use std::sync::mpsc::Sender;
+use libpowerdna_sys::DQ_ACB_DATA_TSCOPY;
+use crate::bootstrap::ChannelConfig;
+use crate::bootstrap::BoardConfig;
 use std::mem::size_of;
-use std::rc::Rc;
-use std::sync::PoisonError;
-use std::sync::Mutex;
-use std::thread::JoinHandle;
 use std::thread::spawn;
-use std::mem::ManuallyDrop;
-use uuid::Uuid;
 use libpowerdna_sys::DQ_AI201_GAIN_1_100;
 use libpowerdna_sys::DQ_AI201_GAIN_2_100;
 use libpowerdna_sys::DQ_AI201_GAIN_5_100;
@@ -51,7 +49,6 @@ use libpowerdna_sys::DQ_LASTDEV;
 use libpowerdna_sys::DqCmdReadStatus;
 use libpowerdna_sys::DQ_IOMODE_CFG;
 use libpowerdna_sys::DqCmdSetMode;
-use std::collections::HashMap;
 use libpowerdna_sys::DqCloseIOM;
 use libpowerdna_sys::DQ_UDP_DAQ_PORT;
 use libpowerdna_sys::DqOpenIOM;
@@ -74,7 +71,7 @@ const TIMEOUT: u32 = 200;
 const EVENT_TIMEOUT: i32 = 1000;
 const CFG201: u32 = DQ_LN_ENABLED | DQ_LN_ACTIVE | DQ_LN_GETRAW | DQ_LN_IRQEN | DQ_LN_CLCKSRC0 | DQ_LN_STREAMING | DQ_AI201_MODEFIFO;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[repr(u32)]
 pub enum Gain {
     One = DQ_AI201_GAIN_1_100,
@@ -92,24 +89,19 @@ pub enum DaqError {
         #[from]
         source: PowerDnaError,
     },
-    #[error("DAQ already in use.")]
-    DaqInUseError,
-    #[error("Not configured.")]
-    NotConfigured,
-    #[error("Unknown error.")]
-    UnknownError,
 }
 
 
 pub struct Daq {
     handle: i32,
-    stream: Option<SignalStream>,
+    dqe: Arc<DqEngine>,
 }
 
 unsafe impl Send for Daq {}
 
 impl Daq {
-    fn new(ip: String) -> Result<Self, PowerDnaError> {
+    pub fn new(dqe: Arc<DqEngine>, ip: String) -> Result<Self, PowerDnaError> {
+        // TODO introduce phantom data to track dqe lifetime?
         let mut handle = 0;
         let config = null_mut();
         
@@ -123,36 +115,45 @@ impl Daq {
             Err(err) => Err(err),
             Ok(_) => Ok(Daq{
                 handle,
-                stream: None,
+                dqe,
             })
         }
     }
 
-    fn configure_stream(&mut self, dqe: pDQE, device: u8, freq: u32) -> Result<(), DaqError> {
-        self.stream = None;
-        let board = Ai201::new(dqe, &self.handle, device, freq)?;
-        self.stream = Some(SignalStream::new(board)?);
+    fn create_acb(&self, device: u8) -> Result<pDQBCB, PowerDnaError> {
+        let mut bcb: pDQBCB = null_mut();
+        // mutation
+        parse_err!(DqAcbCreate(self.dqe.dqe, self.handle, device as u32, DQ_SS0IN, &mut bcb))?;
+        Ok(bcb)
+    }
+
+    fn enter_config_mode(&self, device: u8) -> Result<(), PowerDnaError> {
+        let devices: u8 = device | (DQ_LASTDEV as u8);
+        let mut num_devices: u32 = 1;
+        let mut status_buffer: [u32; DQ_MAXDEVN as usize + 1] = [0; DQ_MAXDEVN as usize + 1];
+        let mut status_size: u32 = status_buffer.len() as u32;
+
+        // mutation
+        parse_err!(DqCmdReadStatus(self.handle, &devices, &mut num_devices, &mut status_buffer[0], &mut status_size))?;
+        
+        if status_buffer[STS_FW as usize] & STS_FW_OPER_MODE != 0 {
+            parse_err!(DqCmdSetMode(self.handle, DQ_IOMODE_CFG, 1 << (device as u32 & DQ_MAXDEVN)))?;
+        }
+
         Ok(())
     }
 
-    fn start_stream(&mut self) -> Result<(), DaqError> {
-        match &mut self.stream {
-            Some(stream) => stream.start(),
-            None => Err(DaqError::NotConfigured),
-        }
-    }
-
-    fn stop_stream(&mut self) -> Result<(), DaqError> {
-        match &mut self.stream {
-            Some(stream) => stream.stop(),
-            None => Err(DaqError::NotConfigured),
-        }
+    fn get_data_converter(&self, device: u8, channels: &Vec<u32>) -> Result<pDATACONV, PowerDnaError> {
+        parse_err!(DqConvFillConvData(self.handle, device as i32, DQ_SS0IN as i32, channels.as_ptr(), channels.len() as u32))?;
+        let mut pdc: pDATACONV = null_mut();
+        // mutation
+        parse_err!(DqConvGetDataConv(self.handle, device as i32, &mut pdc))?;
+        Ok(pdc)
     }
 }
 
 impl Drop for Daq {
     fn drop(&mut self) {
-        self.stream = None;
         match parse_err!(DqCloseIOM(self.handle)) {
             Err(err) => {
                 eprintln!("DqCloseIOM failed. Error: {:?}", err);
@@ -162,12 +163,7 @@ impl Drop for Daq {
     }
 }
 
-fn pubber(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize) {
-    let ctx = zmq::Context::new();
-
-    let socket = ctx.socket(zmq::PUB).unwrap();
-    socket.bind("tcp://*:5555").expect("failed binding publisher");
-    
+fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize, tx: Sender<(String, Vec<u8>)>, topic: String) {
     while !stop.load(SeqCst) {
         let mut events: u32 = 0;
         
@@ -222,57 +218,49 @@ fn pubber(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, bu
             Ok(_) => {},
         };
 
-        for i in 0..1000 {
-            let start = i * size_of::<f64>() * 26;
-            let end = start + size_of::<f64>() * 24; // ignore time stamps
-            let slice = &scaled_buffer[start..end];
-            socket.send("V", zmq::SNDMORE).unwrap();
-            socket.send(slice, 0).unwrap();
-        }
+        match tx.send((topic.clone(), scaled_buffer)) {
+            Ok(_) => {},
+            Err(_) => break,  // TODO log me
+        };
     }
 }
 
-// TODO keep reference to boards, not config values
+
 pub struct SignalStream {
     board: Arc<Ai201>,
-    buffer_size: usize,
     stop: Arc<AtomicBool>,
 }
 
 impl SignalStream {
-    fn new(board: Ai201) -> Result<SignalStream, DaqError> {
-        let Ai201 { mut bcb, acb_cfg, .. } = board;
+    pub fn new(daq: Daq, freq: u32, board_config: &BoardConfig, tx: Sender<(String, Vec<u8>)>, topic: String) -> Result<SignalStream, DaqError> {
+        // let Ai201 { mut bcb, acb_cfg, .. } = board;
 
-        let buffer_size: usize = match (acb_cfg.framesize * acb_cfg.frames * acb_cfg.scansz).try_into() {
-            Err(_) => {
-                return Err(DaqError::BufferError);
-            },
-            Ok(val) => val,
-        };
+        let board = Ai201::new(daq, freq, board_config)?;
+
+        let buffer_size = board.buffer_size()?;
         let raw_buffer = vec![0; buffer_size];
 
         let board = Arc::new(board);
-        let pboard = Arc::clone(&board);
+        let cloned_board = Arc::clone(&board);
         let stop = Arc::new(AtomicBool::new(false));
-        let pstop = stop.clone();
+        let cloned_stop = stop.clone();
 
-        let pubber = spawn(move || {
-            pubber(pboard, pstop, raw_buffer, buffer_size)
+        spawn(move || {
+            sampler(cloned_board, cloned_stop, raw_buffer, buffer_size, tx, topic)
         });
 
         Ok(SignalStream {
             board,
-            buffer_size,
             stop,
         })
     }
 
-    fn start(&mut self) -> Result<(), DaqError> {
+    pub fn start(&self) -> Result<(), DaqError> {
         parse_err!(DqeEnable(1, &self.board.bcb, 1, 0))?;
         Ok(())
     }
 
-    fn stop(&mut self) -> Result<(), DaqError> {
+    pub fn stop(&self) -> Result<(), DaqError> {
         parse_err!(DqeEnable(0, &self.board.bcb, 1, 0))?;
         Ok(())
     }
@@ -287,7 +275,6 @@ impl Drop for SignalStream {
             Ok(_) => {},
         };
         self.stop.store(true, SeqCst);
-        // self.pubber.join();
     }
 }
 
@@ -298,57 +285,63 @@ pub struct Ai201 {
     channels: Vec<u32>,
     pdc: pDATACONV,
     acb_cfg: DQACBCFG,
+    daq: Daq,  // TODO change to phantom data
 }
 
 impl Ai201 {
-    fn new(dqe: pDQE, handle: &i32, dev_n: u8, freq: u32) -> Result<Self, PowerDnaError> {
-        // TODO consider powering down between sampling sessions?
-        let mut device: u8 = dev_n | (DQ_LASTDEV as u8);
-        let mut num_devices: u32 = 1;
-        let mut status_buffer: [u32; DQ_MAXDEVN as usize + 1] = [0; DQ_MAXDEVN as usize + 1];
-        let mut status_size: u32 = status_buffer.len() as u32;
+    fn new(daq: Daq, freq: u32, board_config: &BoardConfig) -> Result<Self, PowerDnaError> {
+        let BoardConfig { device, channels } = board_config;
+        daq.enter_config_mode(*device)?;
+        let bcb = daq.create_acb(*device)?;
 
-        parse_err!(DqCmdReadStatus(*handle, &mut device, &mut num_devices, &mut status_buffer[0], &mut status_size))?;
-        
-        if status_buffer[STS_FW as usize] & STS_FW_OPER_MODE != 0 {
-            parse_err!(DqCmdSetMode(*handle, DQ_IOMODE_CFG, 1 << (device as u32 & DQ_MAXDEVN)))?;
-        }
-
-        let mut bcb: pDQBCB = null_mut();
-
-        parse_err!(DqAcbCreate(dqe, *handle, dev_n as u32, DQ_SS0IN, &mut bcb))?;
-
-        let mut channels: Vec<u32> = (0..26).collect();
-        channels[24] = 24;
-        channels[25] = DQ_LNCL_TIMESTAMP;
+        let mut channel_list: Vec<u32> = channels.iter().map(|ChannelConfig { id, gain }| {
+            let gain_mask = match gain {
+                &10 => DQ_AI201_GAIN_10_100,
+                &5  => DQ_AI201_GAIN_5_100,
+                &2  => DQ_AI201_GAIN_2_100,
+                _  => DQ_AI201_GAIN_1_100, // TODO handle invalid values
+            };
+            *id as u32 | (gain_mask << 8)
+        }).collect();
+        // TODO potential bug here -- sort out these weird timestamp channels
+        channel_list.push(channels.len() as u32);
+        channel_list.push(DQ_LNCL_TIMESTAMP);
 
         let mut acb_cfg = DQACBCFG::empty();
 
-        acb_cfg.samplesz = 16;  // size of single reading
-        acb_cfg.scansz = 26;  // number of readings (incl. timestamp, which is equivalent to 2 readings)
+        acb_cfg.samplesz = size_of::<u16>() as u32;  // size of single reading
+        acb_cfg.scansz = channel_list.len() as u32;  // number of readings (timestamp is equivalent to 2 readings)
         acb_cfg.framesize = 1000;  // frame size TODO
         acb_cfg.frames = 4;  // # of frames TODO
         acb_cfg.mode = DQ_ACBMODE_CYCLE;
-        acb_cfg.samplesz = 16;
-        acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW | DQ_ACB_DATA_RAW;
+        acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW | DQ_ACB_DATA_TSCOPY;
 
         let mut card_cfg = CFG201;
         let mut actual_freq = freq as f32;
-        let mut num_channels = 26;
+        let mut num_channels = channel_list.len() as u32;
 
-        parse_err!(DqAcbInitOps(bcb, &mut card_cfg, null_mut(), null_mut(), &mut actual_freq, null_mut(), &mut num_channels, channels.as_mut_ptr(), null_mut(), &mut acb_cfg))?;
+        // mutation
+        parse_err!(DqAcbInitOps(bcb, &mut card_cfg, null_mut(), null_mut(), &mut actual_freq, null_mut(), &mut num_channels, channel_list.as_mut_ptr(), null_mut(), &mut acb_cfg))?;
         parse_err!(DqeSetEvent(bcb, DQ_eFrameDone | DQ_ePacketLost | DQ_eBufferError | DQ_ePacketOOB | DQ_eBufferDone))?;
         
-        parse_err!(DqConvFillConvData(*handle, dev_n as i32, DQ_SS0IN as i32, channels.as_mut_ptr(), num_channels))?;
-        let mut pdc: pDATACONV = null_mut();
-        parse_err!(DqConvGetDataConv(*handle, dev_n as i32, &mut pdc))?;
+        let pdc = daq.get_data_converter(*device, &channel_list)?;
+
+        println!("Finished setting up board {}", board_config.device);
 
         Ok(Ai201 {
             bcb,
-            channels,
+            channels: channel_list,
             pdc,
             acb_cfg,
+            daq,
         })
+    }
+
+    fn buffer_size(&self) -> Result<usize, DaqError> {
+        match (self.acb_cfg.framesize * self.acb_cfg.frames * self.acb_cfg.scansz).try_into() {
+            Err(_) => Err(DaqError::BufferError),
+            Ok(val) => Ok(val),
+        }
     }
 }
 
@@ -370,13 +363,12 @@ impl Drop for Ai201 {
 
 pub struct DqEngine {
     dqe: pDQE,
-    daq: ManuallyDrop<Daq>,
 }
 
 unsafe impl Send for DqEngine {}
 
 impl DqEngine {
-    pub fn new(ip: String, clock_period: u32) -> Result<Self, PowerDnaError> {
+    pub fn new(clock_period: u32) -> Result<Self, PowerDnaError> {
         let mut dqe = null_mut();
         
         unsafe {
@@ -387,29 +379,13 @@ impl DqEngine {
         Ok(
             DqEngine {
                 dqe,
-                daq: ManuallyDrop::new(Daq::new(ip)?),
             }
         )
-    }
-
-    pub fn configure_stream(&mut self, device: u8, freq: u32) -> Result<(), DaqError> {
-        self.daq.configure_stream(self.dqe, device, freq)
-    }
-
-    pub fn start_stream(&mut self) -> Result<(), DaqError> {
-        self.daq.start_stream()
-    }
-
-    pub fn stop_stream(&mut self) -> Result<(), DaqError> {
-        self.daq.stop_stream()
     }
 }
 
 impl Drop for DqEngine {
     fn drop(&mut self) {
-        unsafe {
-            ManuallyDrop::drop(&mut self.daq);
-        }
         match parse_err!(DqStopDQEngine(self.dqe)) {
             Err(err) => {
                 eprintln!("DqStopDQEngine failed. Error: {:?}", err);

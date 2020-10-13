@@ -1,93 +1,57 @@
 mod powerdna;
+mod bootstrap;
 
+use crate::powerdna::SignalStream;
 use crate::powerdna::Daq;
-use std::sync::Mutex;
-use crate::powerdna::Gain;
 use std::collections::HashMap;
 use powerdna::{ DqEngine };
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use std::env;
-
-use serde::{Deserialize};
-
-const IP: &str = "192.168.100.2";
+use bootstrap::initialise;
 
 use warp::Filter;
 
-#[derive(Deserialize)]
-struct StreamConfig {
-    freq: u32,
-    boards: HashMap<u32, Vec<u32>>,  // device number -> channels
-    gain: Gain,
-}
-
-type SharedEngine = Arc<Mutex<DqEngine>>;
+type StreamStore = Arc<HashMap<String, SignalStream>>;
 
 #[tokio::main]
 async fn main() {
-
-    let e = Arc::new(Mutex::new(DqEngine::new(String::from(IP), 1000).expect("Failed to initialise DqEngine")));
-    
-    let prepare = warp::path("prepare")
-        .and(with_engine(Arc::clone(&e)))
-        .map(move |shared_engine: SharedEngine| {
-            let mut engine = match shared_engine.lock() {
-                Ok(eng) => eng,
-                Err(_) => return warp::reply(),  // TODO 500
-            };
-            engine.configure_stream(0, 1000);
-            drop(engine);
-            warp::reply()
-        });
+    let streams = initialise().expect("Failed to initialise DAQ threads.");
     
     let start = warp::path("start")
-        .and(with_engine(Arc::clone(&e)))
-        .map(|shared_engine: SharedEngine| {
-            let mut engine = match shared_engine.lock() {
-                Ok(eng) => eng,
-                Err(_) => return warp::reply(),  // TODO 500
-            };
-            engine.start_stream();
-            drop(engine);
-            warp::reply()
-            // return start timestamp
-        });
+        .and(warp::path::param())
+        .and(with_streams(Arc::clone(&streams)))
+        .and_then(start_stream);
 
     let stop = warp::path("stop")
-        .and(with_engine(Arc::clone(&e)))
-        .map(|shared_engine: SharedEngine| {
-            let mut engine = match shared_engine.lock() {
-                Ok(eng) => eng,
-                Err(_) => return warp::reply(),  // TODO 500
-            };
-            engine.stop_stream();
-            drop(engine);
-            warp::reply()
-            // return stop timestamp
-        });
+        .and(warp::path::param())
+        .and(with_streams(Arc::clone(&streams)))
+        .and_then(stop_stream);
     
-    let routes = warp::post().and(prepare.or(start).or(stop));
+    let routes = warp::post().and(start.or(stop));
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
-
-    // let stream = daq.stream(vec![0], 1000, stop).expect("Failed to configure IO boards").as_mut().unwrap();
-    // for frame in stream {
-    //     for i in 0..1000 {
-    //         let start = i * 26;
-    //         let end = start + 24; // ignore time stamps
-    //         let slice = &frame[start..end];
-    //         for val in slice {
-    //             print!("{:.4} ", val);
-    //         }
-    //         println!();
-    //     }
-    // }
 }
 
-fn with_engine(engine: SharedEngine) -> impl Filter<Extract = (SharedEngine,), Error = std::convert::Infallible> + Clone {
-    warp::any().map(move || Arc::clone(&engine))
+fn with_streams(streams: StreamStore) -> impl Filter<Extract = (StreamStore,), Error = std::convert::Infallible> + Clone {
+    warp::any().map(move || Arc::clone(&streams))
 }
 
-fn with_stop(stop: Arc<AtomicBool>) -> impl Filter<Extract = (Arc<AtomicBool>,), Error = std::convert::Infallible> + Clone {
-    warp::any().map(move || Arc::clone(&stop))
+async fn start_stream(topic: String, store: StreamStore) -> Result<impl warp::Reply, warp::Rejection> {
+    match store.get(&topic) {
+        // TODO return start timestamp
+        Some(stream) => match stream.start() {
+            Ok(_) => Ok(warp::reply()),
+            Err(_) => Err(warp::reject::not_found()), // TODO
+        },
+        None => Err(warp::reject::not_found()),
+    }
+}
+
+async fn stop_stream(topic: String, store: StreamStore) -> Result<impl warp::Reply, warp::Rejection> {
+    match store.get(&topic) {
+        // TODO return start timestamp
+        Some(stream) => match stream.stop() {
+            Ok(_) => Ok(warp::reply()),
+            Err(_) => Err(warp::reject::not_found()), // TODO
+        },
+        None => Err(warp::reject::not_found()),
+    }
 }

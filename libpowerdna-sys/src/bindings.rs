@@ -40253,7 +40253,7 @@ extern "C" {
 extern "C" {
     pub fn DqCmdReadStatus(
         Iom: ::std::os::raw::c_int,
-        DeviceNum: *mut uint8,
+        DeviceNum: *const uint8,
         Entries: *mut uint32,
         Status: *mut uint32,
         StatusSize: *mut uint32,
@@ -49515,7 +49515,7 @@ extern "C" {
         handle: ::std::os::raw::c_int,
         dev: ::std::os::raw::c_int,
         ss: ::std::os::raw::c_int,
-        ch_lst: *mut uint32,
+        ch_lst: *const uint32,
         ch_lst_sz: uint32,
     ) -> ::std::os::raw::c_int;
 }

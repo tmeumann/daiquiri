@@ -221,6 +221,7 @@ dependencies = [
  "enum_primitive",
  "libpowerdna-sys",
  "serde",
+ "serde_json",
  "thiserror",
  "tokio",
  "uuid",
