@@ -1,31 +1,57 @@
 mod powerdna;
+mod bootstrap;
 
+use crate::powerdna::SignalStream;
+use crate::powerdna::Daq;
+use std::collections::HashMap;
 use powerdna::{ DqEngine };
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use bootstrap::initialise;
 
-const IP: &str = "192.168.100.2";
+use warp::Filter;
 
-fn main() {
-    let stop = Arc::new(AtomicBool::new(false));
-    let r = stop.clone();
+type StreamStore = Arc<HashMap<String, SignalStream>>;
 
-    ctrlc::set_handler(move || {
-        r.store(true, Ordering::SeqCst);
-    }).expect("Error setting Ctrl-C handler");
+#[tokio::main]
+async fn main() {
+    let streams = initialise().expect("Failed to initialise DAQ threads.");
+    
+    let start = warp::path("start")
+        .and(warp::path::param())
+        .and(with_streams(Arc::clone(&streams)))
+        .and_then(start_stream);
 
-    let mut engine = DqEngine::new(1000).expect("Failed to initialise DqEngine");
-    let daq = engine.open_daq(String::from(IP)).expect("Failed to open DAQ");
-    let stream = daq.stream(vec![0], 1000, stop).expect("Failed to configure IO boards").as_mut().unwrap();
-    for frame in stream {
-        for i in 0..1000 {
-            let start = i * 26;
-            let end = start + 24; // ignore time stamps
-            let slice = &frame[start..end];
-            for val in slice {
-                print!("{:.4} ", val);
-            }
-            println!();
-        }
+    let stop = warp::path("stop")
+        .and(warp::path::param())
+        .and(with_streams(Arc::clone(&streams)))
+        .and_then(stop_stream);
+    
+    let routes = warp::post().and(start.or(stop));
+    warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
+}
+
+fn with_streams(streams: StreamStore) -> impl Filter<Extract = (StreamStore,), Error = std::convert::Infallible> + Clone {
+    warp::any().map(move || Arc::clone(&streams))
+}
+
+async fn start_stream(topic: String, store: StreamStore) -> Result<impl warp::Reply, warp::Rejection> {
+    match store.get(&topic) {
+        // TODO return start timestamp
+        Some(stream) => match stream.start() {
+            Ok(_) => Ok(warp::reply()),
+            Err(_) => Err(warp::reject::not_found()), // TODO
+        },
+        None => Err(warp::reject::not_found()),
+    }
+}
+
+async fn stop_stream(topic: String, store: StreamStore) -> Result<impl warp::Reply, warp::Rejection> {
+    match store.get(&topic) {
+        // TODO return start timestamp
+        Some(stream) => match stream.stop() {
+            Ok(_) => Ok(warp::reply()),
+            Err(_) => Err(warp::reject::not_found()), // TODO
+        },
+        None => Err(warp::reject::not_found()),
     }
 }

@@ -1,4 +1,6 @@
-FROM rust:1.46
+FROM rust:1.47
+
+RUN apt-get update && apt-get -y install libzmq5 libczmq-dev
 
 RUN mkdir /app && mkdir /pdna
 WORKDIR /pdna
