@@ -47,6 +47,9 @@ cargo build
 
 ###### Compiling the libraries ######
 
+These aren't complete steps, but there should be enough breadcrumbs here to be able to piece
+things together...
+
 If the ZMQ and/or PowerDNA versions need to be bumped, they may need to be recompiled. The
 easiest way to do this is to compile them in the target docker container and copy the results
 out into the host. Example commands for ZMQ once you've downloaded and extracted the source
