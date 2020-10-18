@@ -5,3 +5,5 @@
 
 /target
 !/target/release/daiquiri
+
+/ct-ng
