@@ -26,9 +26,10 @@ Crosstool-NG requires a case-sensitive file system, so create one using Disk Uti
 volume is easiest).[^1] You can call this what you want, but I'm going to refer to it as
 'Toolchains' from here on.
 
-Run the following [^2]:
+Copy the crosstool-NG config to the case-sensitive file system and build your toolchain [^2]:
 ```shell script
-cd <repo-root>/ct-ng
+cp -r <repo-root>/ct-ng /Volumes/Toolchains/
+cd /Volumes/Toolchains/ct-ng
 ct-ng menuconfig  # optional (if you want to tweak stuff like where to install etc.)
 ct-ng build  # builds & installs the toolchain
 ```
