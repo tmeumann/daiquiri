@@ -49,6 +49,14 @@ Now this will hopefully just work:
 cargo build
 ```
 
+##### Troubleshooting #####
+
+If VSCode highlights the whole `Cargo.toml` with a ZMQ build error, try setting
+`LIBZMQ_PREFIX` in your `.profile`/`.bashrc` and restarting VSCode:
+```shell script
+export LIBZMQ_PREFIX="<path-to-repo>/syslib/zmq"
+```
+
 ###### Compiling the libraries ######
 
 These aren't complete steps, but there should be enough breadcrumbs here to be able to piece
