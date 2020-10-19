@@ -7,12 +7,16 @@ So you want to query the DAQ huh?
 Development
 -----------
 
-#### Cross-Compilation ####
+#### Cross-Compilation on macOS ####
 
-##### macOS #####
+Add the rust target:
 
-You'll need to build a toolchain to cross-compile. It's easiest with crosstool-NG, which you
-can get using Homebrew:
+```shell script
+rustup target add x86_64-unknown-linux-gnu
+```
+
+You'll need to build a toolchain to link against native C libraries. It's easiest to use
+crosstool-NG for this. You can get it using Homebrew:
 
 ```shell script
 brew install crosstool-ng
