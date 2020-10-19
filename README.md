@@ -36,7 +36,7 @@ ct-ng build  # builds & installs the toolchain
 
 Update your `PATH` in your `.profile` or `.bashrc` or whatever:
 ```shell script
-export PATH="${PATH}:/Volumes/Toolchains/x-tools/bin"
+export PATH="${PATH}:/Volumes/Toolchains/x-tools/x86_64-unknown-linux-gnu/bin"
 ```
 
 Download the compiled PowerDNA and ZMQ Linux libraries from (here)[https://ausport.sharepoint.com/:u:/r/sites/ATISoftwareDevTEam/Shared%20Documents/02%20Projects/2020/Wetplate/UEIPAC%20Stuff/syslib.tar.gz?csf=1&web=1&e=UVUDfu],
