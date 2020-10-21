@@ -1,13 +1,12 @@
 use std::sync::mpsc::Receiver;
 use zmq::Socket;
 use std::sync::mpsc::channel;
-use crate::powerdna::DaqError;
+use crate::powerdna::{DaqError, SignalManager};
 use crate::Daq;
 use crate::DqEngine;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::io::BufReader;
 use std::fs::File;
-use crate::powerdna::SignalStream;
 use std::collections::HashMap;
 use serde::{Deserialize};
 use thiserror::Error;
@@ -73,7 +72,8 @@ fn publish(socket: Socket, rx: Receiver<(String, Vec<u8>)>) {
     }
 }
 
-pub fn initialise() -> Result<Arc<HashMap<String, SignalStream>>, ConfigError> {
+
+pub fn initialise() -> Result<Arc<HashMap<String, Mutex<SignalManager>>>, ConfigError> {
     let clock_period: u32 = match env::var("CLOCK_PERIOD").unwrap_or(String::from("1000")).parse() {
         Ok(val) => val,
         Err(_) => return Err(ConfigError::InvalidClockPeriod),
@@ -82,7 +82,7 @@ pub fn initialise() -> Result<Arc<HashMap<String, SignalStream>>, ConfigError> {
     
     let file = File::open(file_path)?;
     let reader = BufReader::new(file);
-    let config: HashMap<String, StreamConfig> = serde_json::from_reader(reader)?;
+    let mut config: HashMap<String, StreamConfig> = serde_json::from_reader(reader)?;
 
     // TODO validate config -- no repeated stream names, IPs, etc.
 
@@ -97,14 +97,21 @@ pub fn initialise() -> Result<Arc<HashMap<String, SignalStream>>, ConfigError> {
         publish(socket, rx)
     });
 
-    let streams = config.iter()
-        .map(|(name, stream_config)| {
-            let StreamConfig { ip, freq, board } = stream_config;
-            let daq = Daq::new(engine.clone(), ip.clone())?;
-            let stream = SignalStream::new(daq, *freq, board, tx.clone(), name.clone())?;
-            Ok((name.clone(), stream))
+    let streams = config.drain()
+        .map(|(name, config)| {
+            let StreamConfig { ip, freq, board } = config;
+            let daq = Arc::new(Daq::new(engine.clone(), ip.clone())?);
+            let manager = Mutex::new(SignalManager::new(
+                name.clone(),
+                freq,
+                board,
+                daq,
+                tx.clone(),
+                None,
+            ));
+            Ok((name, manager))
         })
-        .collect::<Result<HashMap<String, SignalStream>, DaqError>>()?;
+        .collect::<Result<HashMap<String, Mutex<SignalManager>>, DaqError>>()?;  // TODO mutex
 
     Ok(Arc::new(streams))
 }

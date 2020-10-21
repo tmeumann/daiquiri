@@ -1,9 +1,8 @@
 use std::sync::mpsc::Sender;
-use libpowerdna_sys::DQ_ACB_DATA_TSCOPY;
 use crate::bootstrap::ChannelConfig;
 use crate::bootstrap::BoardConfig;
 use std::mem::size_of;
-use std::thread::spawn;
+use std::thread::{spawn, JoinHandle};
 use libpowerdna_sys::DQ_AI201_GAIN_1_100;
 use libpowerdna_sys::DQ_AI201_GAIN_2_100;
 use libpowerdna_sys::DQ_AI201_GAIN_5_100;
@@ -33,7 +32,6 @@ use libpowerdna_sys::DQ_LN_GETRAW;
 use libpowerdna_sys::DQ_LN_ACTIVE;
 use libpowerdna_sys::DQ_LN_ENABLED;
 use libpowerdna_sys::DqAcbInitOps;
-use libpowerdna_sys::DQ_LNCL_TIMESTAMP;
 use libpowerdna_sys::DQ_ACB_DATA_RAW;
 use libpowerdna_sys::DQ_ACB_DIRECTION_INPUT;
 use libpowerdna_sys::DQ_ACBMODE_CYCLE;
@@ -89,6 +87,54 @@ pub enum DaqError {
         #[from]
         source: PowerDnaError,
     },
+    #[error("Invalid state for this action.")]
+    StreamStateError,
+}
+
+
+pub struct SignalManager {
+    name: String,
+    freq: u32,
+    board: BoardConfig,
+    daq: Arc<Daq>,
+    out: Sender<(String, Vec<u8>)>,
+    sampler: Option<Sampler>,
+}
+
+
+impl SignalManager {
+    pub(crate) fn new(name: String, freq: u32, board: BoardConfig, daq: Arc<Daq>, out: Sender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
+        SignalManager {
+            name,
+            freq,
+            board,
+            daq,
+            out,
+            sampler,
+        }
+    }
+
+    pub fn start(&mut self) -> Result<(), DaqError> {
+        match self.sampler {
+            Some(_) => Err(DaqError::StreamStateError),
+            None => {
+                self.sampler = Some(
+                    Sampler::new(self.daq.clone(), self.freq, &self.board, self.out.clone(), self.name.clone())?
+                );
+                Ok(())
+            }
+        }
+    }
+
+    pub fn stop(&mut self) -> Result<(), DaqError> {
+        match self.sampler {
+            Some(_) => {
+                self.sampler = None;
+                Ok(())
+            },
+            None => Err(DaqError::StreamStateError)
+        }
+    }
 }
 
 
@@ -164,33 +210,37 @@ impl Drop for Daq {
 }
 
 fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize, tx: Sender<(String, Vec<u8>)>, topic: String) {
-    while !stop.load(SeqCst) {
+    loop {
         let mut events: u32 = 0;
-        
-        while events & DQ_eFrameDone == 0 {
-            match parse_err!(DqeWaitForEvent(&board.bcb, 1, 0, EVENT_TIMEOUT, &mut events)) {
-                Err(PowerDnaError::TimeoutError) => {
-                    continue;
-                },
-                Err(err) => {
-                    eprintln!("DqeWaitForEvent failed. Error: {:?}", err);
-                    break;
-                },
-                Ok(_) => {},
-            };
 
-            if events & (DQ_ePacketLost|DQ_eBufferError|DQ_ePacketOOB) != 0 {  // TODO recover from errors
-                if events & DQ_ePacketLost != 0 {
-                    eprintln!("AI:DQ_ePacketLost");
-                }
-                if events & DQ_eBufferError != 0 {
-                    eprintln!("AI:DQ_eBufferError");
-                }
-                if events & DQ_ePacketOOB != 0 {
-                    eprintln!("AI:DQ_ePacketOOB");
-                }
+        match parse_err!(DqeWaitForEvent(&board.bcb, 1, 0, EVENT_TIMEOUT, &mut events)) {
+            Err(PowerDnaError::TimeoutError) => {
+                match stop.load(SeqCst) {
+                    true => break,
+                    false => continue,
+                };
+            },
+            Err(err) => {
+                eprintln!("DqeWaitForEvent failed. Error: {:?}", err);
                 break;
+            },
+            Ok(_) => {},
+        };
+
+        if events & (DQ_ePacketLost|DQ_eBufferError|DQ_ePacketOOB) != 0 {  // TODO recover from errors
+            if events & DQ_ePacketLost != 0 {
+                eprintln!("AI:DQ_ePacketLost");
             }
+            if events & DQ_eBufferError != 0 {
+                eprintln!("AI:DQ_eBufferError");
+            }
+            if events & DQ_ePacketOOB != 0 {
+                eprintln!("AI:DQ_ePacketOOB");
+            }
+        }
+
+        if events & DQ_eFrameDone == 0 {
+            continue;
         }
 
         let framesize: u32 = board.acb_cfg.framesize;
@@ -226,15 +276,14 @@ fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, b
 }
 
 
-pub struct SignalStream {
+pub struct Sampler {
     board: Arc<Ai201>,
     stop: Arc<AtomicBool>,
+    join: Option<JoinHandle<()>>,
 }
 
-impl SignalStream {
-    pub fn new(daq: Daq, freq: u32, board_config: &BoardConfig, tx: Sender<(String, Vec<u8>)>, topic: String) -> Result<SignalStream, DaqError> {
-        // let Ai201 { mut bcb, acb_cfg, .. } = board;
-
+impl Sampler {
+    pub fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig, tx: Sender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
         let board = Ai201::new(daq, freq, board_config)?;
 
         let buffer_size = board.buffer_size()?;
@@ -245,36 +294,31 @@ impl SignalStream {
         let stop = Arc::new(AtomicBool::new(false));
         let cloned_stop = stop.clone();
 
-        spawn(move || {
+        let join = Some(spawn(move || {
             sampler(cloned_board, cloned_stop, raw_buffer, buffer_size, tx, topic)
-        });
+        }));
 
-        Ok(SignalStream {
+        parse_err!(DqeEnable(1, &board.bcb, 1, 1))?;
+
+        Ok(Sampler {
             board,
             stop,
+            join,
         })
-    }
-
-    pub fn start(&self) -> Result<(), DaqError> {
-        parse_err!(DqeEnable(1, &self.board.bcb, 1, 0))?;
-        Ok(())
-    }
-
-    pub fn stop(&self) -> Result<(), DaqError> {
-        parse_err!(DqeEnable(0, &self.board.bcb, 1, 0))?;
-        Ok(())
     }
 }
 
-impl Drop for SignalStream {
+impl Drop for Sampler {
     fn drop(&mut self) {
-        match self.stop() {
-            Err(err) => {
-                eprintln!("DqeEnable -> false failed. Error: {:?}", err);
-            },
+        match parse_err!(DqeEnable(0, &self.board.bcb, 1, 1)) {
+            Err(err) => eprintln!("DqeEnable -> false failed. Error: {:?}", err),
             Ok(_) => {},
         };
         self.stop.store(true, SeqCst);
+        match self.join.take() {
+            Some(handle) => { handle.join(); },  // TODO handle me
+            None => eprintln!("Failed to join sampling thread..."),
+        };
     }
 }
 
@@ -285,11 +329,11 @@ pub struct Ai201 {
     channels: Vec<u32>,
     pdc: pDATACONV,
     acb_cfg: DQACBCFG,
-    daq: Daq,  // TODO change to phantom data
+    daq: Arc<Daq>,  // TODO change to phantom data
 }
 
 impl Ai201 {
-    fn new(daq: Daq, freq: u32, board_config: &BoardConfig) -> Result<Self, PowerDnaError> {
+    fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig) -> Result<Self, PowerDnaError> {
         let BoardConfig { device, channels } = board_config;
         daq.enter_config_mode(*device)?;
         let bcb = daq.create_acb(*device)?;
@@ -323,7 +367,7 @@ impl Ai201 {
         // mutation
         parse_err!(DqAcbInitOps(bcb, &mut card_cfg, null_mut(), null_mut(), &mut actual_freq, null_mut(), &mut num_channels, channel_list.as_mut_ptr(), null_mut(), &mut acb_cfg))?;
         parse_err!(DqeSetEvent(bcb, DQ_eFrameDone | DQ_ePacketLost | DQ_eBufferError | DQ_ePacketOOB | DQ_eBufferDone))?;
-        
+
         let pdc = daq.get_data_converter(*device, &channel_list)?;
 
         Ok(Ai201 {
@@ -364,6 +408,7 @@ pub struct DqEngine {
 }
 
 unsafe impl Send for DqEngine {}
+unsafe impl Sync for DqEngine {}  // TODO validate this one's ok
 
 impl DqEngine {
     pub fn new(clock_period: u32) -> Result<Self, PowerDnaError> {
