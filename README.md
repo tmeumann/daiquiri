@@ -7,6 +7,14 @@ So you want to query the DAQ huh?
 Development
 -----------
 
+#### Remote Debugging (WIP) ####
+
+```shell script
+docker build -f Dockerfile.dev -t gdb .
+docker run --init -p 3030:3030 -p 5555:5555 -p 1234:1234 --entrypoint bash -ti --privileged gdb:latest
+```
+
+
 #### Cross-Compilation on macOS ####
 
 Add the rust target:

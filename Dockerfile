@@ -1,8 +1,8 @@
-FROM rust:1.47
+FROM ubuntu:20.04
 
-RUN apt-get update && apt-get -y install libzmq5 libczmq-dev
+RUN apt-get update && apt-get -y install libzmq5 build-essential
 
-RUN mkdir /app && mkdir /pdna
+RUN mkdir /app && mkdir /pdna && mkdir /etc/daiquiri
 WORKDIR /pdna
 
 COPY PowerDNA_Linux_4.10.1.14.tgz /pdna/
@@ -13,4 +13,9 @@ RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz \
 
 WORKDIR /app
 
-CMD bash
+COPY streams.json /etc/daiquiri/streams.json
+COPY target/x86_64-unknown-linux-gnu/release/daiquiri /app/daiquiri
+
+EXPOSE 3030 5555
+
+CMD ["/app/daiquiri"]
