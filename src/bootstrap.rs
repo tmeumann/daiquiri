@@ -1,6 +1,3 @@
-use std::sync::mpsc::Receiver;
-use zmq::Socket;
-use std::sync::mpsc::channel;
 use crate::powerdna::{DaqError, SignalManager};
 use crate::Daq;
 use crate::DqEngine;
@@ -13,6 +10,10 @@ use thiserror::Error;
 use std::io;
 use std::env;
 use serde_json;
+use rdkafka::producer::{FutureProducer, FutureRecord};
+use rdkafka::ClientConfig;
+use std::time::Duration;
+use tokio::sync::mpsc::UnboundedReceiver;
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
@@ -33,10 +34,10 @@ pub enum ConfigError {
         #[from]
         source: DaqError,
     },
-    #[error("Failed to bind ZMQ socket.")]
-    ZmqSocketError {
+    #[error("Failed to connect to Kafka.")]
+    KafkaError {
         #[from]
-        source: zmq::Error,
+        source: rdkafka::error::KafkaError,
     },
 }
 
@@ -59,16 +60,24 @@ pub struct ChannelConfig {
     pub gain: u32,  // TODO enum here
 }
 
-fn publish(socket: Socket, rx: Receiver<(String, Vec<u8>)>) {
+async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Vec<u8>)>) {
+    // TODO clean pack-up
     loop {
-        let (topic, data) = match rx.recv() {
-            Ok(val) => val,
-            Err(_) => {
+        let (topic, data) = match rx.recv().await {
+            Some(val) => {
+                val
+            },
+            None => {
                 break;
             },
         };
-        socket.send(topic.as_str(), zmq::SNDMORE).unwrap();
-        socket.send(data, 0).unwrap();
+        match producer.send(
+            FutureRecord::to(topic.as_str()).key(topic.as_str()).payload(&data),
+            Duration::from_secs(180),
+        ).await {
+            Ok(_) => (),
+            Err((err, _)) => eprintln!("Failed to send to Kafka. Error: {}", err),
+        };
     }
 }
 
@@ -86,15 +95,18 @@ pub fn initialise() -> Result<Arc<HashMap<String, Mutex<SignalManager>>>, Config
 
     // TODO validate config -- no repeated stream names, IPs, etc.
 
-    let engine = Arc::new(DqEngine::new(clock_period).expect("Failed to initialise DqEngine"));
+    let engine = Arc::new(DqEngine::new(clock_period)?);
 
-    let ctx = zmq::Context::new();
-    let socket = ctx.socket(zmq::PUB).unwrap();
-    socket.bind("tcp://*:5555")?;
+    let producer: FutureProducer = ClientConfig::new()
+        .set("bootstrap.servers", "host.docker.internal:19092")
+        .set("message.timeout.ms", "5000")
+        .create()?;
 
-    let (tx, rx) = channel();
-    std::thread::spawn(move || {
-        publish(socket, rx)
+    let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
+    println!("Spawning publisher...");
+    tokio::spawn(async move {
+        println!("wut");
+        publish(producer, rx).await
     });
 
     let streams = config.drain()
@@ -111,7 +123,7 @@ pub fn initialise() -> Result<Arc<HashMap<String, Mutex<SignalManager>>>, Config
             ));
             Ok((name, manager))
         })
-        .collect::<Result<HashMap<String, Mutex<SignalManager>>, DaqError>>()?;  // TODO mutex
+        .collect::<Result<HashMap<String, Mutex<SignalManager>>, DaqError>>()?;
 
     Ok(Arc::new(streams))
 }

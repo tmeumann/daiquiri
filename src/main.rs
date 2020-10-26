@@ -15,7 +15,7 @@ type SignalStore = Arc<HashMap<String, Mutex<SignalManager>>>;
 #[tokio::main]
 async fn main() {
     let signal_managers = initialise().expect("Failed to initialise DAQ threads.");
-    
+
     let start = warp::path("start")
         .and(warp::path::param())
         .and(with_signal_manager(Arc::clone(&signal_managers)))
@@ -25,8 +25,10 @@ async fn main() {
         .and(warp::path::param())
         .and(with_signal_manager(Arc::clone(&signal_managers)))
         .and_then(stop_stream);
-    
-    let routes = warp::post().and(start.or(stop));
+
+    let cors = warp::cors().allow_any_origin().allow_method(warp::http::Method::POST);
+    let routes = warp::post().and(start.or(stop)).with(cors);
+
     warp::serve(routes).run(([0, 0, 0, 0], 3030)).await;
 }
 
