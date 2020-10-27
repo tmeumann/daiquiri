@@ -1,11 +1,8 @@
-use crate::powerdna::{DaqError, SignalManager};
-use crate::Daq;
-use crate::DqEngine;
+use powerdna::{DaqError, SignalManager, daq::Daq, engine::DqEngine, config::StreamConfig};
 use std::sync::{Arc, Mutex};
 use std::io::BufReader;
 use std::fs::File;
 use std::collections::HashMap;
-use serde::{Deserialize};
 use thiserror::Error;
 use std::io;
 use std::env;
@@ -41,25 +38,6 @@ pub enum ConfigError {
     },
 }
 
-#[derive(Deserialize, Debug)]
-struct StreamConfig {
-    ip: String,
-    freq: u32,
-    board: BoardConfig,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct BoardConfig {
-    pub device: u8,
-    pub channels: Vec<ChannelConfig>,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct ChannelConfig {
-    pub id: u8,
-    pub gain: u32,  // TODO enum here
-}
-
 async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Vec<u8>)>) {
     // TODO clean pack-up
     loop {
@@ -82,7 +60,7 @@ async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Ve
 }
 
 
-pub fn initialise() -> Result<Arc<HashMap<String, Mutex<SignalManager>>>, ConfigError> {
+pub fn initialise() -> Result<Arc<Mutex<HashMap<String, SignalManager>>>, ConfigError> {
     let clock_period: u32 = match env::var("CLOCK_PERIOD").unwrap_or(String::from("1000")).parse() {
         Ok(val) => val,
         Err(_) => return Err(ConfigError::InvalidClockPeriod),
@@ -111,17 +89,17 @@ pub fn initialise() -> Result<Arc<HashMap<String, Mutex<SignalManager>>>, Config
         .map(|(name, config)| {
             let StreamConfig { ip, freq, board } = config;
             let daq = Arc::new(Daq::new(engine.clone(), ip.clone())?);
-            let manager = Mutex::new(SignalManager::new(
+            let manager = SignalManager::new(
                 name.clone(),
                 freq,
                 board,
                 daq,
                 tx.clone(),
                 None,
-            ));
+            );
             Ok((name, manager))
         })
-        .collect::<Result<HashMap<String, Mutex<SignalManager>>, DaqError>>()?;
+        .collect::<Result<HashMap<String, SignalManager>, DaqError>>()?;
 
-    Ok(Arc::new(streams))
+    Ok(Arc::new(Mutex::new(streams)))
 }

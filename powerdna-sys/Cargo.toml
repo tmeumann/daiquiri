@@ -1,5 +1,5 @@
 [package]
-name = "libpowerdna-sys"
+name = "powerdna-sys"
 version = "0.1.0"
 authors = ["tmeumann <tom.meumann@ausport.gov.au>"]
 edition = "2018"
