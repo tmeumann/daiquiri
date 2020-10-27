@@ -103,9 +103,7 @@ pub fn initialise() -> Result<Arc<HashMap<String, Mutex<SignalManager>>>, Config
         .create()?;
 
     let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
-    println!("Spawning publisher...");
     tokio::spawn(async move {
-        println!("wut");
         publish(producer, rx).await
     });
 
