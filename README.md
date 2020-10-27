@@ -51,7 +51,6 @@ tar xzf syslib.tar.gz
 Update your `.profile` or `.bashrc` or whatever to include these lines and reload it:
 ```shell script
 export PATH="${PATH}:/Volumes/Toolchains/x-tools/x86_64-unknown-linux-gnu/bin"
-export LIBZMQ_PREFIX="<path-to-repo>/syslib/zmq"
 ```
 
 Put the following in `~/.cargo/config.toml`:
@@ -62,7 +61,7 @@ linker = "x86_64-unknown-linux-gnu-gcc"
 
 Now this will hopefully just work:
 ```shell script
-cargo build
+CXX=x86_64-unknown-linux-gnu-g++ CC=x86_64-unknown-linux-gnu-cc cargo build
 ```
 
 ###### Compiling the libraries ######
@@ -80,8 +79,6 @@ tarball:
 make
 make install
 ```
-
-ZMQ releases can be found (here)[https://github.com/zeromq/libzmq/releases].
 
 
 [^1]: You can make Macintosh HD case-sensitive if you want, but I don't recommend it - it
