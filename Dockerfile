@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-RUN apt-get update && apt-get -y install libzmq5 build-essential
+RUN apt-get update && apt-get -y install build-essential
 
 RUN mkdir /app && mkdir /pdna && mkdir /etc/daiquiri
 WORKDIR /pdna

@@ -1,4 +1,3 @@
-use std::sync::mpsc::Sender;
 use crate::bootstrap::ChannelConfig;
 use crate::bootstrap::BoardConfig;
 use std::mem::size_of;
@@ -61,6 +60,7 @@ use std::convert::TryInto;
 use serde::{Deserialize};
 
 use thiserror::Error;
+use tokio::sync::mpsc::UnboundedSender;
 
 #[macro_use]
 pub mod results;
@@ -97,13 +97,13 @@ pub struct SignalManager {
     freq: u32,
     board: BoardConfig,
     daq: Arc<Daq>,
-    out: Sender<(String, Vec<u8>)>,
+    out: UnboundedSender<(String, Vec<u8>)>,
     sampler: Option<Sampler>,
 }
 
 
 impl SignalManager {
-    pub(crate) fn new(name: String, freq: u32, board: BoardConfig, daq: Arc<Daq>, out: Sender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
+    pub(crate) fn new(name: String, freq: u32, board: BoardConfig, daq: Arc<Daq>, out: UnboundedSender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
         SignalManager {
             name,
             freq,
@@ -209,7 +209,7 @@ impl Drop for Daq {
     }
 }
 
-fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize, tx: Sender<(String, Vec<u8>)>, topic: String) {
+fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) {
     loop {
         let mut events: u32 = 0;
 
@@ -283,7 +283,7 @@ pub struct Sampler {
 }
 
 impl Sampler {
-    pub fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig, tx: Sender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
+    pub fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
         let board = Ai201::new(daq, freq, board_config)?;
 
         let buffer_size = board.buffer_size()?;
@@ -312,13 +312,16 @@ impl Drop for Sampler {
     fn drop(&mut self) {
         match parse_err!(DqeEnable(0, &self.board.bcb, 1, 1)) {
             Err(err) => eprintln!("DqeEnable -> false failed. Error: {:?}", err),
-            Ok(_) => {},
+            Ok(_) => (),
         };
         self.stop.store(true, SeqCst);
         match self.join.take() {
-            Some(handle) => { handle.join(); },  // TODO handle me
-            None => eprintln!("Failed to join sampling thread..."),
-        };
+            Some(handle) => match handle.join() {
+                Ok(_) => (),
+                Err(_) => eprintln!("Failed to join sampling thread."),
+            },
+            None => (),
+        }
     }
 }
 
@@ -411,7 +414,7 @@ unsafe impl Send for DqEngine {}
 unsafe impl Sync for DqEngine {}  // TODO validate this one's ok
 
 impl DqEngine {
-    pub fn new(clock_period: u32) -> Result<Self, PowerDnaError> {
+    pub fn new(clock_period: u32) -> Result<Self, DaqError> {
         let mut dqe = null_mut();
         
         unsafe {
