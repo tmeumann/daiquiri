@@ -44,6 +44,7 @@ pub enum DaqError {
 pub struct SignalManager {
     name: String,
     freq: u32,
+    frame_size: u32,
     board: BoardConfig,
     daq: Arc<Daq>,
     out: UnboundedSender<(String, Vec<u8>)>,
@@ -52,10 +53,11 @@ pub struct SignalManager {
 
 
 impl SignalManager {
-    pub fn new(name: String, freq: u32, board: BoardConfig, daq: Arc<Daq>, out: UnboundedSender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
+    pub fn new(name: String, freq: u32, frame_size: u32, board: BoardConfig, daq: Arc<Daq>, out: UnboundedSender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
         SignalManager {
             name,
             freq,
+            frame_size,
             board,
             daq,
             out,
@@ -68,7 +70,7 @@ impl SignalManager {
             Some(_) => Err(DaqError::StreamStateError),
             None => {
                 self.sampler = Some(
-                    Sampler::new(self.daq.clone(), self.freq, &self.board, self.out.clone(), self.name.clone())?
+                    Sampler::new(self.daq.clone(), self.freq, self.frame_size, &self.board, self.out.clone(), self.name.clone())?
                 );
                 Ok(())
             }

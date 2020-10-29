@@ -67,8 +67,8 @@ pub struct Sampler {
 }
 
 impl Sampler {
-    pub fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
-        let board = Ai201::new(daq, freq, board_config)?;
+    pub fn new(daq: Arc<Daq>, freq: u32, frame_size: u32, board_config: &BoardConfig, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
+        let board = Ai201::new(daq, freq, frame_size, board_config)?;
 
         let buffer_size = board.buffer_size()?;
         let raw_buffer = vec![0; buffer_size];

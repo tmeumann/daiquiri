@@ -87,11 +87,12 @@ pub fn initialise() -> Result<Arc<Mutex<HashMap<String, SignalManager>>>, Config
 
     let streams = config.drain()
         .map(|(name, config)| {
-            let StreamConfig { ip, freq, board } = config;
+            let StreamConfig { ip, freq, frame_size, board } = config;
             let daq = Arc::new(Daq::new(engine.clone(), ip.clone())?);
             let manager = SignalManager::new(
                 name.clone(),
                 freq,
+                frame_size,
                 board,
                 daq,
                 tx.clone(),

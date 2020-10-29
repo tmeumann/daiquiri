@@ -49,7 +49,7 @@ pub struct Ai201 {
 }
 
 impl Ai201 {
-    pub(crate) fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig) -> Result<Self, PowerDnaError> {
+    pub(crate) fn new(daq: Arc<Daq>, freq: u32, frame_size: u32, board_config: &BoardConfig) -> Result<Self, PowerDnaError> {
         let BoardConfig { device, channels } = board_config;
         daq.enter_config_mode(*device)?;
         let bcb = daq.create_acb(*device)?;
@@ -71,8 +71,8 @@ impl Ai201 {
 
         acb_cfg.samplesz = mem::size_of::<u16>() as u32;  // size of single reading
         acb_cfg.scansz = channel_list.len() as u32;  // number of readings (timestamp is equivalent to 2 readings)
-        acb_cfg.framesize = 1000;  // frame size TODO
-        acb_cfg.frames = 4;  // # of frames TODO
+        acb_cfg.framesize = frame_size;
+        acb_cfg.frames = 12;  // # of frames in circular buffer TODO
         acb_cfg.mode = DQ_ACBMODE_CYCLE;
         acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW; // | DQ_ACB_DATA_TSCOPY;
 
