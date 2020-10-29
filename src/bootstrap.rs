@@ -4,13 +4,13 @@ use std::io::BufReader;
 use std::fs::File;
 use std::collections::HashMap;
 use thiserror::Error;
-use std::io;
+use std::{io, thread, mem};
 use std::env;
 use serde_json;
 use rdkafka::producer::{FutureProducer, FutureRecord};
 use rdkafka::ClientConfig;
 use std::time::Duration;
-use tokio::sync::mpsc::UnboundedReceiver;
+use std::sync::mpsc::{channel, Receiver};
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
@@ -38,24 +38,26 @@ pub enum ConfigError {
     },
 }
 
-async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Vec<u8>)>) {
+fn publish(producer: FutureProducer, mut rx: Receiver<(String, Vec<u8>)>) {
     // TODO clean pack-up
     loop {
-        let (topic, data) = match rx.recv().await {
-            Some(val) => {
+        let (topic, data) = match rx.recv() {
+            Ok(val) => {
                 val
             },
-            None => {
+            Err(_) => {
+                eprintln!("something broke in the channel...");
                 break;
             },
         };
-        match producer.send(
-            FutureRecord::to(topic.as_str()).key(topic.as_str()).payload(&data),
-            Duration::from_secs(180),
-        ).await {
-            Ok(_) => (),
-            Err((err, _)) => eprintln!("Failed to send to Kafka. Error: {}", err),
-        };
+        println!("{}: {}", topic, data.len() / mem::size_of::<f64>());
+        // match producer.send(
+        //     FutureRecord::to(topic.as_str()).key(topic.as_str()).payload(&data),
+        //     Duration::from_secs(180),
+        // ).await {
+        //     Ok(_) => (),
+        //     Err((err, _)) => eprintln!("Failed to send to Kafka. Error: {}", err),
+        // };
     }
 }
 
@@ -80,9 +82,9 @@ pub fn initialise() -> Result<Arc<Mutex<HashMap<String, SignalManager>>>, Config
         .set("message.timeout.ms", "5000")
         .create()?;
 
-    let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
-    tokio::spawn(async move {
-        publish(producer, rx).await
+    let (tx, rx) = channel();
+    thread::spawn(move || {
+        publish(producer, rx)
     });
 
     let streams = config.drain()

@@ -12,9 +12,9 @@ use powerdna_sys::{
 use crate::daq::Daq;
 use crate::DaqError;
 use crate::config::BoardConfig;
-use tokio::sync::mpsc::UnboundedSender;
+use std::sync::mpsc::Sender;
 
-fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) {
+fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize, tx: Sender<(String, Vec<u8>)>, topic: String) {
     loop {
         let events = match board.wait_for_event() {
             Err(PowerDnaError::TimeoutError) => {
@@ -67,7 +67,7 @@ pub struct Sampler {
 }
 
 impl Sampler {
-    pub fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
+    pub fn new(daq: Arc<Daq>, freq: u32, board_config: &BoardConfig, tx: Sender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
         let board = Ai201::new(daq, freq, board_config)?;
 
         let buffer_size = board.buffer_size()?;

@@ -7,7 +7,7 @@ use thiserror::Error;
 use crate::config::BoardConfig;
 use crate::daq::Daq;
 use crate::stream::Sampler;
-use tokio::sync::mpsc::UnboundedSender;
+use std::sync::mpsc::Sender;
 
 #[macro_use]
 mod results;
@@ -46,13 +46,13 @@ pub struct SignalManager {
     freq: u32,
     board: BoardConfig,
     daq: Arc<Daq>,
-    out: UnboundedSender<(String, Vec<u8>)>,
+    out: Sender<(String, Vec<u8>)>,
     sampler: Option<Sampler>,
 }
 
 
 impl SignalManager {
-    pub fn new(name: String, freq: u32, board: BoardConfig, daq: Arc<Daq>, out: UnboundedSender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
+    pub fn new(name: String, freq: u32, board: BoardConfig, daq: Arc<Daq>, out: Sender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
         SignalManager {
             name,
             freq,
