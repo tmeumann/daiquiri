@@ -38,6 +38,8 @@ pub enum DaqError {
     },
     #[error("Invalid state for this action.")]
     StreamStateError,
+    #[error("Unexpected number of channels.")]
+    ChannelConfigError,
 }
 
 

@@ -10,8 +10,20 @@ use tokio::sync::mpsc::UnboundedSender;
 use std::sync::mpsc::{Receiver, channel};
 
 
-async fn pass_through() {
-    todo!()
+fn pass_through(topic: String, input: Receiver<Vec<f64>>, out: UnboundedSender<(String, Vec<f64>)>) {
+    loop {
+        let buffer = match input.recv() {
+            Ok(buf) => buf,
+            Err(_) => {
+                // channel closed -- time to shut down
+                break;
+            },
+        };
+        match out.send((topic.clone(), buffer)) {
+            Ok(_) => (),
+            Err(err) => eprintln!("Failed to push buffer to channel. Error: {}", err),
+        };
+    }
 }
 
 
@@ -75,9 +87,19 @@ impl Sampler {
             total_channels += config.channels.len();
         }
 
-        let muxer_thread = Some(thread::spawn(move || {
-            merge(topic, total_channels, frame_size as usize, receivers, out)
-        }));
+        let muxer_thread = Some(if receivers.len() > 1 {
+            thread::spawn(move || {
+                merge(topic, total_channels, frame_size as usize, receivers, out)
+            })
+        } else {
+            let receiver = match receivers.pop() {
+                Some(rx) => rx,
+                None => return Err(DaqError::ChannelConfigError),
+            };
+            thread::spawn(move || {
+                pass_through(topic, receiver, out)
+            })
+        });
 
         let bcbs: Vec<pDQBCB> = boards.iter().map(|board| board.bcb()).collect();
         parse_err!(DqeEnable(1, bcbs.as_ptr(), bcbs.len() as i32, 1))?;
