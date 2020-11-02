@@ -45,20 +45,20 @@ pub struct SignalManager {
     name: String,
     freq: u32,
     frame_size: u32,
-    board: BoardConfig,
+    boards: Vec<BoardConfig>,
     daq: Arc<Daq>,
-    out: UnboundedSender<(String, Vec<u8>)>,
+    out: UnboundedSender<(String, Vec<f64>)>,
     sampler: Option<Sampler>,
 }
 
 
 impl SignalManager {
-    pub fn new(name: String, freq: u32, frame_size: u32, board: BoardConfig, daq: Arc<Daq>, out: UnboundedSender<(String, Vec<u8>)>, sampler: Option<Sampler>) -> Self {
+    pub fn new(name: String, freq: u32, frame_size: u32, boards: Vec<BoardConfig>, daq: Arc<Daq>, out: UnboundedSender<(String, Vec<f64>)>, sampler: Option<Sampler>) -> Self {
         SignalManager {
             name,
             freq,
             frame_size,
-            board,
+            boards,
             daq,
             out,
             sampler,
@@ -70,7 +70,7 @@ impl SignalManager {
             Some(_) => Err(DaqError::StreamStateError),
             None => {
                 self.sampler = Some(
-                    Sampler::new(self.daq.clone(), self.freq, self.frame_size, &self.board, self.out.clone(), self.name.clone())?
+                    Sampler::new(self.daq.clone(), self.freq, self.frame_size, &self.boards, self.out.clone(), self.name.clone())?
                 );
                 Ok(())
             }

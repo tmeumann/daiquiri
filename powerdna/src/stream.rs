@@ -2,109 +2,121 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use crate::boards::Ai201;
-use crate::results::PowerDnaError;
-use powerdna_sys::{
-    DQ_ePacketLost,
-    DQ_eBufferError,
-    DQ_ePacketOOB,
-    DQ_eFrameDone,
-};
+use powerdna_sys::{pDQBCB, DqeEnable};
 use crate::daq::Daq;
 use crate::DaqError;
 use crate::config::BoardConfig;
 use tokio::sync::mpsc::UnboundedSender;
+use std::sync::mpsc::{Receiver, channel};
 
-fn sampler(board: Arc<Ai201>, stop: Arc<AtomicBool>, mut raw_buffer: Vec<u16>, buffer_size: usize, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) {
+
+async fn pass_through() {
+    todo!()
+}
+
+
+fn merge(topic: String, num_channels: usize, frames: usize, inputs: Vec<Receiver<Vec<f64>>>, out: UnboundedSender<(String, Vec<f64>)>) {
+    // danger here! memcpy-style pointer arithmetic!
     loop {
-        let events = match board.wait_for_event() {
-            Err(PowerDnaError::TimeoutError) => {
-                match stop.load(Ordering::SeqCst) {
-                    true => break,
-                    false => continue,
-                };
-            },
-            Err(err) => {
-                eprintln!("DqeWaitForEvent failed. Error: {:?}", err);
+        let mut combined: Vec<f64> = vec![0.0; num_channels * frames];
+
+        let buffers: Vec<Vec<f64>> = match inputs.iter().map(|input| input.recv()).collect() {
+            Ok(bufs) => bufs,
+            Err(_) => {
+                // one of the channels has been closed -- time to shut down
                 break;
             },
-            Ok(val) => val,
         };
 
-        if events & DQ_ePacketLost != 0 {
-            eprintln!("AI:DQ_ePacketLost");
+        for i in 0..frames {
+            let mut dst_start = i * num_channels;
+            for buf in &buffers {
+                let src_start = i * 12;  // TODO num channels
+                let src_end = src_start + 12;  // TODO  num channels
+                let dst_end = dst_start + 12;  // TODO num channels
+                &mut combined[dst_start..dst_end].copy_from_slice(&buf[src_start..src_end]);
+                dst_start += 12;  // TODO num channels
+            }
         }
-        if events & DQ_eBufferError != 0 {
-            eprintln!("AI:DQ_eBufferError");
-        }
-        if events & DQ_ePacketOOB != 0 {
-            eprintln!("AI:DQ_ePacketOOB");
-        }
-
-        if events & DQ_eFrameDone == 0 {
-            continue;
-        }
-
-        let scaled_data = match board.get_scaled_data(&mut raw_buffer, buffer_size) {
-            Ok(val) => val,
-            Err(_) => {
-                eprintln!("Failed to get scaled data. Skipping frame!");
-                continue;
-            },
-        };
-
-        match tx.send((topic.clone(), scaled_data)) {
-            Ok(_) => {},
-            Err(_) => break,  // TODO log me
+        match out.send((topic.clone(), combined)) {
+            Ok(_) => (),
+            Err(err) => eprintln!("Failed to push merged buffer to channel. Error: {}", err),
         };
     }
 }
 
 
 pub struct Sampler {
-    board: Arc<Ai201>,
     stop: Arc<AtomicBool>,
-    join: Option<thread::JoinHandle<()>>,
+    muxer_thread: Option<thread::JoinHandle<()>>,
+    boards: Vec<Arc<Ai201>>,
+    board_threads: Option<Vec<thread::JoinHandle<()>>>,
 }
 
 impl Sampler {
-    pub fn new(daq: Arc<Daq>, freq: u32, frame_size: u32, board_config: &BoardConfig, tx: UnboundedSender<(String, Vec<u8>)>, topic: String) -> Result<Sampler, DaqError> {
-        let board = Ai201::new(daq, freq, frame_size, board_config)?;
-
-        let buffer_size = board.buffer_size()?;
-        let raw_buffer = vec![0; buffer_size];
-
-        let board = Arc::new(board);
-        let cloned_board = Arc::clone(&board);
+    pub fn new(daq: Arc<Daq>, freq: u32, frame_size: u32, board_configs: &Vec<BoardConfig>, out: UnboundedSender<(String, Vec<f64>)>, topic: String) -> Result<Sampler, DaqError> {
         let stop = Arc::new(AtomicBool::new(false));
-        let cloned_stop = stop.clone();
+        let mut boards = Vec::new();
+        let mut board_threads = Vec::new();
+        let mut receivers = Vec::new();
+        let mut total_channels = 0;
 
-        let join = Some(thread::spawn(move || {
-            sampler(cloned_board, cloned_stop, raw_buffer, buffer_size, tx, topic)
+        for config in board_configs {
+            let (tx, rx) = channel();
+            let board = Arc::new(Ai201::new(Arc::clone(&daq), freq, frame_size, config, tx)?);
+
+            let cloned_stop = Arc::clone(&stop);
+            let cloned_board = Arc::clone(&board);
+            let thread = thread::spawn(move || cloned_board.sample(cloned_stop));
+
+            boards.push(board);
+            board_threads.push(thread);
+            receivers.push(rx);
+            total_channels += config.channels.len();
+        }
+
+        let muxer_thread = Some(thread::spawn(move || {
+            merge(topic, total_channels, frame_size as usize, receivers, out)
         }));
 
-        board.enable()?;
+        let bcbs: Vec<pDQBCB> = boards.iter().map(|board| board.bcb()).collect();
+        parse_err!(DqeEnable(1, bcbs.as_ptr(), bcbs.len() as i32, 1))?;
 
         Ok(Sampler {
-            board,
             stop,
-            join,
+            muxer_thread,
+            boards,
+            board_threads: Some(board_threads),
         })
     }
 }
 
 impl Drop for Sampler {
     fn drop(&mut self) {
-        match self.board.disable() {
-            Err(err) => eprintln!("DqeEnable -> false failed. Error: {:?}", err),
+        let bcbs: Vec<pDQBCB> = self.boards.iter().map(|board| board.bcb()).collect();
+        match parse_err!(DqeEnable(0, bcbs.as_ptr(), bcbs.len() as i32, 1)) {
             Ok(_) => (),
+            Err(err) => eprintln!("DqeEnable -> false failed. Error: {:?}", err),
         };
         self.stop.store(true, Ordering::SeqCst);
-        match self.join.take() {
+        match self.board_threads.take() {
+            Some(threads) => {
+                for thread in threads {
+                    match thread.join() {
+                        Ok(_) => (),
+                        Err(_) => eprintln!("Failed to join board thread."),
+                    };
+                }
+            },
+            None => eprintln!("No board threads to join!!"),
+        }
+        self.boards.clear();
+        match self.muxer_thread.take() {
             Some(handle) => match handle.join() {
                 Ok(_) => (),
                 Err(_) => eprintln!("Failed to join sampling thread."),
             },
-            None => (),
+            None => eprintln!("No muxer thread to join!!"),
         }
     }
 }

@@ -11,5 +11,4 @@ powerdna-sys = { path = "../powerdna-sys" }
 thiserror = "1.0"
 enum_primitive = "0.1"
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 tokio = { version = "0.2", features = ["full"] }
