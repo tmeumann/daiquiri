@@ -169,8 +169,6 @@ impl Ai201 {
         while data_available {
             parse_err!(DqAcbGetScansCopy(self.bcb, buffer_ptr, framesize, framesize, &mut received_scans, &mut remaining_scans))?;
 
-            println!("Buffer length: {} Framesize: {} Received: {} Remaining: {}", raw_buffer.len(), framesize, received_scans, remaining_scans);
-
             let chans = self.channels.len() as u32;
             let mut scaled_buffer: Vec<f64> = vec![0.0; self.buffer_size];
 
