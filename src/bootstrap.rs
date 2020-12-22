@@ -11,6 +11,7 @@ use rdkafka::producer::{FutureProducer, FutureRecord};
 use rdkafka::ClientConfig;
 use std::time::Duration;
 use tokio::sync::mpsc::UnboundedReceiver;
+use bytemuck::try_cast_slice;
 
 #[derive(Error, Debug)]
 pub enum ConfigError {
@@ -38,19 +39,22 @@ pub enum ConfigError {
     },
 }
 
-async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Vec<u8>)>) {
+async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Vec<f64>)>) {
     // TODO clean pack-up
     loop {
         let (topic, data) = match rx.recv().await {
-            Some(val) => {
-                val
-            },
-            None => {
-                break;
+            Some(val) => val,
+            None => break,
+        };
+        let transmuted = match try_cast_slice(&data[..]) {
+            Ok(buf) => buf,
+            Err(err) => {
+                eprintln!("Failed to cast into byte slice. Error: {}", err);
+                continue;
             },
         };
         match producer.send(
-            FutureRecord::to(topic.as_str()).key(topic.as_str()).payload(&data),
+            FutureRecord::to(topic.as_str()).key(topic.as_str()).payload(transmuted),
             Duration::from_secs(180),
         ).await {
             Ok(_) => (),
@@ -87,13 +91,13 @@ pub fn initialise() -> Result<Arc<Mutex<HashMap<String, SignalManager>>>, Config
 
     let streams = config.drain()
         .map(|(name, config)| {
-            let StreamConfig { ip, freq, frame_size, board } = config;
+            let StreamConfig { ip, freq, frame_size, boards } = config;
             let daq = Arc::new(Daq::new(engine.clone(), ip.clone())?);
             let manager = SignalManager::new(
                 name.clone(),
                 freq,
                 frame_size,
-                board,
+                boards,
                 daq,
                 tx.clone(),
                 None,

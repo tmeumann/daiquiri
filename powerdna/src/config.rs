@@ -5,7 +5,7 @@ pub struct StreamConfig {
     pub ip: String,
     pub freq: u32,
     pub frame_size: u32,
-    pub board: BoardConfig,
+    pub boards: Vec<BoardConfig>,
 }
 
 #[derive(Deserialize, Debug)]

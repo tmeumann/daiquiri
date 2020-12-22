@@ -27,15 +27,14 @@ use powerdna_sys::{
     DqeWaitForEvent,
     DqAcbGetScansCopy,
     DqConvRaw2ScalePdc,
-    DqeEnable,
 };
-use crate::DaqError;
 use std::sync::Arc;
 use crate::results::PowerDnaError;
-use std::{mem, ptr};
+use std::{mem, ptr, cmp};
 use crate::daq::Daq;
 use crate::config::{BoardConfig, ChannelConfig};
-use std::convert::TryInto;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::Sender;
 
 const CFG201: u32 = DQ_LN_ENABLED | DQ_LN_ACTIVE | DQ_LN_GETRAW | DQ_LN_IRQEN | DQ_LN_CLCKSRC0 | DQ_LN_STREAMING | DQ_AI201_MODEFIFO;
 const EVENT_TIMEOUT: i32 = 1000;
@@ -45,11 +44,14 @@ pub struct Ai201 {
     channels: Vec<u32>,
     pdc: pDATACONV,
     acb_cfg: DQACBCFG,
-    daq: Arc<Daq>,  // TODO change to phantom data
+    #[allow(dead_code)]
+    daq: Arc<Daq>,
+    buffer_size: usize,
+    out: Sender<Vec<f64>>,
 }
 
 impl Ai201 {
-    pub(crate) fn new(daq: Arc<Daq>, freq: u32, frame_size: u32, board_config: &BoardConfig) -> Result<Self, PowerDnaError> {
+    pub(crate) fn new(daq: Arc<Daq>, freq: u32, frame_size: u32, board_config: &BoardConfig, out: Sender<Vec<f64>>) -> Result<Self, PowerDnaError> {
         let BoardConfig { device, channels } = board_config;
         daq.enter_config_mode(*device)?;
         let bcb = daq.create_acb(*device)?;
@@ -86,53 +88,102 @@ impl Ai201 {
 
         let pdc = daq.get_data_converter(*device, &channel_list)?;
 
+        let buffer_size = (acb_cfg.framesize * acb_cfg.scansz) as usize;
+
         Ok(Ai201 {
             bcb,
             channels: channel_list,
             pdc,
             acb_cfg,
             daq,
+            buffer_size,
+            out,
         })
     }
 
-    pub(crate) fn wait_for_event(&self) -> Result<u32, PowerDnaError> {
+    pub(crate) fn sample(&self, stop: Arc<AtomicBool>) {
+        let mut raw_buffer = vec![0; self.buffer_size];
+        'outer: loop {
+            let events = match self.wait_for_event() {
+                Err(PowerDnaError::TimeoutError) => {
+                    match stop.load(Ordering::SeqCst) {
+                        true => break,
+                        false => continue,
+                    };
+                },
+                Err(err) => {
+                    eprintln!("DqeWaitForEvent failed. Error: {:?}", err);
+                    break;
+                },
+                Ok(val) => val,
+            };
+
+            if events & DQ_ePacketLost != 0 {
+                eprintln!("AI:DQ_ePacketLost");
+            }
+            if events & DQ_eBufferError != 0 {
+                eprintln!("AI:DQ_eBufferError");
+            }
+            if events & DQ_ePacketOOB != 0 {
+                eprintln!("AI:DQ_ePacketOOB");
+            }
+
+            if events & DQ_eFrameDone == 0 {
+                continue;
+            }
+
+            let scaled_data = match self.get_scaled_data(&mut raw_buffer) {
+                Ok(val) => val,
+                Err(_) => {
+                    eprintln!("Failed to get scaled data. Skipping frame!");
+                    continue;
+                },
+            };
+
+            for frame in scaled_data {
+                match self.out.send(frame) {
+                    Ok(_) => {},
+                    Err(_) => break 'outer,  // TODO log me
+                };
+            }
+        }
+    }
+
+    fn wait_for_event(&self) -> Result<u32, PowerDnaError> {
         let mut events: u32 = 0;
         parse_err!(DqeWaitForEvent(&self.bcb, 1, 0, EVENT_TIMEOUT, &mut events))?;
         Ok(events)
     }
 
-    pub(crate) fn get_scaled_data(&self, raw_buffer: &mut Vec<u16>, buffer_size: usize) -> Result<Vec<u8>, PowerDnaError> {
+    fn get_scaled_data(&self, raw_buffer: &mut Vec<u16>) -> Result<Vec<Vec<f64>>, PowerDnaError> {
         let framesize: u32 = self.acb_cfg.framesize;
         let mut received_scans: u32 = 0;
         let mut remaining_scans: u32 = 0;
 
         let buffer_ptr = raw_buffer.as_mut_ptr() as *mut i8;
 
-        parse_err!(DqAcbGetScansCopy(self.bcb, buffer_ptr, framesize, framesize, &mut received_scans, &mut remaining_scans))?;
+        let mut scaled_frames: Vec<Vec<f64>> = vec![];
 
-        let chans = self.channels.len() as u32;
-        let mut scaled_buffer: Vec<u8> = vec![0; buffer_size * mem::size_of::<f64>()];
+        let mut data_available = true;
 
-        parse_err!(DqConvRaw2ScalePdc(self.pdc, self.channels.as_ptr(), chans, received_scans * chans, buffer_ptr, scaled_buffer.as_mut_ptr() as *mut f64))?;
+        while data_available {
+            parse_err!(DqAcbGetScansCopy(self.bcb, buffer_ptr, framesize, framesize, &mut received_scans, &mut remaining_scans))?;
 
-        Ok(scaled_buffer)
-    }
+            let chans = self.channels.len() as u32;
+            let mut scaled_buffer: Vec<f64> = vec![0.0; self.buffer_size];
 
-    pub(crate) fn enable(&self) -> Result<(), PowerDnaError> {
-        parse_err!(DqeEnable(1, &self.bcb, 1, 1))?;
-        Ok(())
-    }
+            parse_err!(DqConvRaw2ScalePdc(self.pdc, self.channels.as_ptr(), chans, received_scans * chans, buffer_ptr, scaled_buffer.as_mut_ptr() as *mut f64))?;
 
-    pub(crate) fn disable(&self) -> Result<(), PowerDnaError> {
-        parse_err!(DqeEnable(0, &self.bcb, 1, 1))?;
-        Ok(())
-    }
+            scaled_frames.push(scaled_buffer);
 
-    pub(crate) fn buffer_size(&self) -> Result<usize, DaqError> {
-        match (self.acb_cfg.framesize * self.acb_cfg.scansz).try_into() {
-            Err(_) => Err(DaqError::BufferError),
-            Ok(val) => Ok(val),
+            data_available = remaining_scans > framesize;
         }
+
+        Ok(scaled_frames)
+    }
+
+    pub(crate) fn bcb(&self) -> pDQBCB {
+        self.bcb
     }
 }
 
