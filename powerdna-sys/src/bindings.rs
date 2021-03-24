@@ -41064,7 +41064,7 @@ extern "C" {
 extern "C" {
     pub fn DqAcbPutScansCopy(
         pBcb: pDQBCB,
-        data: *mut ::std::os::raw::c_char,
+        data: *const ::std::os::raw::c_char,
         size: uint32,
         rqsizemin: uint32,
         retrieved: *mut uint32,

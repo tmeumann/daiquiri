@@ -1,16 +1,15 @@
+use crate::results::PowerDnaError;
+use crate::DaqError;
 use powerdna_sys::{
-    pDQE,
-    DqInitDAQLib,
-    DqStartDQEngine,
-    DqStopDQEngine,
-    DqCleanUpDAQLib,
-    pDQBCB,
-    DqAcbCreate,
-    DQ_SS0IN,
+    pDQBCB, pDQE, DqAcbCreate, DqCleanUpDAQLib, DqInitDAQLib, DqStartDQEngine, DqStopDQEngine,
+    DQ_SS0IN, DQ_SS0OUT,
 };
 use std::ptr;
-use crate::DaqError;
-use crate::results::PowerDnaError;
+
+pub enum InterfaceType {
+    Input,
+    Output,
+}
 
 pub struct DqEngine {
     dqe: pDQE,
@@ -25,17 +24,30 @@ impl DqEngine {
         }
         parse_err!(DqStartDQEngine(clock_period, &mut dqe, ptr::null_mut()))?;
 
-        Ok(
-            DqEngine {
-                dqe,
-            }
-        )
+        Ok(DqEngine { dqe })
     }
 
-    pub(crate) fn create_acb(&self, handle: i32, device: u8) -> Result<pDQBCB, PowerDnaError> {
+    pub(crate) fn create_acb(
+        &self,
+        handle: i32,
+        device: u8,
+        interface_type: InterfaceType,
+    ) -> Result<pDQBCB, PowerDnaError> {
         let mut bcb: pDQBCB = ptr::null_mut();
+
+        let subsystem = match interface_type {
+            InterfaceType::Input => DQ_SS0IN,
+            InterfaceType::Output => DQ_SS0OUT,
+        };
+
         // mutation
-        parse_err!(DqAcbCreate(self.dqe, handle, device as u32, DQ_SS0IN, &mut bcb))?;
+        parse_err!(DqAcbCreate(
+            self.dqe,
+            handle,
+            device as u32,
+            subsystem,
+            &mut bcb
+        ))?;
         Ok(bcb)
     }
 }
@@ -45,8 +57,8 @@ impl Drop for DqEngine {
         match parse_err!(DqStopDQEngine(self.dqe)) {
             Err(err) => {
                 eprintln!("DqStopDQEngine failed. Error: {:?}", err);
-            },
-            Ok(_) => {},
+            }
+            Ok(_) => {}
         };
         unsafe {
             DqCleanUpDAQLib();
@@ -55,4 +67,4 @@ impl Drop for DqEngine {
 }
 
 unsafe impl Send for DqEngine {}
-unsafe impl Sync for DqEngine {}  // TODO validate this one's ok
+unsafe impl Sync for DqEngine {} // TODO validate this one's ok

@@ -4,7 +4,7 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential ssh gdbserver \
     && apt-get clean
 
-RUN mkdir /app && mkdir /pdna && mkdir /etc/daiquiri
+RUN mkdir /etc/daiquiri && ln -s /app/streams.json /etc/daiquiri/streams.json
 WORKDIR /pdna
 
 COPY PowerDNA_Linux_4.10.1.14.tgz /pdna/
@@ -15,11 +15,8 @@ RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz \
 
 WORKDIR /app
 
-COPY streams.json /etc/daiquiri/streams.json
 COPY . /app
 
 EXPOSE 3030 5555 1234
 
-ENTRYPOINT ["gdbserver", ":1234"]
-
-CMD ["/app/target/x86_64-unknown-linux-gnu/debug/daiquiri"]
+CMD ["gdbserver", ":1234", "/app/target/x86_64-unknown-linux-gnu/debug/daiquiri"]

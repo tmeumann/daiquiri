@@ -1,24 +1,33 @@
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::thread;
-use crate::boards::Ai201;
-use powerdna_sys::{pDQBCB, DqeEnable};
+use crate::boards::{Ai201, Bcb, Dio405};
+use crate::config::{BoardConfig, OutputConfig};
 use crate::daq::Daq;
 use crate::DaqError;
-use crate::config::BoardConfig;
+use powerdna_sys::{pDQBCB, DqeEnable};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::{channel, Receiver, RecvError};
+use std::sync::Arc;
+use std::thread;
 use tokio::sync::mpsc::UnboundedSender;
-use std::sync::mpsc::{Receiver, channel, RecvError};
-
 
 pub struct Sampler {
     stop: Arc<AtomicBool>,
     muxer_thread: Option<thread::JoinHandle<()>>,
     boards: Vec<Arc<Ai201>>,
     board_threads: Option<Vec<thread::JoinHandle<()>>>,
+    outputs: Vec<Arc<Dio405>>,
+    output_threads: Option<Vec<thread::JoinHandle<()>>>,
 }
 
 impl Sampler {
-    pub fn new(daq: Arc<Daq>, freq: u32, frame_size: u32, board_configs: &Vec<BoardConfig>, out: UnboundedSender<(String, Vec<f64>)>, topic: String) -> Result<Sampler, DaqError> {
+    pub fn new(
+        daq: Arc<Daq>,
+        freq: u32,
+        frame_size: u32,
+        board_configs: &Vec<BoardConfig>,
+        output_configs: &Vec<OutputConfig>,
+        out: UnboundedSender<(String, Vec<f64>)>,
+        topic: String,
+    ) -> Result<Sampler, DaqError> {
         let stop = Arc::new(AtomicBool::new(false));
         let mut boards = Vec::new();
         let mut board_threads = Vec::new();
@@ -38,20 +47,34 @@ impl Sampler {
         }
 
         let muxer_thread = Some(if receivers.len() > 1 {
-            thread::spawn(move || {
-                merge(topic, frame_size as usize, receivers, out)
-            })
+            thread::spawn(move || merge(topic, frame_size as usize, receivers, out))
         } else {
             let (rx, _) = match receivers.pop() {
                 Some(item) => item,
                 None => return Err(DaqError::ChannelConfigError),
             };
-            thread::spawn(move || {
-                pass_through(topic, rx, out)
-            })
+            thread::spawn(move || pass_through(topic, rx, out))
         });
 
-        let bcbs: Vec<pDQBCB> = boards.iter().map(|board| board.bcb()).collect();
+        let mut outputs: Vec<Arc<Dio405>> = Vec::new();
+        let mut output_threads = Vec::new();
+
+        for config in output_configs {
+            let output_board = Arc::new(Dio405::new(Arc::clone(&daq), freq, frame_size, config)?);
+
+            let cloned_stop = Arc::clone(&stop);
+            let cloned_board = Arc::clone(&output_board);
+            let thread = thread::spawn(move || cloned_board.push_data(cloned_stop));
+
+            outputs.push(output_board);
+            output_threads.push(thread);
+        }
+
+        let bcbs: Vec<pDQBCB> = boards
+            .iter()
+            .map(|board| board.bcb())
+            .chain(outputs.iter().map(|output| output.bcb()))
+            .collect();
         parse_err!(DqeEnable(1, bcbs.as_ptr(), bcbs.len() as i32, 1))?;
 
         Ok(Sampler {
@@ -59,18 +82,31 @@ impl Sampler {
             muxer_thread,
             boards,
             board_threads: Some(board_threads),
+            outputs,
+            output_threads: Some(output_threads),
         })
+    }
+
+    pub fn trigger(&mut self) -> Result<(), DaqError> {
+        for output in self.outputs.as_slice() {
+            output.trigger()?;
+        }
+        Ok(())
     }
 }
 
-fn pass_through(topic: String, input: Receiver<Vec<f64>>, out: UnboundedSender<(String, Vec<f64>)>) {
+fn pass_through(
+    topic: String,
+    input: Receiver<Vec<f64>>,
+    out: UnboundedSender<(String, Vec<f64>)>,
+) {
     loop {
         let buffer = match input.recv() {
             Ok(buf) => buf,
             Err(_) => {
                 // channel closed -- time to shut down
                 break;
-            },
+            }
         };
         match out.send((topic.clone(), buffer)) {
             Ok(_) => (),
@@ -79,21 +115,27 @@ fn pass_through(topic: String, input: Receiver<Vec<f64>>, out: UnboundedSender<(
     }
 }
 
-
-fn merge(topic: String, frames: usize, inputs: Vec<(Receiver<Vec<f64>>, usize)>, out: UnboundedSender<(String, Vec<f64>)>) {
+fn merge(
+    topic: String,
+    frames: usize,
+    inputs: Vec<(Receiver<Vec<f64>>, usize)>,
+    out: UnboundedSender<(String, Vec<f64>)>,
+) {
     // danger here! memcpy-style pointer arithmetic!
     let total_channels = inputs.iter().fold(0, |total, (_, chans)| total + chans);
     loop {
         let mut combined: Vec<f64> = vec![0.0; total_channels * frames];
 
-        let buffers: Vec<(Vec<f64>, &usize)> = match inputs.iter()
+        let buffers: Vec<(Vec<f64>, &usize)> = match inputs
+            .iter()
             .map(|(input, chans)| Ok::<(Vec<f64>, &usize), RecvError>((input.recv()?, chans)))
-            .collect() {
+            .collect()
+        {
             Ok(bufs) => bufs,
             Err(_) => {
                 // one of the channels has been closed -- time to shut down
                 break;
-            },
+            }
         };
 
         for i in 0..frames {
@@ -115,7 +157,12 @@ fn merge(topic: String, frames: usize, inputs: Vec<(Receiver<Vec<f64>>, usize)>,
 
 impl Drop for Sampler {
     fn drop(&mut self) {
-        let bcbs: Vec<pDQBCB> = self.boards.iter().map(|board| board.bcb()).collect();
+        let bcbs: Vec<pDQBCB> = self
+            .boards
+            .iter()
+            .map(|board| board.bcb())
+            .chain(self.outputs.iter().map(|output| output.bcb()))
+            .collect();
         match parse_err!(DqeEnable(0, bcbs.as_ptr(), bcbs.len() as i32, 1)) {
             Ok(_) => (),
             Err(err) => eprintln!("DqeEnable -> false failed. Error: {:?}", err),
@@ -129,10 +176,22 @@ impl Drop for Sampler {
                         Err(_) => eprintln!("Failed to join board thread."),
                     };
                 }
-            },
-            None => eprintln!("No board threads to join!!"),
+            }
+            None => eprintln!("No board threads to join."),
+        }
+        match self.output_threads.take() {
+            Some(threads) => {
+                for thread in threads {
+                    match thread.join() {
+                        Ok(_) => (),
+                        Err(_) => eprintln!("Failed to join output thread."),
+                    };
+                }
+            }
+            None => eprintln!("No output threads to join."),
         }
         self.boards.clear();
+        self.outputs.clear();
         match self.muxer_thread.take() {
             Some(handle) => match handle.join() {
                 Ok(_) => (),

@@ -1,22 +1,22 @@
+use crate::config::{BoardConfig, OutputConfig};
+use crate::daq::Daq;
+use crate::stream::Sampler;
+use powerdna_sys::DQ_AI201_GAIN_10_100;
 use powerdna_sys::DQ_AI201_GAIN_1_100;
 use powerdna_sys::DQ_AI201_GAIN_2_100;
 use powerdna_sys::DQ_AI201_GAIN_5_100;
-use powerdna_sys::DQ_AI201_GAIN_10_100;
 use std::sync::Arc;
 use thiserror::Error;
-use crate::config::BoardConfig;
-use crate::daq::Daq;
-use crate::stream::Sampler;
 use tokio::sync::mpsc::UnboundedSender;
 
 #[macro_use]
 mod results;
 
-pub mod engine;
 mod boards;
-pub mod daq;
-mod stream;
 pub mod config;
+pub mod daq;
+pub mod engine;
+mod stream;
 
 #[derive(Debug)]
 #[repr(u32)]
@@ -42,25 +42,34 @@ pub enum DaqError {
     ChannelConfigError,
 }
 
-
 pub struct SignalManager {
     name: String,
     freq: u32,
     frame_size: u32,
     boards: Vec<BoardConfig>,
+    outputs: Vec<OutputConfig>,
     daq: Arc<Daq>,
     out: UnboundedSender<(String, Vec<f64>)>,
     sampler: Option<Sampler>,
 }
 
-
 impl SignalManager {
-    pub fn new(name: String, freq: u32, frame_size: u32, boards: Vec<BoardConfig>, daq: Arc<Daq>, out: UnboundedSender<(String, Vec<f64>)>, sampler: Option<Sampler>) -> Self {
+    pub fn new(
+        name: String,
+        freq: u32,
+        frame_size: u32,
+        boards: Vec<BoardConfig>,
+        outputs: Vec<OutputConfig>,
+        daq: Arc<Daq>,
+        out: UnboundedSender<(String, Vec<f64>)>,
+        sampler: Option<Sampler>,
+    ) -> Self {
         SignalManager {
             name,
             freq,
             frame_size,
             boards,
+            outputs,
             daq,
             out,
             sampler,
@@ -71,11 +80,34 @@ impl SignalManager {
         match self.sampler {
             Some(_) => Err(DaqError::StreamStateError),
             None => {
-                self.sampler = Some(
-                    Sampler::new(self.daq.clone(), self.freq, self.frame_size, &self.boards, self.out.clone(), self.name.clone())?
-                );
+                let sampler = match Sampler::new(
+                    self.daq.clone(),
+                    self.freq,
+                    self.frame_size,
+                    &self.boards,
+                    &self.outputs,
+                    self.out.clone(),
+                    self.name.clone(),
+                ) {
+                    Ok(sampler) => sampler,
+                    Err(err) => {
+                        println!("{:?}", err);
+                        return Err(err);
+                    }
+                };
+                self.sampler = Some(sampler);
                 Ok(())
             }
+        }
+    }
+
+    pub fn trigger(&mut self) -> Result<(), DaqError> {
+        match &mut self.sampler {
+            Some(sampler) => {
+                sampler.trigger()?;
+                Ok(())
+            }
+            None => Err(DaqError::StreamStateError),
         }
     }
 
@@ -84,10 +116,8 @@ impl SignalManager {
             Some(_) => {
                 self.sampler = None;
                 Ok(())
-            },
-            None => Err(DaqError::StreamStateError)
+            }
+            None => Err(DaqError::StreamStateError),
         }
     }
 }
-
-
