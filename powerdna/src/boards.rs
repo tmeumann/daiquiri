@@ -4,12 +4,11 @@ use crate::engine::InterfaceType;
 use crate::results::PowerDnaError;
 use powerdna_sys::{
     pDATACONV, pDQBCB, DQ_eBufferDone, DQ_eBufferError, DQ_eFrameDone, DQ_ePacketLost,
-    DQ_ePacketOOB, DqAcbDestroy, DqAcbGetScansCopy, DqAcbInitOps, DqAcbPutScansCopy,
-    DqConvRaw2ScalePdc, DqeSetEvent, DqeWaitForEvent, DQACBCFG, DQ_ACBMODE_CYCLE,
-    DQ_ACBMODE_RECYCLED, DQ_ACB_DATA_RAW, DQ_ACB_DIRECTION_INPUT, DQ_ACB_DIRECTION_OUTPUT,
-    DQ_AI201_GAIN_10_100, DQ_AI201_GAIN_1_100, DQ_AI201_GAIN_2_100, DQ_AI201_GAIN_5_100,
-    DQ_AI201_MODEFIFO, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0, DQ_LN_CVCKSRC0, DQ_LN_ENABLED, DQ_LN_GETRAW,
-    DQ_LN_IRQEN, DQ_LN_STREAMING,
+    DQ_ePacketOOB, DqAcbGetScansCopy, DqAcbInitOps, DqAcbPutScansCopy, DqConvRaw2ScalePdc,
+    DqeSetEvent, DqeWaitForEvent, DQACBCFG, DQ_ACBMODE_CYCLE, DQ_ACBMODE_RECYCLED, DQ_ACB_DATA_RAW,
+    DQ_ACB_DIRECTION_INPUT, DQ_ACB_DIRECTION_OUTPUT, DQ_AI201_GAIN_10_100, DQ_AI201_GAIN_1_100,
+    DQ_AI201_GAIN_2_100, DQ_AI201_GAIN_5_100, DQ_AI201_MODEFIFO, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0,
+    DQ_LN_CVCKSRC0, DQ_LN_ENABLED, DQ_LN_GETRAW, DQ_LN_IRQEN, DQ_LN_STREAMING,
 };
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::Sender;
@@ -35,7 +34,6 @@ pub struct Ai201 {
     channels: Vec<u32>,
     pdc: pDATACONV,
     acb_cfg: DQACBCFG,
-    #[allow(dead_code)]
     daq: Arc<Daq>,
     buffer_size: usize,
     out: Sender<Vec<f64>>,
@@ -223,7 +221,7 @@ unsafe impl Sync for Ai201 {}
 
 impl Drop for Ai201 {
     fn drop(&mut self) {
-        match parse_err!(DqAcbDestroy(self.bcb)) {
+        match self.daq.destroy_acb(self.bcb) {
             Err(err) => {
                 eprintln!("DqAcbDestroy failed. Error: {}", err);
             }
@@ -234,6 +232,7 @@ impl Drop for Ai201 {
 
 pub struct Dio405 {
     bcb: pDQBCB,
+    daq: Arc<Daq>,
     output_buffer: Vec<u32>,
 }
 
@@ -252,7 +251,7 @@ impl Dio405 {
 
         acb_cfg.scansz = 1;
         acb_cfg.framesize = frame_size;
-        acb_cfg.frames = 4; // # of frames in circular buffer TODO
+        acb_cfg.frames = 4; // # of frames in circular buffer
         acb_cfg.mode = DQ_ACBMODE_RECYCLED;
         acb_cfg.dirflags = DQ_ACB_DIRECTION_OUTPUT | DQ_ACB_DATA_RAW; // TODO input
 
@@ -261,18 +260,6 @@ impl Dio405 {
         let mut num_channels = 1;
 
         // mutation
-        // parse_err!(DqAcbInitOps(
-        //     bcb,
-        //     &mut card_cfg,
-        //     ptr::null_mut(),
-        //     ptr::null_mut(),
-        //     &mut actual_freq, // TODO figure out difference between CV and CL clocks
-        //     ptr::null_mut(),
-        //     &mut num_channels,
-        //     vec![0].as_mut_ptr(), // TODO can this be ptr::null_mut()?
-        //     ptr::null_mut(),
-        //     &mut acb_cfg
-        // ))?;
         parse_err!(DqAcbInitOps(
             bcb,
             &mut card_cfg,
@@ -281,7 +268,7 @@ impl Dio405 {
             ptr::null_mut(),
             &mut actual_freq, // TODO figure out difference between CV and CL clocks
             &mut num_channels,
-            vec![0].as_mut_ptr(), // TODO can this be ptr::null_mut()?
+            vec![0].as_mut_ptr(),
             ptr::null_mut(),
             &mut acb_cfg
         ))?;
@@ -291,9 +278,11 @@ impl Dio405 {
             .map(|val| if val < buffer_size / 2 { 0xfff } else { 0 })
             .collect();
 
-        let the_dio405 = Dio405 { bcb, output_buffer };
-
-        the_dio405.trigger()?;
+        let the_dio405 = Dio405 {
+            daq,
+            bcb,
+            output_buffer,
+        };
 
         parse_err!(DqeSetEvent(
             bcb,
@@ -303,78 +292,21 @@ impl Dio405 {
         Ok(the_dio405)
     }
 
-    fn wait_for_event(&self) -> Result<u32, PowerDnaError> {
-        let mut events: u32 = 0;
-        parse_err!(DqeWaitForEvent(&self.bcb, 1, 0, EVENT_TIMEOUT, &mut events))?;
-        Ok(events)
-    }
-
-    pub(crate) fn push_data(&self, stop: Arc<AtomicBool>) {
-        loop {
-            let events = match self.wait_for_event() {
-                Err(PowerDnaError::TimeoutError) => {
-                    match stop.load(Ordering::SeqCst) {
-                        true => break,
-                        false => continue,
-                    };
-                }
-                Err(err) => {
-                    eprintln!("DqeWaitForEvent failed. Error: {:?}", err);
-                    break;
-                }
-                Ok(val) => val,
-            };
-
-            if events & DQ_ePacketLost != 0 {
-                eprintln!("AI:DQ_ePacketLost");
-            }
-            if events & DQ_eBufferError != 0 {
-                eprintln!("AI:DQ_eBufferError");
-            }
-            if events & DQ_ePacketOOB != 0 {
-                eprintln!("AI:DQ_ePacketOOB");
-            }
-
-            if events & DQ_eFrameDone == 0 {
-                continue;
-            }
-
-            match self.trigger() {
-                Ok(_) => {}
-                Err(_) => {
-                    eprintln!("Failed to trigger buzzer.");
-                    break;
-                }
-            };
-        }
-    }
-
     pub(crate) fn trigger(&self) -> Result<(), PowerDnaError> {
         let mut copied_size: u32 = 0;
         let mut remaining_space: u32 = 0;
 
         let len = self.output_buffer.len() as u32;
 
-        println!("copying {:?}...", len);
-
         // TODO deal with failure
-        match parse_err!(DqAcbPutScansCopy(
+        parse_err!(DqAcbPutScansCopy(
             self.bcb,
             self.output_buffer.as_ptr() as *const i8,
             len,
             len,
             &mut copied_size,
             &mut remaining_space,
-        )) {
-            Err(err) => {
-                println!("{:?}", err);
-                return Err(err);
-            }
-            Ok(_) => {
-                println!("copied {:?}", copied_size);
-                println!("remaining: {:?}", remaining_space);
-            }
-        };
+        ))?;
 
         Ok(())
     }
@@ -388,7 +320,7 @@ impl Bcb for Dio405 {
 
 impl Drop for Dio405 {
     fn drop(&mut self) {
-        match parse_err!(DqAcbDestroy(self.bcb)) {
+        match self.daq.destroy_acb(self.bcb) {
             Err(err) => {
                 eprintln!("DqAcbDestroy failed. Error: {}", err);
             }

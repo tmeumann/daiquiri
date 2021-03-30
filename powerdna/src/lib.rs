@@ -48,9 +48,9 @@ pub struct SignalManager {
     frame_size: u32,
     boards: Vec<BoardConfig>,
     outputs: Vec<OutputConfig>,
-    daq: Arc<Daq>,
-    out: UnboundedSender<(String, Vec<f64>)>,
     sampler: Option<Sampler>,
+    out: UnboundedSender<(String, Vec<f64>)>,
+    daq: Arc<Daq>,
 }
 
 impl SignalManager {

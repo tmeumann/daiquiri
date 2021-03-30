@@ -15,7 +15,6 @@ pub struct Sampler {
     boards: Vec<Arc<Ai201>>,
     board_threads: Option<Vec<thread::JoinHandle<()>>>,
     outputs: Vec<Arc<Dio405>>,
-    output_threads: Option<Vec<thread::JoinHandle<()>>>,
 }
 
 impl Sampler {
@@ -57,17 +56,10 @@ impl Sampler {
         });
 
         let mut outputs: Vec<Arc<Dio405>> = Vec::new();
-        let mut output_threads = Vec::new();
 
         for config in output_configs {
             let output_board = Arc::new(Dio405::new(Arc::clone(&daq), freq, frame_size, config)?);
-
-            let cloned_stop = Arc::clone(&stop);
-            let cloned_board = Arc::clone(&output_board);
-            let thread = thread::spawn(move || cloned_board.push_data(cloned_stop));
-
             outputs.push(output_board);
-            output_threads.push(thread);
         }
 
         let bcbs: Vec<pDQBCB> = boards
@@ -83,7 +75,6 @@ impl Sampler {
             boards,
             board_threads: Some(board_threads),
             outputs,
-            output_threads: Some(output_threads),
         })
     }
 
@@ -178,17 +169,6 @@ impl Drop for Sampler {
                 }
             }
             None => eprintln!("No board threads to join."),
-        }
-        match self.output_threads.take() {
-            Some(threads) => {
-                for thread in threads {
-                    match thread.join() {
-                        Ok(_) => (),
-                        Err(_) => eprintln!("Failed to join output thread."),
-                    };
-                }
-            }
-            None => eprintln!("No output threads to join."),
         }
         self.boards.clear();
         self.outputs.clear();

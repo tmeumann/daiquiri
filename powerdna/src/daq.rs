@@ -1,7 +1,7 @@
 use crate::engine::{DqEngine, InterfaceType};
-use crate::results::PowerDnaError;
+use crate::results::{PowerDnaError, PowerDnaSuccess};
 use powerdna_sys::{
-    pDATACONV, pDQBCB, DqCloseIOM, DqCmdReadStatus, DqCmdSetMode, DqConvFillConvData,
+    pDATACONV, pDQBCB, DqAcbDestroy, DqCloseIOM, DqCmdReadStatus, DqCmdSetMode, DqConvFillConvData,
     DqConvGetDataConv, DqOpenIOM, DQ_IOMODE_CFG, DQ_LASTDEV, DQ_MAXDEVN, DQ_SS0IN, DQ_UDP_DAQ_PORT,
     STS_FW, STS_FW_OPER_MODE,
 };
@@ -50,6 +50,10 @@ impl Daq {
         interface_type: InterfaceType,
     ) -> Result<pDQBCB, PowerDnaError> {
         self.dqe.create_acb(self.handle, device, interface_type)
+    }
+
+    pub(crate) fn destroy_acb(&self, bcb: pDQBCB) -> Result<PowerDnaSuccess, PowerDnaError> {
+        parse_err!(DqAcbDestroy(bcb))
     }
 
     pub(crate) fn enter_config_mode(&self, device: u8) -> Result<(), PowerDnaError> {
