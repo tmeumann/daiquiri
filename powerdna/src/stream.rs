@@ -81,9 +81,9 @@ impl Sampler {
         })
     }
 
-    pub fn trigger(&mut self) -> Result<(), DaqError> {
+    pub async fn trigger(&mut self) -> Result<(), DaqError> {
         for output in self.outputs.as_slice() {
-            output.trigger()?;
+            output.trigger().await?;
         }
         Ok(())
     }

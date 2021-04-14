@@ -8,10 +8,11 @@ use std::env;
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::Duration;
 use thiserror::Error;
 use tokio::sync::mpsc::UnboundedReceiver;
+use tokio::sync::Mutex;
 
 #[derive(Error, Debug)]
 pub enum ConfigError {

@@ -1,8 +1,9 @@
 use bootstrap::initialise;
 use powerdna::SignalManager;
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use tokio::signal;
+use tokio::sync::Mutex;
 use warp::Filter;
 
 mod bootstrap;
@@ -37,12 +38,7 @@ async fn main() {
         warp::serve(routes).bind_with_graceful_shutdown(([0, 0, 0, 0], 3030), async move {
             match signal::ctrl_c().await {
                 Err(_) => eprintln!("Failed waiting for ^C"),
-                Ok(_) => match signal_managers.lock() {
-                    Ok(mut map) => {
-                        map.clear();
-                    }
-                    Err(_) => eprintln!("Failed to shut down gracefully."),
-                },
+                Ok(_) => signal_managers.lock().await.clear(),
             };
         });
 
@@ -59,15 +55,12 @@ async fn start_stream(
     topic: String,
     store: SignalStore,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    match store.lock() {
-        Ok(mut map) => match map.get_mut(&topic) {
-            Some(manager) => match manager.start() {
-                Ok(_) => Ok(warp::reply()),
-                Err(_) => Err(warp::reject::not_found()), // TODO
-            },
-            None => Err(warp::reject::not_found()),
+    match store.lock().await.get_mut(&topic) {
+        Some(manager) => match manager.start() {
+            Ok(_) => Ok(warp::reply()),
+            Err(_) => Err(warp::reject::not_found()), // TODO
         },
-        Err(_) => Err(warp::reject::not_found()),
+        None => Err(warp::reject::not_found()),
     }
 }
 
@@ -75,15 +68,12 @@ async fn stop_stream(
     topic: String,
     store: SignalStore,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    match store.lock() {
-        Ok(mut map) => match map.get_mut(&topic) {
-            Some(manager) => match manager.stop() {
-                Ok(_) => Ok(warp::reply()),
-                Err(_) => Err(warp::reject::not_found()), // TODO
-            },
-            None => Err(warp::reject::not_found()),
+    match store.lock().await.get_mut(&topic) {
+        Some(manager) => match manager.stop() {
+            Ok(_) => Ok(warp::reply()),
+            Err(_) => Err(warp::reject::not_found()), // TODO
         },
-        Err(_) => Err(warp::reject::not_found()),
+        None => Err(warp::reject::not_found()),
     }
 }
 
@@ -91,14 +81,11 @@ async fn trigger_buzzer(
     topic: String,
     store: SignalStore,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    match store.lock() {
-        Ok(mut map) => match map.get_mut(&topic) {
-            Some(manager) => match manager.trigger() {
-                Ok(_) => Ok(warp::reply()),
-                Err(_) => Err(warp::reject::not_found()),
-            },
-            None => Err(warp::reject::not_found()),
+    match store.lock().await.get_mut(&topic) {
+        Some(manager) => match manager.trigger().await {
+            Ok(_) => Ok(warp::reply()),
+            Err(_) => Err(warp::reject::not_found()),
         },
-        Err(_) => Err(warp::reject::not_found()),
+        None => Err(warp::reject::not_found()),
     }
 }

@@ -101,10 +101,10 @@ impl SignalManager {
         }
     }
 
-    pub fn trigger(&mut self) -> Result<(), DaqError> {
+    pub async fn trigger(&mut self) -> Result<(), DaqError> {
         match &mut self.sampler {
             Some(sampler) => {
-                sampler.trigger()?;
+                sampler.trigger().await?;
                 Ok(())
             }
             None => Err(DaqError::StreamStateError),
