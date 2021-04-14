@@ -231,100 +231,111 @@ impl Drop for Ai201 {
 }
 
 pub struct Dio405 {
-    bcb: pDQBCB,
+    device: u8,
+    // bcb: pDQBCB,
     daq: Arc<Daq>,
-    output_buffer: Vec<u32>,
+    // output_buffer: Vec<u32>,
 }
 
 impl Dio405 {
     pub(crate) fn new(
         daq: Arc<Daq>,
-        freq: u32,
-        frame_size: u32,
+        // freq: u32,
+        // frame_size: u32,
         board_config: &OutputConfig,
     ) -> Result<Self, PowerDnaError> {
         let OutputConfig { device } = board_config;
 
         daq.enter_config_mode(*device)?;
-        let bcb = daq.create_acb(*device, InterfaceType::Output)?;
-        let mut acb_cfg = DQACBCFG::empty();
+        // let bcb = daq.create_acb(*device, InterfaceType::Output)?;
+        // let mut acb_cfg = DQACBCFG::empty();
 
-        acb_cfg.scansz = 1;
-        acb_cfg.framesize = frame_size;
-        acb_cfg.frames = 4; // # of frames in circular buffer
-        acb_cfg.mode = DQ_ACBMODE_RECYCLED;
-        acb_cfg.dirflags = DQ_ACB_DIRECTION_OUTPUT | DQ_ACB_DATA_RAW; // TODO input
+        // acb_cfg.scansz = 1;
+        // acb_cfg.framesize = frame_size;
+        // acb_cfg.frames = 4; // # of frames in circular buffer
+        // acb_cfg.mode = DQ_ACBMODE_RECYCLED;
+        // acb_cfg.dirflags = DQ_ACB_DIRECTION_OUTPUT | DQ_ACB_DATA_RAW; // TODO input
 
-        let mut card_cfg = CFG405;
-        let mut actual_freq = freq as f32;
-        let mut num_channels = 1;
+        // let mut card_cfg = CFG405;
+        // let mut actual_freq = freq as f32;
+        // let mut num_channels = 1;
 
         // mutation
-        parse_err!(DqAcbInitOps(
-            bcb,
-            &mut card_cfg,
-            ptr::null_mut(),
-            ptr::null_mut(),
-            ptr::null_mut(),
-            &mut actual_freq, // TODO figure out difference between CV and CL clocks
-            &mut num_channels,
-            vec![0].as_mut_ptr(),
-            ptr::null_mut(),
-            &mut acb_cfg
-        ))?;
+        // parse_err!(DqAcbInitOps(
+        //     bcb,
+        //     &mut card_cfg,
+        //     ptr::null_mut(),
+        //     ptr::null_mut(),
+        //     ptr::null_mut(),
+        //     &mut actual_freq, // TODO figure out difference between CV and CL clocks
+        //     &mut num_channels,
+        //     vec![0].as_mut_ptr(),
+        //     ptr::null_mut(),
+        //     &mut acb_cfg
+        // ))?;
 
-        let buffer_size = acb_cfg.framesize as usize;
-        let output_buffer: Vec<u32> = (0..buffer_size)
-            .map(|val| if val < buffer_size / 2 { 0xfff } else { 0 })
-            .collect();
+        // let buffer_size = acb_cfg.framesize as usize;
+        // let output_buffer: Vec<u32> = (0..buffer_size)
+        //     .map(|val| if val < buffer_size / 2 { 0xfff } else { 0 })
+        //     .collect();
+
+        // ------------ input -------------
+        daq.setup_edge_events(*device)?;
 
         let the_dio405 = Dio405 {
+            device: *device,
             daq,
-            bcb,
-            output_buffer,
+            // bcb,
+            // output_buffer,
         };
 
-        parse_err!(DqeSetEvent(
-            bcb,
-            DQ_eFrameDone | DQ_ePacketLost | DQ_eBufferError | DQ_ePacketOOB | DQ_eBufferDone
-        ))?;
+        // parse_err!(DqeSetEvent(
+        //     bcb,
+        //     DQ_eFrameDone | DQ_ePacketLost | DQ_eBufferError | DQ_ePacketOOB | DQ_eBufferDone
+        // ))?;
 
         Ok(the_dio405)
     }
 
     pub(crate) fn trigger(&self) -> Result<(), PowerDnaError> {
-        let mut copied_size: u32 = 0;
-        let mut remaining_space: u32 = 0;
+        // let mut copied_size: u32 = 0;
+        // let mut remaining_space: u32 = 0;
 
-        let len = self.output_buffer.len() as u32;
+        // let len = self.output_buffer.len() as u32;
 
         // TODO deal with failure
-        parse_err!(DqAcbPutScansCopy(
-            self.bcb,
-            self.output_buffer.as_ptr() as *const i8,
-            len,
-            len,
-            &mut copied_size,
-            &mut remaining_space,
-        ))?;
-
+        // parse_err!(DqAcbPutScansCopy(
+        //     self.bcb,
+        //     self.output_buffer.as_ptr() as *const i8,
+        //     len,
+        //     len,
+        //     &mut copied_size,
+        //     &mut remaining_space,
+        // ))?;
+        self.daq.write(self.device, 0b1)?;
+        // delay_for(Duration::from_millis(200)).await;
+        self.daq.write(self.device, 0b0)?;
         Ok(())
     }
 }
 
-impl Bcb for Dio405 {
-    fn bcb(&self) -> pDQBCB {
-        self.bcb
-    }
-}
+// impl Bcb for Dio405 {
+//     fn bcb(&self) -> pDQBCB {
+//         self.bcb
+//     }
+// }
 
 impl Drop for Dio405 {
     fn drop(&mut self) {
-        match self.daq.destroy_acb(self.bcb) {
-            Err(err) => {
-                eprintln!("DqAcbDestroy failed. Error: {}", err);
-            }
-            Ok(_) => {}
+        // match self.daq.destroy_acb(self.bcb) {
+        //     Err(err) => {
+        //         eprintln!("DqAcbDestroy failed. Error: {}", err);
+        //     }
+        //     Ok(_) => (),
+        // };
+        match self.daq.teardown_edge_events(self.device) {
+            Err(err) => eprintln!("Failed to teardown edge events. Error: {}", err),
+            Ok(_) => (),
         };
     }
 }

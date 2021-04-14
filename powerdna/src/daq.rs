@@ -1,9 +1,11 @@
 use crate::engine::{DqEngine, InterfaceType};
 use crate::results::{PowerDnaError, PowerDnaSuccess};
 use powerdna_sys::{
-    pDATACONV, pDQBCB, DqAcbDestroy, DqCloseIOM, DqCmdReadStatus, DqCmdSetMode, DqConvFillConvData,
-    DqConvGetDataConv, DqOpenIOM, DQ_IOMODE_CFG, DQ_LASTDEV, DQ_MAXDEVN, DQ_SS0IN, DQ_UDP_DAQ_PORT,
-    STS_FW, STS_FW_OPER_MODE,
+    event401_t_EV401_CLEAR, event401_t_EV401_DI_CHANGE, pDATACONV, pDQBCB, DqAcbDestroy,
+    DqAddIOMPort, DqAdv40xConfigEvents, DqAdv40xWrite, DqCloseIOM, DqCmdReadStatus, DqCmdSetCfg,
+    DqCmdSetMode, DqConvFillConvData, DqConvGetDataConv, DqOpenIOM, DqRtAsyncEnableEvents,
+    DQSETCFG, DQ_IOMODE_CFG, DQ_IOMODE_OPS, DQ_LASTDEV, DQ_LN_ACTIVE, DQ_LN_ENABLED, DQ_LN_MAPPED,
+    DQ_MAXDEVN, DQ_SS0IN, DQ_UDP_DAQ_PORT, DQ_UDP_DAQ_PORT_ASYNC, STS_FW, STS_FW_OPER_MODE,
 };
 use std::ffi::CString;
 use std::ptr;
@@ -13,6 +15,7 @@ const TIMEOUT: u32 = 200;
 
 pub struct Daq {
     handle: i32,
+    async_handle: i32,
     dqe: Arc<DqEngine>,
 }
 
@@ -20,28 +23,36 @@ unsafe impl Send for Daq {}
 
 impl Daq {
     pub fn new(dqe: Arc<DqEngine>, ip: String) -> Result<Self, PowerDnaError> {
-        // TODO introduce phantom data to track dqe lifetime?
         let mut handle = 0;
         let config = ptr::null_mut();
 
         let ip_ptr = CString::new(ip.as_str())
             .expect("Failed to allocate memory for IP address.")
             .into_raw();
-        let result = parse_err!(DqOpenIOM(
+        parse_err!(DqOpenIOM(
             ip_ptr,
             DQ_UDP_DAQ_PORT as u16,
             TIMEOUT,
             &mut handle,
             config
-        ));
+        ))?;
         unsafe {
             let _ = CString::from_raw(ip_ptr); // reclaims memory
         }
 
-        match result {
-            Err(err) => Err(err),
-            Ok(_) => Ok(Daq { handle, dqe }),
-        }
+        let mut async_handle = 0;
+        parse_err!(DqAddIOMPort(
+            handle,
+            &mut async_handle,
+            DQ_UDP_DAQ_PORT_ASYNC as u16,
+            TIMEOUT
+        ))?;
+
+        Ok(Daq {
+            handle,
+            async_handle,
+            dqe,
+        })
     }
 
     pub(crate) fn create_acb(
@@ -72,11 +83,7 @@ impl Daq {
         ))?;
 
         if status_buffer[STS_FW as usize] & STS_FW_OPER_MODE != 0 {
-            parse_err!(DqCmdSetMode(
-                self.handle,
-                DQ_IOMODE_CFG,
-                1 << (device as u32 & DQ_MAXDEVN)
-            ))?;
+            parse_err!(DqCmdSetMode(self.handle, DQ_IOMODE_CFG, 1 << device))?;
         }
 
         Ok(())
@@ -99,10 +106,70 @@ impl Daq {
         parse_err!(DqConvGetDataConv(self.handle, device as i32, &mut pdc))?;
         Ok(pdc)
     }
+
+    pub(crate) fn setup_edge_events(&self, device: u8) -> Result<(), PowerDnaError> {
+        // clears any existing events
+        parse_err!(DqAdv40xConfigEvents(
+            self.async_handle,
+            device as i32,
+            event401_t_EV401_CLEAR,
+            0,
+            0
+        ))?;
+        // set edge detection events (bit 0 is line 0, bit 1 is line 1 etc.)
+        parse_err!(DqAdv40xConfigEvents(
+            self.async_handle,
+            device as i32,
+            event401_t_EV401_DI_CHANGE,
+            0x1, // rising edge
+            0x0, // falling edge
+        ))?;
+        // multiple devices might need to be coalesced into one call here
+        parse_err!(DqRtAsyncEnableEvents(self.async_handle, 0, 1 << device))?;
+
+        let mut cfg: DQSETCFG = DQSETCFG {
+            dev: device,
+            ss: DQ_SS0IN as u8,
+            cfg: DQ_LN_ACTIVE | DQ_LN_ENABLED | DQ_LN_MAPPED,
+        };
+
+        let mut status = 0;
+        let mut entries = 1;
+
+        parse_err!(DqCmdSetCfg(
+            self.handle,
+            &mut cfg,
+            &mut status,
+            &mut entries
+        ))?;
+        // TODO check status and entries
+
+        parse_err!(DqCmdSetMode(self.handle, DQ_IOMODE_OPS, 1 << device))?;
+
+        Ok(())
+    }
+
+    pub(crate) fn teardown_edge_events(&self, device: u8) -> Result<(), PowerDnaError> {
+        // TODO turn edge event handler into a struct?
+        parse_err!(DqRtAsyncEnableEvents(self.handle, 0, 0))?;
+        parse_err!(DqCmdSetMode(self.handle, DQ_IOMODE_CFG, 1 << device))?;
+        Ok(())
+    }
+
+    pub(crate) fn write(&self, device: u8, value: u32) -> Result<(), PowerDnaError> {
+        parse_err!(DqAdv40xWrite(self.handle, device as i32, value))?;
+        Ok(())
+    }
 }
 
 impl Drop for Daq {
     fn drop(&mut self) {
+        match parse_err!(DqCloseIOM(self.async_handle)) {
+            Err(err) => {
+                eprintln!("Async DqCloseIOM failed. Error: {:?}", err);
+            }
+            Ok(_) => {}
+        }
         match parse_err!(DqCloseIOM(self.handle)) {
             Err(err) => {
                 eprintln!("DqCloseIOM failed. Error: {:?}", err);

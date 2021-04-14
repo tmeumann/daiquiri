@@ -58,14 +58,17 @@ impl Sampler {
         let mut outputs: Vec<Arc<Dio405>> = Vec::new();
 
         for config in output_configs {
-            let output_board = Arc::new(Dio405::new(Arc::clone(&daq), freq, frame_size, config)?);
+            let output_board = Arc::new(Dio405::new(
+                Arc::clone(&daq),
+                /*freq, frame_size,*/ config,
+            )?);
             outputs.push(output_board);
         }
 
         let bcbs: Vec<pDQBCB> = boards
             .iter()
             .map(|board| board.bcb())
-            .chain(outputs.iter().map(|output| output.bcb()))
+            // .chain(outputs.iter().map(|output| output.bcb()))
             .collect();
         parse_err!(DqeEnable(1, bcbs.as_ptr(), bcbs.len() as i32, 1))?;
 
@@ -152,7 +155,7 @@ impl Drop for Sampler {
             .boards
             .iter()
             .map(|board| board.bcb())
-            .chain(self.outputs.iter().map(|output| output.bcb()))
+            // .chain(self.outputs.iter().map(|output| output.bcb()))
             .collect();
         match parse_err!(DqeEnable(0, bcbs.as_ptr(), bcbs.len() as i32, 1)) {
             Ok(_) => (),
