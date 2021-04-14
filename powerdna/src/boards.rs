@@ -254,6 +254,10 @@ impl Dio405 {
         self.daq.write(self.device, 0b0)?;
         Ok(())
     }
+
+    pub(crate) fn sample(&self, stop: Arc<AtomicBool>) {
+        todo!();
+    }
 }
 
 impl Drop for Dio405 {
