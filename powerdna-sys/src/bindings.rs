@@ -3690,6 +3690,7 @@ pub const DQ_L401_MAXCLFRQ: u32 = 100000;
 pub const DQ_L401_MAXCVFRQ: u32 = 100000;
 pub const DQL_IOCTL401_CFG_DI_CHANGE: u32 = 13;
 pub const DQL_IOCTL401_WAIT_DI_CHANGE: u32 = 14;
+pub const EV401_PERI_RESET: u32 = 1;
 pub const DQ_L401_MODESCAN: u32 = 0;
 pub const DQ_L401_MODEDGE: u32 = 65536;
 pub const DQ_L401_MODEFIFO: u32 = 131072;
@@ -3822,6 +3823,7 @@ pub const DQ_DIO448_MAX_uVCnt: u32 = 800;
 pub const DQ_DIO448_MAX_Offset: u32 = 250;
 pub const DQ_DIO448_MAX_Hyst: f64 = 30.0;
 pub const DQ_DIO403_MAXCVFRQ: u32 = 10000;
+pub const EV403_PERI_RESET: u32 = 1;
 pub const DQ_DIO403_MODESCAN: u32 = 0;
 pub const DQ_DIO403_MODEFIFO: u32 = 131072;
 pub const DQ_DIO403_MODECONT: u32 = 196608;
@@ -4077,6 +4079,7 @@ pub const DQDIO449_SET_LEV_DCV_MAX_G2: f64 = 37.5;
 pub const DQDIO449_SET_LEV_DCV_MAX_G1: f64 = 75.0;
 pub const DQ_DIO449_DEFLT_DC_DEBOUNCE: u32 = 6;
 pub const DQ_DIO449_DEFLT_AC_DEBOUNCE: u32 = 90;
+pub const EV449_PERI_RESET: u32 = 1;
 pub const DQ_DIO449_MODESCAN: u32 = 0;
 pub const DQ_DIO449_MODEFIFO: u32 = 131072;
 pub const DQ_DIO449_MODECONT: u32 = 196608;
@@ -4343,6 +4346,23 @@ pub const DQ_SL501_PARITY9_ENABLED: u32 = 4;
 pub const DQ_SL501_PARITY9: u32 = 256;
 pub const DQ_SL501_MIXED_PARITY: u32 = 512;
 pub const DQ_SL501_SEND_NOREPLY: u32 = 1024;
+pub const EV501_FIFO_DATA: u32 = 1;
+pub const EV501_ACC_DATA: u32 = 2;
+pub const EV501_PTCFG_MFEN: u32 = 32768;
+pub const EV501_PTCFG_BSIZE1: u32 = 8192;
+pub const EV501_PTCFG_BSIZE0: u32 = 4096;
+pub const EV501_PTCFG_EM4: u32 = 2048;
+pub const EV501_PTCFG_EM3: u32 = 1024;
+pub const EV501_PTCFG_EM2: u32 = 512;
+pub const EV501_PTCFG_EM1: u32 = 256;
+pub const EV501_PTCFG_SM8: u32 = 128;
+pub const EV501_PTCFG_SM7: u32 = 64;
+pub const EV501_PTCFG_SM6: u32 = 32;
+pub const EV501_PTCFG_SM5: u32 = 16;
+pub const EV501_PTCFG_SM4: u32 = 8;
+pub const EV501_PTCFG_SM3: u32 = 4;
+pub const EV501_PTCFG_SM2: u32 = 2;
+pub const EV501_PTCFG_SM1: u32 = 1;
 pub const DQ_L501_MODESCAN: u32 = 0;
 pub const DQ_L501_MODEFIFO: u32 = 131072;
 pub const DQ_L501_MODECONT: u32 = 196608;
@@ -4467,6 +4487,20 @@ pub const DQ_L503_MODECONT: u32 = 196608;
 pub const DQ_L503_FIFO_GET_DATA: u32 = 16;
 pub const DQ_L503_FIFO_SET_DATA: u32 = 16;
 pub const DQ_L503_NAMELEN: u32 = 32;
+pub const EV503_ON_RX_PER: u32 = 1;
+pub const EV503_ON_RX: u32 = 2;
+pub const EV503_ON_TX: u32 = 4;
+pub const EV503_ON_BUS: u32 = 8;
+pub const EV503_ON_WARN: u32 = 16;
+pub const EV503_ON_PASS: u32 = 32;
+pub const EV503_ON_OFF: u32 = 64;
+pub const EV503_ON_OVFL: u32 = 128;
+pub const EV503_ON_RXERR: u32 = 256;
+pub const EV503_ON_TXERR: u32 = 512;
+pub const EV503_ON_CHIPERR: u32 = 1073741824;
+pub const EV503_ON_ERROR: u32 = 888;
+pub const EV503_FIFO_DATA: u32 = 1;
+pub const EV503_ACC_DATA: u32 = 2;
 pub const DQ_L504_CHAN: u32 = 4;
 pub const DQ_L504_INFOSZ: u32 = 4096;
 pub const DQ_L504_BASE_66: u32 = 66000000;
@@ -4501,6 +4535,8 @@ pub const DQ_SL504_PARITY_ODD: u32 = 2;
 pub const DQ_SL504_PARITY_SPACE: u32 = 3;
 pub const DQ_SL504_PARITY_MARK: u32 = 4;
 pub const DQ_SL504_ERR_RXOVERUN: u32 = 65536;
+pub const EV504_FIFO_DATA: u32 = 1;
+pub const EV504_ACC_DATA: u32 = 2;
 pub const DQ_L504_FIFO_GET_DATA: u32 = 16;
 pub const DQ_L504_FIFO_SET_DATA: u32 = 16;
 pub const DQ_L504_NAMELEN: u32 = 32;
@@ -5360,6 +5396,8 @@ pub const DQ_EM_TBR: u32 = 4;
 pub const DQ_EM_GT: u32 = 5;
 pub const DQ_EM_PULSES: u32 = 128;
 pub const DQL_ADDMODE_DOUBLE_PRECISION: u32 = 16384;
+pub const EV601_LOW_TO_HI: u32 = 1;
+pub const EV601_HI_TO_LOW: u32 = 2;
 pub const DQ_CM_CT: u32 = 0;
 pub const DQ_CM_TPPM: u32 = 1;
 pub const DQ_CM_VR: u32 = 2;
@@ -6099,6 +6137,11 @@ pub const DQ_AR664_DEV_INFO_PRMB: u32 = 22439;
 pub const DQ_AR664_DEV_INFO_SVER: u32 = 1;
 pub const DQ_AR664_ERR_OLD_AR_FW: u32 = 2;
 pub const DQ_AR664_ERR_OLD_DQBIOS: u32 = 4;
+pub const EV664_FIFO_DATA: u32 = 1;
+pub const EV664_ACC_DATA: u32 = 2;
+pub const EV664_TS_DATA: u32 = 1048576;
+pub const EV664_EV_MASK: u32 = 4095;
+pub const EV664_RXUNX_EVOVER: u32 = 1;
 pub const DQMAXTRL: u32 = 256;
 pub const DQMAXCHNLS: u32 = 32;
 pub const DQ_VDD_DMAPID_IN: u32 = 4080;
@@ -6373,6 +6416,69 @@ pub const DQ_L91x_NAMELEN: u32 = 32;
 pub const DQ_LAYER_CHAN: u32 = 4;
 pub const DQ_LAYER_CALDACS: u32 = 4;
 pub const DQ_LAYER_NAMELEN: u32 = 20;
+pub const EVTMOD_CFG: u32 = 0;
+pub const EVTMOD_EMP0: u32 = 4;
+pub const EVTMOD_EMP1: u32 = 8;
+pub const EVTMOD_DLY0: u32 = 12;
+pub const EVTMOD_DLY1: u32 = 16;
+pub const EVTMOD_STS: u32 = 20;
+pub const EVTMOD_SDNADC: u32 = 24;
+pub const EVTMOD_SDNAAC: u32 = 28;
+pub const EVTMOD_CFG_EN: u32 = 2147483648;
+pub const EVTMOD_CFG_RSV30: u32 = 1073741824;
+pub const EVTMOD_CFG_RSV29: u32 = 536870912;
+pub const EVTMOD_CFG_SPTE: u32 = 268435456;
+pub const EVTMOD_CFG_EV1IRQ: u32 = 134217728;
+pub const EVTMOD_CFG_EV0IRQ: u32 = 67108864;
+pub const EVTMOD_CFG_DBL: u32 = 33554432;
+pub const EVTMOD_CFG_RPT: u32 = 16777216;
+pub const EVTMOD_CFG_STTE: u32 = 131072;
+pub const EVTMOD_CFG_YM: u32 = 2048;
+pub const EVTMOD_CFG_DM: u32 = 1024;
+pub const EVTMOD_CFG_HM: u32 = 512;
+pub const EVTMOD_CFG_MM: u32 = 256;
+pub const EVTMOD_CFG_ISRCM: u32 = 256;
+pub const EVTMOD_CFG_SM: u32 = 128;
+pub const EVTMOD_CFG_UM: u32 = 64;
+pub const EVTMOD_CFG_EDGE: u32 = 32;
+pub const EVTMOD_CFG_EVTPL_1MS: u32 = 15728640;
+pub const EVTMOD_CFG_EVTPL_1US: u32 = 14680064;
+pub const EVTMOD_CFG_ISRC_1KHZ: u32 = 786432;
+pub const EVTMOD_CFG_ISRC_1MHZ: u32 = 524288;
+pub const EVTMOD_CFG_ISRC_100I: u32 = 0;
+pub const EVTMOD_CFG_ESRC_DEVT23: u32 = 31;
+pub const EVTMOD_CFG_ESRC_DEVT0: u32 = 8;
+pub const EVTMOD_CFG_ESRC_RES7: u32 = 7;
+pub const EVTMOD_CFG_ESRC_DPLL: u32 = 6;
+pub const EVTMOD_CFG_ESRC_DNAB: u32 = 5;
+pub const EVTMOD_CFG_ESRC_IPC: u32 = 4;
+pub const EVTMOD_CFG_ESRC_SBT: u32 = 3;
+pub const EVTMOD_CFG_ESRC_BCDT: u32 = 2;
+pub const EVTMOD_CFG_ESRC_SWF: u32 = 1;
+pub const EVTMOD_CFG_ESRC_DIS: u32 = 0;
+pub const EVTMOD_CFG_ICRS_DEVT23: u32 = 126976;
+pub const EVTMOD_CFG_ICRS_DEVT0: u32 = 32768;
+pub const EVTMOD_CFG_ICRS_RES7: u32 = 28672;
+pub const EVTMOD_CFG_ICRS_RES6: u32 = 24576;
+pub const EVTMOD_CFG_ICRS_DNAB: u32 = 20480;
+pub const EVTMOD_CFG_ICRS_IPC: u32 = 16384;
+pub const EVTMOD_CFG_ICRS_SBT: u32 = 12288;
+pub const EVTMOD_CFG_ICRS_BCDT: u32 = 8192;
+pub const EVTMOD_CFG_ICRS_SWF: u32 = 4096;
+pub const EVTMOD_CFG_ICRS_DIS: u32 = 0;
+pub const EVTMOD_EMP0_DRD: u32 = 134217728;
+pub const EVTMOD_EMP0_DWR: u32 = 67108864;
+pub const EVTMOD_EMP0_DLAC: u32 = 2;
+pub const EVTMOD_EMP0_DDC: u32 = 1;
+pub const EVTMOD_STS_SEARM: u32 = 2147483648;
+pub const EVTMOD_STS_SEVT1: u32 = 1073741824;
+pub const EVTMOD_STS_SEVT0: u32 = 536870912;
+pub const EVTMOD_STS_DPLLS: u32 = 268435456;
+pub const EVTMOD_STS_RSV27: u32 = 134217728;
+pub const EVTMOD_STS_RSV26: u32 = 67108864;
+pub const EVTMOD_STS_SEVT1D: u32 = 33554432;
+pub const EVTMOD_STS_SEVT0D: u32 = 16777216;
+pub const EVTMOD_STS_ECTS: u32 = 1;
 pub const DQ_NOERROR: u32 = 0;
 pub const DQ_SUCCESS: u32 = 1;
 pub const DQ_WAIT_ENDED: u32 = 2;
@@ -7823,6 +7929,7 @@ fn bindgen_test_layout_DQSETCFG() {
         )
     );
 }
+pub type pDQSETCFG = *mut DQSETCFG;
 #[repr(C, packed)]
 pub struct DQEVENT {
     pub dev: uint8,
@@ -7966,6 +8073,7 @@ fn bindgen_test_layout_DQAXMAP() {
         )
     );
 }
+pub type pDQAXMAP = *mut DQAXMAP;
 #[repr(C, packed)]
 pub struct DQGETCFG {
     pub dev: uint8,
@@ -8234,6 +8342,7 @@ fn bindgen_test_layout_DQCHNL() {
         )
     );
 }
+pub type pDQCHNL = *mut DQCHNL;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQWRCHNL32 {
@@ -9324,6 +9433,7 @@ fn bindgen_test_layout_DQJTAGDATA() {
         )
     );
 }
+pub type pDQJTAGDATA = *mut DQJTAGDATA;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCRCINFO {
@@ -9418,6 +9528,7 @@ fn bindgen_test_layout_DQCRCINFO() {
         )
     );
 }
+pub type pDQCRCINFO = *mut DQCRCINFO;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSETCOMM {
@@ -9866,6 +9977,7 @@ fn bindgen_test_layout_DQCLRMEM() {
         )
     );
 }
+pub type pDQCLRMEM = *mut DQCLRMEM;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQRBF {
@@ -9916,6 +10028,7 @@ fn bindgen_test_layout_DQRBF() {
         )
     );
 }
+pub type pDQRBF = *mut DQRBF;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQRBFDEV {
@@ -10354,6 +10467,7 @@ fn bindgen_test_layout_DQ_SYNC_SCHEME_AUX() {
         )
     );
 }
+pub type pDQ_SYNC_SCHEME_AUX = *mut DQ_SYNC_SCHEME_AUX;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQ_SYNC_ADPLL_STAT {
@@ -10437,6 +10551,7 @@ fn bindgen_test_layout_DQ_SYNC_ADPLL_STAT() {
         )
     );
 }
+pub type pDQ_SYNC_ADPLL_STAT = *mut DQ_SYNC_ADPLL_STAT;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQ_SYNC_STATUS {
@@ -11438,6 +11553,7 @@ fn bindgen_test_layout_DQEEPROMTAIL() {
         )
     );
 }
+pub type pDQEEPROMTAIL = *mut DQEEPROMTAIL;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQPRMFLAGS {
@@ -11499,6 +11615,7 @@ fn bindgen_test_layout_DQPRMFLAGS() {
         )
     );
 }
+pub type pDQPRMFLAGS = *mut DQPRMFLAGS;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQPRMFLAGSA {
@@ -11549,6 +11666,7 @@ fn bindgen_test_layout_DQPRMFLAGSA() {
         )
     );
 }
+pub type pDQPRMFLAGSA = *mut DQPRMFLAGSA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_104 {
@@ -11577,6 +11695,7 @@ fn bindgen_test_layout_DQCNAMES_104() {
         )
     );
 }
+pub type pDQCNAMES_104 = *mut DQCNAMES_104;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_104 {
@@ -11605,6 +11724,7 @@ fn bindgen_test_layout_DQCALSET_104() {
         )
     );
 }
+pub type pDQCALSET_104 = *mut DQCALSET_104;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_104 {
@@ -11644,6 +11764,7 @@ fn bindgen_test_layout_DQOPMODEPRM_104() {
         )
     );
 }
+pub type pDQOPMODEPRM_104 = *mut DQOPMODEPRM_104;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_105 {
@@ -11672,6 +11793,7 @@ fn bindgen_test_layout_DQCNAMES_105() {
         )
     );
 }
+pub type pDQCNAMES_105 = *mut DQCNAMES_105;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_105 {
@@ -11700,6 +11822,7 @@ fn bindgen_test_layout_DQCALSET_105() {
         )
     );
 }
+pub type pDQCALSET_105 = *mut DQCALSET_105;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_105 {
@@ -11739,6 +11862,7 @@ fn bindgen_test_layout_DQOPMODEPRM_105() {
         )
     );
 }
+pub type pDQOPMODEPRM_105 = *mut DQOPMODEPRM_105;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_105 {
@@ -11767,6 +11891,7 @@ fn bindgen_test_layout_DQINITPRM_105() {
         )
     );
 }
+pub type pDQINITPRM_105 = *mut DQINITPRM_105;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_105 {
@@ -11795,6 +11920,7 @@ fn bindgen_test_layout_DQSDOWNPRM_105() {
         )
     );
 }
+pub type pDQSDOWNPRM_105 = *mut DQSDOWNPRM_105;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_2000_ {
@@ -11823,6 +11949,7 @@ fn bindgen_test_layout_DQCNAMES_2000_() {
         )
     );
 }
+pub type pDQCNAMES_2000_ = *mut DQCNAMES_2000_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_2000_ {
@@ -11873,6 +12000,7 @@ fn bindgen_test_layout_DQCALSET_2000_() {
         )
     );
 }
+pub type pDQCALSET_2000_ = *mut DQCALSET_2000_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_2000_ {
@@ -11945,6 +12073,7 @@ fn bindgen_test_layout_DQOPMODEPRM_2000_() {
         )
     );
 }
+pub type pDQOPMODEPRM_2000_ = *mut DQOPMODEPRM_2000_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_2000_ {
@@ -11973,6 +12102,7 @@ fn bindgen_test_layout_DQINITPRM_2000_() {
         )
     );
 }
+pub type pDQINITPRM_2000_ = *mut DQINITPRM_2000_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_2000_ {
@@ -12001,189 +12131,7 @@ fn bindgen_test_layout_DQSDOWNPRM_2000_() {
         )
     );
 }
-#[repr(C, packed)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_2000_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_2000_,
-    pub opmodeprm: DQOPMODEPRM_2000_,
-    pub initprm: DQINITPRM_2000_,
-    pub sdownprm: DQSDOWNPRM_2000_,
-    pub cname: DQCNAMES_2000_,
-    pub eeflags: DQPRMFLAGS,
-    pub u_pass: [::std::os::raw::c_char; 12usize],
-    pub su_pass: [::std::os::raw::c_char; 12usize],
-    pub ipflag: uint32,
-    pub ip1: uint32,
-    pub ip2: uint32,
-    pub ipfec1: [uint32; 4usize],
-    pub ipfec2: [uint32; 4usize],
-    pub hours: [uint32; 8usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_2000_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_2000_>(),
-        1042usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_2000_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_2000_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_2000_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).opmodeprm as *const _ as usize },
-        214usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).initprm as *const _ as usize },
-        354usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).sdownprm as *const _ as usize },
-        358usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).cname as *const _ as usize },
-        362usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).eeflags as *const _ as usize },
-        682usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).u_pass as *const _ as usize },
-        942usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(u_pass)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).su_pass as *const _ as usize },
-        954usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(su_pass)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).ipflag as *const _ as usize },
-        966usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(ipflag)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).ip1 as *const _ as usize },
-        970usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(ip1)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).ip2 as *const _ as usize },
-        974usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(ip2)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).ipfec1 as *const _ as usize },
-        978usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(ipfec1)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).ipfec2 as *const _ as usize },
-        994usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(ipfec2)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_2000_>())).hours as *const _ as usize },
-        1010usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_2000_),
-            "::",
-            stringify!(hours)
-        )
-    );
-}
-pub type pDEVEEPROM_2000_ = *mut DEVEEPROM_2000_;
+pub type pDQSDOWNPRM_2000_ = *mut DQSDOWNPRM_2000_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_201_ {
@@ -12212,6 +12160,7 @@ fn bindgen_test_layout_DQCNAMES_201_() {
         )
     );
 }
+pub type pDQCNAMES_201_ = *mut DQCNAMES_201_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_201_ {
@@ -12251,6 +12200,7 @@ fn bindgen_test_layout_DQCALSET_201_() {
         )
     );
 }
+pub type pDQCALSET_201_ = *mut DQCALSET_201_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_201_ {
@@ -12334,79 +12284,7 @@ fn bindgen_test_layout_DQOPMODEPRM_201_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_201_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_201_,
-    pub opmodeprm: DQOPMODEPRM_201_,
-    pub cname: DQCNAMES_201_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_201_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_201_>(),
-        982usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_201_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_201_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_201_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_201_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_201_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_201_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_201_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_201_>())).opmodeprm as *const _ as usize },
-        30usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_201_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_201_>())).cname as *const _ as usize },
-        242usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_201_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_201_>())).eeflags as *const _ as usize },
-        722usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_201_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_201_ = *mut DEVEEPROM_201_;
+pub type pDQOPMODEPRM_201_ = *mut DQOPMODEPRM_201_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_204_ {
@@ -12435,6 +12313,7 @@ fn bindgen_test_layout_DQCNAMES_204_() {
         )
     );
 }
+pub type pDQCNAMES_204_ = *mut DQCNAMES_204_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_204_ {
@@ -12474,6 +12353,7 @@ fn bindgen_test_layout_DQCALSET_204_() {
         )
     );
 }
+pub type pDQCALSET_204_ = *mut DQCALSET_204_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_204_ {
@@ -12568,6 +12448,7 @@ fn bindgen_test_layout_DQOPMODEPRM_204_() {
         )
     );
 }
+pub type pDQOPMODEPRM_204_ = *mut DQOPMODEPRM_204_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_204_ {
@@ -12618,101 +12499,7 @@ fn bindgen_test_layout_DQINITPRM_204_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_204_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_204_,
-    pub opmodeprm: DQOPMODEPRM_204_,
-    pub initprm: DQINITPRM_204_,
-    pub cname: DQCNAMES_204_,
-    pub eeflags: DQPRMFLAGS,
-    pub res: [uint8; 118usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_204_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_204_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_204_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_204_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_204_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_204_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_204_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_204_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_204_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_204_>())).opmodeprm as *const _ as usize },
-        918usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_204_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_204_>())).initprm as *const _ as usize },
-        1066usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_204_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_204_>())).cname as *const _ as usize },
-        1170usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_204_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_204_>())).eeflags as *const _ as usize },
-        1666usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_204_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_204_>())).res as *const _ as usize },
-        1926usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_204_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_204_ = *mut DEVEEPROM_204_;
+pub type pDQINITPRM_204_ = *mut DQINITPRM_204_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_205_ {
@@ -12741,6 +12528,7 @@ fn bindgen_test_layout_DQCNAMES_205_() {
         )
     );
 }
+pub type pDQCNAMES_205_ = *mut DQCNAMES_205_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_205_ {
@@ -12769,6 +12557,7 @@ fn bindgen_test_layout_DQCALSET_205_() {
         )
     );
 }
+pub type pDQCALSET_205_ = *mut DQCALSET_205_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_205_ {
@@ -12874,79 +12663,7 @@ fn bindgen_test_layout_DQOPMODEPRM_205_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_205_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_205_,
-    pub opmodeprm: DQOPMODEPRM_205_,
-    pub cname: DQCNAMES_205_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_205_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_205_>(),
-        494usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_205_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_205_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_205_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_205_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_205_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_205_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_205_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_205_>())).opmodeprm as *const _ as usize },
-        30usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_205_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_205_>())).cname as *const _ as usize },
-        106usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_205_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_205_>())).eeflags as *const _ as usize },
-        234usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_205_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_205_ = *mut DEVEEPROM_205_;
+pub type pDQOPMODEPRM_205_ = *mut DQOPMODEPRM_205_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_208_ {
@@ -12975,6 +12692,7 @@ fn bindgen_test_layout_DQCNAMES_208_() {
         )
     );
 }
+pub type pDQCNAMES_208_ = *mut DQCNAMES_208_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_207_ {
@@ -13003,6 +12721,7 @@ fn bindgen_test_layout_DQCNAMES_207_() {
         )
     );
 }
+pub type pDQCNAMES_207_ = *mut DQCNAMES_207_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_248_ {
@@ -13031,6 +12750,7 @@ fn bindgen_test_layout_DQCNAMES_248_() {
         )
     );
 }
+pub type pDQCNAMES_248_ = *mut DQCNAMES_248_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_208_ {
@@ -13081,6 +12801,7 @@ fn bindgen_test_layout_DQCALSET_208_() {
         )
     );
 }
+pub type pDQCALSET_208_ = *mut DQCALSET_208_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_248_ {
@@ -13120,6 +12841,7 @@ fn bindgen_test_layout_DQCALSET_248_() {
         )
     );
 }
+pub type pDQCALSET_248_ = *mut DQCALSET_248_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_208_ {
@@ -13203,6 +12925,7 @@ fn bindgen_test_layout_DQOPMODEPRM_208_() {
         )
     );
 }
+pub type pDQOPMODEPRM_208_ = *mut DQOPMODEPRM_208_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_248_ {
@@ -13286,6 +13009,7 @@ fn bindgen_test_layout_DQOPMODEPRM_248_() {
         )
     );
 }
+pub type pDQOPMODEPRM_248_ = *mut DQOPMODEPRM_248_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_248_ {
@@ -13325,163 +13049,7 @@ fn bindgen_test_layout_DQINITPRM_248_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_208_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_208_,
-    pub opmodeprm: DQOPMODEPRM_208_,
-    pub cname: DQCNAMES_207_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_208_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_208_>(),
-        914usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_208_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_208_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_208_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_208_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_208_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_208_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_208_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_208_>())).opmodeprm as *const _ as usize },
-        122usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_208_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_208_>())).cname as *const _ as usize },
-        206usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_208_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_208_>())).eeflags as *const _ as usize },
-        654usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_208_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_208_ = *mut DEVEEPROM_208_;
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_248_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_248_,
-    pub opmodeprm: DQOPMODEPRM_248_,
-    pub initprm: DQINITPRM_248_,
-    pub cname: DQCNAMES_248_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_248_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_248_>(),
-        778usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_248_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_248_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_248_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_248_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_248_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_248_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_248_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_248_>())).opmodeprm as *const _ as usize },
-        54usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_248_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_248_>())).initprm as *const _ as usize },
-        178usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_248_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_248_>())).cname as *const _ as usize },
-        182usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_248_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_248_>())).eeflags as *const _ as usize },
-        518usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_248_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_248_ = *mut DEVEEPROM_248_;
+pub type pDQINITPRM_248_ = *mut DQINITPRM_248_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCFGCH_211 {
@@ -13755,6 +13323,7 @@ fn bindgen_test_layout_DQCNAMES_211_() {
         )
     );
 }
+pub type pDQCNAMES_211_ = *mut DQCNAMES_211_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CAL_DAC_SET_211 {
@@ -13833,6 +13402,7 @@ fn bindgen_test_layout_DQCALSET_211_() {
         )
     );
 }
+pub type pDQCALSET_211_ = *mut DQCALSET_211_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct CAL_DAC_SET_EXT_211 {
@@ -13889,6 +13459,7 @@ fn bindgen_test_layout_DQCALSET_EXT_AFON_211_() {
         )
     );
 }
+pub type pDQCALSET_EXT_AFON_211_ = *mut DQCALSET_EXT_AFON_211_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_EXT_AFOFF_211_ {
@@ -13917,6 +13488,7 @@ fn bindgen_test_layout_DQCALSET_EXT_AFOFF_211_() {
         )
     );
 }
+pub type pDQCALSET_EXT_AFOFF_211_ = *mut DQCALSET_EXT_AFOFF_211_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_211_ {
@@ -14088,101 +13660,7 @@ fn bindgen_test_layout_DQOPMODEPRM_211_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_211_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_211_,
-    pub calsetext_afon: DQCALSET_EXT_AFON_211_,
-    pub calsetext_afoff: DQCALSET_EXT_AFOFF_211_,
-    pub opmodeprm: DQOPMODEPRM_211_,
-    pub cname: DQCNAMES_211_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_211_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_211_>(),
-        1838usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_211_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_211_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_211_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_211_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_211_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_211_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_211_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_211_>())).calsetext_afon as *const _ as usize },
-        286usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_211_),
-            "::",
-            stringify!(calsetext_afon)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_211_>())).calsetext_afoff as *const _ as usize },
-        798usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_211_),
-            "::",
-            stringify!(calsetext_afoff)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_211_>())).opmodeprm as *const _ as usize },
-        1310usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_211_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_211_>())).cname as *const _ as usize },
-        1450usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_211_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_211_>())).eeflags as *const _ as usize },
-        1578usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_211_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_211_ = *mut DEVEEPROM_211_;
+pub type pDQOPMODEPRM_211_ = *mut DQOPMODEPRM_211_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_212_ {
@@ -14211,6 +13689,7 @@ fn bindgen_test_layout_DQCNAMES_212_() {
         )
     );
 }
+pub type pDQCNAMES_212_ = *mut DQCNAMES_212_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct CAL_DAC_SET_212 {
@@ -14328,6 +13807,7 @@ fn bindgen_test_layout_DQ222DATA2() {
         )
     );
 }
+pub type pDQ222DATA2 = *mut DQ222DATA2;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct CAL_DAC_SET_222 {
@@ -14461,6 +13941,7 @@ fn bindgen_test_layout_DQCALSET_212_() {
         )
     );
 }
+pub type pDQCALSET_212_ = *mut DQCALSET_212_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_222_ {
@@ -14566,6 +14047,7 @@ fn bindgen_test_layout_DQCALSET_222_() {
         )
     );
 }
+pub type pDQCALSET_222_ = *mut DQCALSET_222_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_212_X {
@@ -14660,6 +14142,7 @@ fn bindgen_test_layout_DQCALSET_212_X() {
         )
     );
 }
+pub type pDQCALSET_212_X = *mut DQCALSET_212_X;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_212_ {
@@ -14776,135 +14259,7 @@ fn bindgen_test_layout_DQOPMODEPRM_212_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_212_ {
-    pub ee: DQEECMNDEVS,
-    pub cs: DEVEEPROM_212___bindgen_ty_1,
-    pub opmodeprm: DQOPMODEPRM_212_,
-    pub cname: DQCNAMES_212_,
-    pub eeflags: DQPRMFLAGSA,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union DEVEEPROM_212___bindgen_ty_1 {
-    pub calset: DQCALSET_212_,
-    pub calsetx: DQCALSET_212_X,
-    pub calset_222: DQCALSET_222_,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_212___bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_212___bindgen_ty_1>(),
-        1652usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_212___bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_212___bindgen_ty_1>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_212___bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<DEVEEPROM_212___bindgen_ty_1>())).calset as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212___bindgen_ty_1),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<DEVEEPROM_212___bindgen_ty_1>())).calsetx as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212___bindgen_ty_1),
-            "::",
-            stringify!(calsetx)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<DEVEEPROM_212___bindgen_ty_1>())).calset_222 as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212___bindgen_ty_1),
-            "::",
-            stringify!(calset_222)
-        )
-    );
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_212_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_212_>(),
-        2022usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_212_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_212_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_212_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_212_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_212_>())).cs as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212_),
-            "::",
-            stringify!(cs)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_212_>())).opmodeprm as *const _ as usize },
-        1674usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_212_>())).cname as *const _ as usize },
-        1818usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_212_>())).eeflags as *const _ as usize },
-        2010usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_212_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_212_ = *mut DEVEEPROM_212_;
+pub type pDQOPMODEPRM_212_ = *mut DQOPMODEPRM_212_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_217_ {
@@ -14933,6 +14288,7 @@ fn bindgen_test_layout_DQCNAMES_217_() {
         )
     );
 }
+pub type pDQCNAMES_217_ = *mut DQCNAMES_217_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct CAL_DAC_SET_217 {
@@ -15022,6 +14378,7 @@ fn bindgen_test_layout_DQCALSET_217_() {
         )
     );
 }
+pub type pDQCALSET_217_ = *mut DQCALSET_217_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_217_X {
@@ -15083,6 +14440,7 @@ fn bindgen_test_layout_DQCALSET_217_X() {
         )
     );
 }
+pub type pDQCALSET_217_X = *mut DQCALSET_217_X;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_217_ {
@@ -15199,6 +14557,7 @@ fn bindgen_test_layout_DQOPMODEPRM_217_() {
         )
     );
 }
+pub type pDQOPMODEPRM_217_ = *mut DQOPMODEPRM_217_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_218_ {
@@ -15282,133 +14641,7 @@ fn bindgen_test_layout_DQINITPRM_218_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_217_ {
-    pub ee: DQEECMNDEVS,
-    pub eeflags: DQPRMFLAGS,
-    pub cs: DEVEEPROM_217___bindgen_ty_1,
-    pub opmodeprm: DQOPMODEPRM_217_,
-    pub cname: DQCNAMES_217_,
-    pub initprm: DQINITPRM_218_,
-}
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub union DEVEEPROM_217___bindgen_ty_1 {
-    pub calset: DQCALSET_217_,
-    pub calsetx: DQCALSET_217_X,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_217___bindgen_ty_1() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_217___bindgen_ty_1>(),
-        904usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_217___bindgen_ty_1))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_217___bindgen_ty_1>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_217___bindgen_ty_1))
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<DEVEEPROM_217___bindgen_ty_1>())).calset as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217___bindgen_ty_1),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<DEVEEPROM_217___bindgen_ty_1>())).calsetx as *const _ as usize
-        },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217___bindgen_ty_1),
-            "::",
-            stringify!(calsetx)
-        )
-    );
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_217_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_217_>(),
-        1966usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_217_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_217_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_217_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_217_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_217_>())).eeflags as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_217_>())).cs as *const _ as usize },
-        282usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217_),
-            "::",
-            stringify!(cs)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_217_>())).opmodeprm as *const _ as usize },
-        1186usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_217_>())).cname as *const _ as usize },
-        1314usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_217_>())).initprm as *const _ as usize },
-        1858usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_217_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-}
-pub type pDEVEEPROM_217_ = *mut DEVEEPROM_217_;
+pub type pDQINITPRM_218_ = *mut DQINITPRM_218_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_224_ {
@@ -15437,6 +14670,7 @@ fn bindgen_test_layout_DQCNAMES_224_() {
         )
     );
 }
+pub type pDQCNAMES_224_ = *mut DQCNAMES_224_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_224_ {
@@ -15586,6 +14820,7 @@ fn bindgen_test_layout_DQCALSET_224_() {
         )
     );
 }
+pub type pDQCALSET_224_ = *mut DQCALSET_224_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_224_ {
@@ -15691,79 +14926,7 @@ fn bindgen_test_layout_DQOPMODEPRM_224_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_224_ {
-    pub ee: DQEECMNDEVS,
-    pub eeflags: DQPRMFLAGS,
-    pub calset: DQCALSET_224_,
-    pub cname: DQCNAMES_224_,
-    pub opmodeprm: DQOPMODEPRM_224_,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_224_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_224_>(),
-        1346usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_224_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_224_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_224_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_224_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_224_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_224_>())).eeflags as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_224_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_224_>())).calset as *const _ as usize },
-        282usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_224_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_224_>())).cname as *const _ as usize },
-        1202usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_224_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_224_>())).opmodeprm as *const _ as usize },
-        1282usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_224_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-}
-pub type pDEVEEPROM_224_ = *mut DEVEEPROM_224_;
+pub type pDQOPMODEPRM_224_ = *mut DQOPMODEPRM_224_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQAI225CALDATA {
@@ -15825,6 +14988,7 @@ fn bindgen_test_layout_DQAI225CALDATA() {
         )
     );
 }
+pub type pDQAI225CALDATA = *mut DQAI225CALDATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_225_ {
@@ -15853,6 +15017,7 @@ fn bindgen_test_layout_DQCNAMES_225_() {
         )
     );
 }
+pub type pDQCNAMES_225_ = *mut DQCNAMES_225_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_225_ {
@@ -15903,6 +15068,7 @@ fn bindgen_test_layout_DQCALSET_225_() {
         )
     );
 }
+pub type pDQCALSET_225_ = *mut DQCALSET_225_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_225_ {
@@ -15975,90 +15141,7 @@ fn bindgen_test_layout_DQOPMODEPRM_225_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_225_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_225_,
-    pub opmodeprm: DQOPMODEPRM_225_,
-    pub cname: DQCNAMES_225_,
-    pub eeflags: DQPRMFLAGS,
-    pub res: [uint8; 1014usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_225_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_225_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_225_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_225_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_225_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_225_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_225_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_225_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_225_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_225_>())).opmodeprm as *const _ as usize },
-        234usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_225_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_225_>())).cname as *const _ as usize },
-        354usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_225_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_225_>())).eeflags as *const _ as usize },
-        770usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_225_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_225_>())).res as *const _ as usize },
-        1030usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_225_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_225_ = *mut DEVEEPROM_225_;
+pub type pDQOPMODEPRM_225_ = *mut DQOPMODEPRM_225_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ254SetExt {
@@ -16149,6 +15232,7 @@ fn bindgen_test_layout_DQCNAMES_254_() {
         )
     );
 }
+pub type pDQCNAMES_254_ = *mut DQCNAMES_254_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALCHAN_254_ {
@@ -16320,6 +15404,7 @@ fn bindgen_test_layout_DQCALCHAN_254_() {
         )
     );
 }
+pub type pDQCALCHAN_254_ = *mut DQCALCHAN_254_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_254_ {
@@ -16392,6 +15477,7 @@ fn bindgen_test_layout_DQCALSET_254_() {
         )
     );
 }
+pub type pDQCALSET_254_ = *mut DQCALSET_254_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_254_ {
@@ -16475,79 +15561,7 @@ fn bindgen_test_layout_DQOPMODEPRM_254_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_254_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_254_,
-    pub opmodeprm: DQOPMODEPRM_254_,
-    pub cname: DQCNAMES_254_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_254_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_254_>(),
-        670usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_254_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_254_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_254_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_254_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_254_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_254_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_254_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_254_>())).opmodeprm as *const _ as usize },
-        278usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_254_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_254_>())).cname as *const _ as usize },
-        330usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_254_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_254_>())).eeflags as *const _ as usize },
-        410usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_254_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_254_ = *mut DEVEEPROM_254_;
+pub type pDQOPMODEPRM_254_ = *mut DQOPMODEPRM_254_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct WFPRM_254 {
@@ -16883,6 +15897,7 @@ fn bindgen_test_layout_DQCNAMES_255_() {
         )
     );
 }
+pub type pDQCNAMES_255_ = *mut DQCNAMES_255_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALCHAN_255_ {
@@ -17098,6 +16113,7 @@ fn bindgen_test_layout_DQCALCHAN_255_() {
         )
     );
 }
+pub type pDQCALCHAN_255_ = *mut DQCALCHAN_255_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_255_ {
@@ -17214,6 +16230,7 @@ fn bindgen_test_layout_DQCALSET_255_() {
         )
     );
 }
+pub type pDQCALSET_255_ = *mut DQCALSET_255_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_255_ {
@@ -17297,6 +16314,7 @@ fn bindgen_test_layout_DQOPMODEPRM_255_() {
         )
     );
 }
+pub type pDQOPMODEPRM_255_ = *mut DQOPMODEPRM_255_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_256_ {
@@ -17369,6 +16387,7 @@ fn bindgen_test_layout_DQCALSET_256_() {
         )
     );
 }
+pub type pDQCALSET_256_ = *mut DQCALSET_256_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_256_ {
@@ -17419,101 +16438,7 @@ fn bindgen_test_layout_DQOPMODEPRM_256_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_255_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_255_,
-    pub opmodeprm: DQOPMODEPRM_255_,
-    pub cname: DQCNAMES_255_,
-    pub eeflags: DQPRMFLAGS,
-    pub cal256: DQCALSET_256_,
-    pub opmodeprm256: DQOPMODEPRM_256_,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_255_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_255_>(),
-        650usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_255_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_255_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_255_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_255_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_255_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_255_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_255_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_255_>())).opmodeprm as *const _ as usize },
-        230usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_255_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_255_>())).cname as *const _ as usize },
-        266usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_255_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_255_>())).eeflags as *const _ as usize },
-        306usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_255_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_255_>())).cal256 as *const _ as usize },
-        566usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_255_),
-            "::",
-            stringify!(cal256)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_255_>())).opmodeprm256 as *const _ as usize },
-        622usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_255_),
-            "::",
-            stringify!(opmodeprm256)
-        )
-    );
-}
-pub type pDEVEEPROM_255_ = *mut DEVEEPROM_255_;
+pub type pDQOPMODEPRM_256_ = *mut DQOPMODEPRM_256_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct WFPRM_255 {
@@ -17853,6 +16778,7 @@ fn bindgen_test_layout_DQAI256DATAIN() {
         )
     );
 }
+pub type pDQAI256DATAIN = *mut DQAI256DATAIN;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQAI256DATAOUT {
@@ -17987,6 +16913,7 @@ fn bindgen_test_layout_DQCNAMES_261_() {
         )
     );
 }
+pub type pDQCNAMES_261_ = *mut DQCNAMES_261_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCAL_DAC_INT_261_IDC {
@@ -18026,6 +16953,7 @@ fn bindgen_test_layout_DQCAL_DAC_INT_261_IDC() {
         )
     );
 }
+pub type pDQCAL_DAC_INT_261_IDC = *mut DQCAL_DAC_INT_261_IDC;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCAL_DAC_INT_261_IAC {
@@ -18087,6 +17015,7 @@ fn bindgen_test_layout_DQCAL_DAC_INT_261_IAC() {
         )
     );
 }
+pub type pDQCAL_DAC_INT_261_IAC = *mut DQCAL_DAC_INT_261_IAC;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCAL_DAC_INT_261_VDC {
@@ -18126,6 +17055,7 @@ fn bindgen_test_layout_DQCAL_DAC_INT_261_VDC() {
         )
     );
 }
+pub type pDQCAL_DAC_INT_261_DC = *mut DQCAL_DAC_INT_261_VDC;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCAL_DAC_INT_261_VAC {
@@ -18187,6 +17117,7 @@ fn bindgen_test_layout_DQCAL_DAC_INT_261_VAC() {
         )
     );
 }
+pub type pDQCAL_DAC_INT_261_AC = *mut DQCAL_DAC_INT_261_VAC;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCAL_OFF_GN_261 {
@@ -18226,6 +17157,7 @@ fn bindgen_test_layout_DQCAL_OFF_GN_261() {
         )
     );
 }
+pub type pDQCAL_OFF_GN_261 = *mut DQCAL_OFF_GN_261;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCAL_DAC_SETRDEF_261 {
@@ -18298,6 +17230,7 @@ fn bindgen_test_layout_DQCAL_DAC_SETRDEF_261() {
         )
     );
 }
+pub type pDQCAL_DAC_SETRDEF_261 = *mut DQCAL_DAC_SETRDEF_261;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCAL_DAC_SETGVT_261 {
@@ -18326,6 +17259,7 @@ fn bindgen_test_layout_DQCAL_DAC_SETGVT_261() {
         )
     );
 }
+pub type pDQCAL_DAC_SETGVT_261 = *mut DQCAL_DAC_SETGVT_261;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_261_ {
@@ -18541,6 +17475,7 @@ fn bindgen_test_layout_DQCALSET_261_() {
         )
     );
 }
+pub type pDQCALSET_261_ = *mut DQCALSET_261_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_261_ {
@@ -18646,6 +17581,7 @@ fn bindgen_test_layout_DQOPMODEPRM_261_() {
         )
     );
 }
+pub type pDQOPMODEPRM_261_ = *mut DQOPMODEPRM_261_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_261_ {
@@ -18740,6 +17676,7 @@ fn bindgen_test_layout_DQINITPRM_261_() {
         )
     );
 }
+pub type pDQINITPRM_261_ = *mut DQINITPRM_261_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_261_ {
@@ -18790,6 +17727,7 @@ fn bindgen_test_layout_DQSDOWNPRM_261_() {
         )
     );
 }
+pub type pDQSDOWNPRM_261_ = *mut DQSDOWNPRM_261_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQEERSVD_261_ {
@@ -18820,123 +17758,6 @@ fn bindgen_test_layout_DQEERSVD_261_() {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct DEVEEPROM_261_ {
-    pub ee: DQEECMNDEVS,
-    pub eeflags: DQPRMFLAGSA,
-    pub initprm: DQINITPRM_261_,
-    pub opmodeprm: DQOPMODEPRM_261_,
-    pub sdownprm: DQSDOWNPRM_261_,
-    pub cname: DQCNAMES_261_,
-    pub calset: DQCALSET_261_,
-    pub reserved: DQEERSVD_261_,
-    pub eever_crc: DQEEPROMTAIL,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_261_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_261_>(),
-        2048usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_261_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_261_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_261_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).eeflags as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).initprm as *const _ as usize },
-        34usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).opmodeprm as *const _ as usize },
-        122usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).sdownprm as *const _ as usize },
-        214usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).cname as *const _ as usize },
-        286usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).calset as *const _ as usize },
-        558usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).reserved as *const _ as usize },
-        1362usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(reserved)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_261_>())).eever_crc as *const _ as usize },
-        2042usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_261_),
-            "::",
-            stringify!(eever_crc)
-        )
-    );
-}
-pub type pDEVEEPROM_261_ = *mut DEVEEPROM_261_;
-#[repr(C)]
-#[derive(Copy, Clone)]
 pub struct DQCNAMES_301_ {
     pub cname: [[::std::os::raw::c_char; 32usize]; 8usize],
 }
@@ -18963,6 +17784,7 @@ fn bindgen_test_layout_DQCNAMES_301_() {
         )
     );
 }
+pub type pDQCNAMES_301_ = *mut DQCNAMES_301_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_301_ {
@@ -19002,6 +17824,7 @@ fn bindgen_test_layout_DQCALSET_301_() {
         )
     );
 }
+pub type pDQCALSET_301_ = *mut DQCALSET_301_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_301_ {
@@ -19107,6 +17930,7 @@ fn bindgen_test_layout_DQOPMODEPRM_301_() {
         )
     );
 }
+pub type pDQOPMODEPRM_301_ = *mut DQOPMODEPRM_301_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_301_ {
@@ -19146,6 +17970,7 @@ fn bindgen_test_layout_DQINITPRM_301_() {
         )
     );
 }
+pub type pDQINITPRM_301_ = *mut DQINITPRM_301_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_301_ {
@@ -19185,112 +18010,7 @@ fn bindgen_test_layout_DQSDOWNPRM_301_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_301_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_301_,
-    pub opmodeprm: DQOPMODEPRM_301_,
-    pub initprm: DQINITPRM_301_,
-    pub sdownprm: DQSDOWNPRM_301_,
-    pub cname: DQCNAMES_301_,
-    pub eeflags: DQPRMFLAGS,
-    pub res: [uint8; 1338usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_301_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_301_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_301_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_301_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_301_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).opmodeprm as *const _ as usize },
-        46usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).initprm as *const _ as usize },
-        150usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).sdownprm as *const _ as usize },
-        170usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).cname as *const _ as usize },
-        190usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).eeflags as *const _ as usize },
-        446usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_301_>())).res as *const _ as usize },
-        706usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_301_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_301_ = *mut DEVEEPROM_301_;
+pub type pDQSDOWNPRM_301_ = *mut DQSDOWNPRM_301_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_332_ {
@@ -19319,6 +18039,7 @@ fn bindgen_test_layout_DQCNAMES_332_() {
         )
     );
 }
+pub type pDQCNAMES_332_ = *mut DQCNAMES_332_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_332_ {
@@ -19380,6 +18101,7 @@ fn bindgen_test_layout_DQCALSET_332_() {
         )
     );
 }
+pub type pDQCALSET_332_ = *mut DQCALSET_332_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_333_ {
@@ -19430,6 +18152,7 @@ fn bindgen_test_layout_DQCALSET_333_() {
         )
     );
 }
+pub type pDQCALSET_333_ = *mut DQCALSET_333_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_332_ {
@@ -19535,6 +18258,7 @@ fn bindgen_test_layout_DQOPMODEPRM_332_() {
         )
     );
 }
+pub type pDQOPMODEPRM_332_ = *mut DQOPMODEPRM_332_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_332_ {
@@ -19574,6 +18298,7 @@ fn bindgen_test_layout_DQINITPRM_332_() {
         )
     );
 }
+pub type pDQINITPRM_332_ = *mut DQINITPRM_332_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_332_ {
@@ -19613,123 +18338,7 @@ fn bindgen_test_layout_DQSDOWNPRM_332_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_332_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_332_,
-    pub opmodeprm: DQOPMODEPRM_332_,
-    pub initprm: DQINITPRM_332_,
-    pub sdownprm: DQSDOWNPRM_332_,
-    pub cname: DQCNAMES_332_,
-    pub eeflags: DQPRMFLAGS,
-    pub calset3: DQCALSET_333_,
-    pub res: [uint8; 636usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_332_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_332_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_332_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_332_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_332_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).opmodeprm as *const _ as usize },
-        154usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).initprm as *const _ as usize },
-        498usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).sdownprm as *const _ as usize },
-        566usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).cname as *const _ as usize },
-        634usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).eeflags as *const _ as usize },
-        1018usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).calset3 as *const _ as usize },
-        1278usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(calset3)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_332_>())).res as *const _ as usize },
-        1408usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_332_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_332_ = *mut DEVEEPROM_332_;
+pub type pDQSDOWNPRM_332_ = *mut DQSDOWNPRM_332_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQAO318BRK_CFG {
@@ -19926,6 +18535,7 @@ fn bindgen_test_layout_DQCNAMES_318_() {
         )
     );
 }
+pub type pDQCNAMES_318_ = *mut DQCNAMES_318_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_318_ {
@@ -20009,6 +18619,7 @@ fn bindgen_test_layout_DQCALSET_318_() {
         )
     );
 }
+pub type pDQCALSET_318_ = *mut DQCALSET_318_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_318_ {
@@ -20147,6 +18758,7 @@ fn bindgen_test_layout_DQOPMODEPRM_318_() {
         )
     );
 }
+pub type pDQOPMODEPRM_318_ = *mut DQOPMODEPRM_318_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_318_ {
@@ -20219,6 +18831,7 @@ fn bindgen_test_layout_DQINITPRM_318_() {
         )
     );
 }
+pub type pDQINITPRM_318_ = *mut DQINITPRM_318_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_318_ {
@@ -20269,112 +18882,7 @@ fn bindgen_test_layout_DQSDOWNPRM_318_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_318_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_318_,
-    pub cname: DQCNAMES_318_,
-    pub opmodeprm: DQOPMODEPRM_318_,
-    pub initprm: DQINITPRM_318_,
-    pub sdownprm: DQSDOWNPRM_318_,
-    pub eeflags: DQPRMFLAGS,
-    pub res: [uint8; 806usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_318_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_318_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_318_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_318_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_318_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).cname as *const _ as usize },
-        246usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).opmodeprm as *const _ as usize },
-        374usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).initprm as *const _ as usize },
-        650usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).sdownprm as *const _ as usize },
-        942usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).eeflags as *const _ as usize },
-        978usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_318_>())).res as *const _ as usize },
-        1238usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_318_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_318_ = *mut DEVEEPROM_318_;
+pub type pDQSDOWNPRM_318_ = *mut DQSDOWNPRM_318_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_358_ {
@@ -20403,6 +18911,7 @@ fn bindgen_test_layout_DQCNAMES_358_() {
         )
     );
 }
+pub type pDQCNAMES_358_ = *mut DQCNAMES_358_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_358_ {
@@ -20431,6 +18940,7 @@ fn bindgen_test_layout_DQCALSET_358_() {
         )
     );
 }
+pub type pDQCALSET_358_ = *mut DQCALSET_358_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_358_ {
@@ -20525,6 +19035,7 @@ fn bindgen_test_layout_DQOPMODEPRM_358_() {
         )
     );
 }
+pub type pDQOPMODEPRM_358_ = *mut DQOPMODEPRM_358_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_358_ {
@@ -20553,6 +19064,7 @@ fn bindgen_test_layout_DQINITPRM_358_() {
         )
     );
 }
+pub type pDQINITPRM_358_ = *mut DQINITPRM_358_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_358_ {
@@ -20603,101 +19115,7 @@ fn bindgen_test_layout_DQSDOWNPRM_358_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_358_ {
-    pub ee: DQEECMNDEVS,
-    pub eeflags: DQPRMFLAGS,
-    pub calset: DQCALSET_358_,
-    pub opmodeprm: DQOPMODEPRM_358_,
-    pub initprm: DQINITPRM_358_,
-    pub sdownprm: DQSDOWNPRM_358_,
-    pub cname: DQCNAMES_358_,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_358_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_358_>(),
-        670usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_358_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_358_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_358_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_358_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_358_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_358_>())).eeflags as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_358_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_358_>())).calset as *const _ as usize },
-        282usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_358_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_358_>())).opmodeprm as *const _ as usize },
-        286usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_358_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_358_>())).initprm as *const _ as usize },
-        374usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_358_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_358_>())).sdownprm as *const _ as usize },
-        378usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_358_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_358_>())).cname as *const _ as usize },
-        414usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_358_),
-            "::",
-            stringify!(cname)
-        )
-    );
-}
-pub type pDEVEEPROM_358_ = *mut DEVEEPROM_358_;
+pub type pDQSDOWNPRM_358_ = *mut DQSDOWNPRM_358_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQ_358CAL_HEAD {
@@ -21025,6 +19443,7 @@ fn bindgen_test_layout_DQ_358CAL_HEAD() {
         )
     );
 }
+pub type pDQ_358CAL_HEAD = *mut DQ_358CAL_HEAD;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQEXCAL_358 {
@@ -21075,6 +19494,7 @@ fn bindgen_test_layout_DQEXCAL_358() {
         )
     );
 }
+pub type pDQEXCAL_358 = *mut DQEXCAL_358;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQEXCAL_358_8 {
@@ -21103,6 +19523,7 @@ fn bindgen_test_layout_DQEXCAL_358_8() {
         )
     );
 }
+pub type pDQEXCAL_358_8 = *mut DQEXCAL_358_8;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQAO364STDWF {
@@ -21489,6 +19910,7 @@ fn bindgen_test_layout_DQCNAMES_364_() {
         )
     );
 }
+pub type pDQCNAMES_364_ = *mut DQCNAMES_364_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_364_ {
@@ -21561,6 +19983,7 @@ fn bindgen_test_layout_DQCALSET_364_() {
         )
     );
 }
+pub type pDQCALSET_364_ = *mut DQCALSET_364_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_364_ {
@@ -21622,6 +20045,7 @@ fn bindgen_test_layout_DQINITPRM_364_() {
         )
     );
 }
+pub type pDQINITPRM_364_ = *mut DQINITPRM_364_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_364_ {
@@ -21738,6 +20162,7 @@ fn bindgen_test_layout_DQOPMODEPRM_364_() {
         )
     );
 }
+pub type pDQOPMODEPRM_364_ = *mut DQOPMODEPRM_364_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_364_ {
@@ -21799,6 +20224,7 @@ fn bindgen_test_layout_DQSDOWNPRM_364_() {
         )
     );
 }
+pub type pDQSDOWNPRM_364_ = *mut DQSDOWNPRM_364_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQPRMFLAGS_364_ {
@@ -21827,6 +20253,7 @@ fn bindgen_test_layout_DQPRMFLAGS_364_() {
         )
     );
 }
+pub type pDQPRMFLAGS_364_ = *mut DQPRMFLAGS_364_;
 #[repr(C, packed)]
 pub struct EV364_ID {
     pub chan: uint32,
@@ -21992,6 +20419,7 @@ fn bindgen_test_layout_DQEXEE_364() {
         )
     );
 }
+pub type pDQEXEE_364 = *mut DQEXEE_364;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQEXEE_STS_364 {
@@ -22258,6 +20686,7 @@ fn bindgen_test_layout_DQ_PLL_364() {
         )
     );
 }
+pub type pDQ_PLL_364 = *mut DQ_PLL_364;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQRTD388CFG {
@@ -22359,6 +20788,7 @@ fn bindgen_test_layout_DQCNAMES_388_() {
         )
     );
 }
+pub type pDQCNAMES_388_ = *mut DQCNAMES_388_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_388_ {
@@ -22420,6 +20850,7 @@ fn bindgen_test_layout_DQCALSET_388_() {
         )
     );
 }
+pub type pDQCALSET_388_ = *mut DQCALSET_388_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_388_ {
@@ -22514,6 +20945,7 @@ fn bindgen_test_layout_DQOPMODEPRM_388_() {
         )
     );
 }
+pub type pDQOPMODEPRM_388_ = *mut DQOPMODEPRM_388_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_388_ {
@@ -22575,6 +21007,7 @@ fn bindgen_test_layout_DQINITPRM_388_() {
         )
     );
 }
+pub type pDQINITPRM_388_ = *mut DQINITPRM_388_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_388_ {
@@ -22614,112 +21047,7 @@ fn bindgen_test_layout_DQSDOWNPRM_388_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_388_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_388_,
-    pub cname: DQCNAMES_388_,
-    pub opmodeprm: DQOPMODEPRM_388_,
-    pub initprm: DQINITPRM_388_,
-    pub sdownprm: DQSDOWNPRM_388_,
-    pub eeflags: DQPRMFLAGS,
-    pub res: [uint8; 454usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_388_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_388_>(),
-        2048usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_388_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_388_>(),
-        4usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_388_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).calset as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).cname as *const _ as usize },
-        920usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).opmodeprm as *const _ as usize },
-        1048usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).initprm as *const _ as usize },
-        1136usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).sdownprm as *const _ as usize },
-        1296usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).eeflags as *const _ as usize },
-        1332usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_388_>())).res as *const _ as usize },
-        1592usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_388_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_388_ = *mut DEVEEPROM_388_;
+pub type pDQSDOWNPRM_388_ = *mut DQSDOWNPRM_388_;
 #[repr(C)]
 pub struct EV401_ID {
     pub chan: uint32,
@@ -23463,6 +21791,7 @@ fn bindgen_test_layout_DQCNAMES_401_() {
         )
     );
 }
+pub type pDQCNAMES_401_ = *mut DQCNAMES_401_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_401_ {
@@ -23579,6 +21908,7 @@ fn bindgen_test_layout_DQOPMODEPRM_401_() {
         )
     );
 }
+pub type pDQOPMODEPRM_401_ = *mut DQOPMODEPRM_401_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_401_ {
@@ -23607,6 +21937,7 @@ fn bindgen_test_layout_DQINITPRM_401_() {
         )
     );
 }
+pub type pDQINITPRM_401_ = *mut DQINITPRM_401_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_401_ {
@@ -23635,6 +21966,7 @@ fn bindgen_test_layout_DQSDOWNPRM_401_() {
         )
     );
 }
+pub type pDQSDOWNPRM_401_ = *mut DQSDOWNPRM_401_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_414_ {
@@ -23696,6 +22028,7 @@ fn bindgen_test_layout_DQINITPRM_414_() {
         )
     );
 }
+pub type pDQINITPRM_414_ = *mut DQINITPRM_414_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_414_ {
@@ -23757,6 +22090,7 @@ fn bindgen_test_layout_DQSDOWNPRM_414_() {
         )
     );
 }
+pub type pDQSDOWNPRM_414_ = *mut DQSDOWNPRM_414_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_461_ {
@@ -23796,6 +22130,7 @@ fn bindgen_test_layout_DQINITPRM_461_() {
         )
     );
 }
+pub type pDQINITPRM_461_ = *mut DQINITPRM_461_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_461_ {
@@ -23835,195 +22170,7 @@ fn bindgen_test_layout_DQSDOWNPRM_461_() {
         )
     );
 }
-#[repr(C, packed)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_401_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_401_,
-    pub initprm: DQINITPRM_401_,
-    pub sdownprm: DQSDOWNPRM_401_,
-    pub cname: DQCNAMES_401_,
-    pub eeflags: DQPRMFLAGSA,
-    pub initprm414: DQINITPRM_414_,
-    pub sdownprm414: DQSDOWNPRM_414_,
-    pub initprm461: DQINITPRM_461_,
-    pub sdownprm461: DQSDOWNPRM_461_,
-    pub res: [uint8; 890usize],
-    pub switch_count: [DQ461COUNT; 3usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_401_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_401_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_401_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_401_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_401_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).opmodeprm as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).initprm as *const _ as usize },
-        246usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).sdownprm as *const _ as usize },
-        250usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).cname as *const _ as usize },
-        254usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).eeflags as *const _ as usize },
-        734usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).initprm414 as *const _ as usize },
-        746usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(initprm414)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).sdownprm414 as *const _ as usize },
-        762usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(sdownprm414)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).initprm461 as *const _ as usize },
-        778usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(initprm461)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).sdownprm461 as *const _ as usize },
-        786usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(sdownprm461)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).res as *const _ as usize },
-        794usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(res)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_401_>())).switch_count as *const _ as usize },
-        1684usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_401_),
-            "::",
-            stringify!(switch_count)
-        )
-    );
-}
-pub type pDEVEEPROM_401_ = *mut DEVEEPROM_401_;
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DIIEVENTPRM_401 {
-    pub pos_edge_status: uint32,
-    pub neg_edge_status: uint32,
-}
-#[test]
-fn bindgen_test_layout_DIIEVENTPRM_401() {
-    assert_eq!(
-        ::std::mem::size_of::<DIIEVENTPRM_401>(),
-        8usize,
-        concat!("Size of: ", stringify!(DIIEVENTPRM_401))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DIIEVENTPRM_401>(),
-        4usize,
-        concat!("Alignment of ", stringify!(DIIEVENTPRM_401))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DIIEVENTPRM_401>())).pos_edge_status as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DIIEVENTPRM_401),
-            "::",
-            stringify!(pos_edge_status)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DIIEVENTPRM_401>())).neg_edge_status as *const _ as usize },
-        4usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DIIEVENTPRM_401),
-            "::",
-            stringify!(neg_edge_status)
-        )
-    );
-}
+pub type pDQSDOWNPRM_461_ = *mut DQSDOWNPRM_461_;
 #[repr(C)]
 pub struct EV403_ID {
     pub chan: uint32,
@@ -24128,6 +22275,7 @@ fn bindgen_test_layout_DQCNAMES_403_() {
         )
     );
 }
+pub type pDQCNAMES_403_ = *mut DQCNAMES_403_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_403_ {
@@ -24222,6 +22370,7 @@ fn bindgen_test_layout_DQOPMODEPRM_403_() {
         )
     );
 }
+pub type pDQOPMODEPRM_403_ = *mut DQOPMODEPRM_403_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_403_ {
@@ -24261,6 +22410,7 @@ fn bindgen_test_layout_DQINITPRM_403_() {
         )
     );
 }
+pub type pDQINITPRM_403_ = *mut DQINITPRM_403_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_403_ {
@@ -24300,90 +22450,7 @@ fn bindgen_test_layout_DQSDOWNPRM_403_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_403_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_403_,
-    pub initprm: DQINITPRM_403_,
-    pub sdownprm: DQSDOWNPRM_403_,
-    pub cname: DQCNAMES_403_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_403_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_403_>(),
-        850usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_403_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_403_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_403_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_403_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_403_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_403_>())).opmodeprm as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_403_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_403_>())).initprm as *const _ as usize },
-        54usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_403_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_403_>())).sdownprm as *const _ as usize },
-        82usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_403_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_403_>())).cname as *const _ as usize },
-        110usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_403_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_403_>())).eeflags as *const _ as usize },
-        590usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_403_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_403_ = *mut DEVEEPROM_403_;
+pub type pDQSDOWNPRM_403_ = *mut DQSDOWNPRM_403_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_448_ {
@@ -24412,6 +22479,7 @@ fn bindgen_test_layout_DQCNAMES_448_() {
         )
     );
 }
+pub type pDQCNAMES_448_ = *mut DQCNAMES_448_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_448_ {
@@ -24495,6 +22563,7 @@ fn bindgen_test_layout_DQOPMODEPRM_448_() {
         )
     );
 }
+pub type pDQOPMODEPRM_448_ = *mut DQOPMODEPRM_448_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_448_ {
@@ -24545,6 +22614,7 @@ fn bindgen_test_layout_DQINITPRM_448_() {
         )
     );
 }
+pub type pDQINITPRM_448_ = *mut DQINITPRM_448_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_448_ {
@@ -24650,90 +22720,7 @@ fn bindgen_test_layout_DQCALSET_448_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_448_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_448_,
-    pub opmodeprm: DQOPMODEPRM_448_,
-    pub initprm: DQINITPRM_448_,
-    pub cname: DQCNAMES_448_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_448_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_448_>(),
-        828usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_448_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_448_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_448_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_448_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_448_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_448_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_448_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_448_>())).opmodeprm as *const _ as usize },
-        52usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_448_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_448_>())).initprm as *const _ as usize },
-        76usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_448_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_448_>())).cname as *const _ as usize },
-        88usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_448_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_448_>())).eeflags as *const _ as usize },
-        568usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_448_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_448_ = *mut DEVEEPROM_448_;
+pub type pDQCALSET_448_ = *mut DQCALSET_448_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQDIO448DATAOUT {
@@ -24846,6 +22833,7 @@ fn bindgen_test_layout_DQCNAMES_416_() {
         )
     );
 }
+pub type pDQCNAMES_416_ = *mut DQCNAMES_416_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_432_ {
@@ -24874,6 +22862,7 @@ fn bindgen_test_layout_DQCNAMES_432_() {
         )
     );
 }
+pub type pDQCNAMES_432_ = *mut DQCNAMES_432_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_416_ {
@@ -24935,6 +22924,7 @@ fn bindgen_test_layout_DQCALSET_416_() {
         )
     );
 }
+pub type pDQCALSET_416_ = *mut DQCALSET_416_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_432_ {
@@ -24996,6 +22986,7 @@ fn bindgen_test_layout_DQCALSET_432_() {
         )
     );
 }
+pub type pDQCALSET_432_ = *mut DQCALSET_432_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_416_ {
@@ -25123,6 +23114,7 @@ fn bindgen_test_layout_DQOPMODEPRM_416_() {
         )
     );
 }
+pub type pDQOPMODEPRM_416_ = *mut DQOPMODEPRM_416_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_432_ {
@@ -25250,6 +23242,7 @@ fn bindgen_test_layout_DQOPMODEPRM_432_() {
         )
     );
 }
+pub type pDQOPMODEPRM_432_ = *mut DQOPMODEPRM_432_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_416_ {
@@ -25278,6 +23271,7 @@ fn bindgen_test_layout_DQINITPRM_416_() {
         )
     );
 }
+pub type pDQINITPRM_416_ = *mut DQINITPRM_416_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_416_ {
@@ -25306,6 +23300,7 @@ fn bindgen_test_layout_DQSDOWNPRM_416_() {
         )
     );
 }
+pub type pDQSDOWNPRM_416_ = *mut DQSDOWNPRM_416_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_432_ {
@@ -25334,6 +23329,7 @@ fn bindgen_test_layout_DQINITPRM_432_() {
         )
     );
 }
+pub type pDQINITPRM_432_ = *mut DQINITPRM_432_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_432_ {
@@ -25362,218 +23358,7 @@ fn bindgen_test_layout_DQSDOWNPRM_432_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_416_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_416_,
-    pub opmodeprm: DQOPMODEPRM_416_,
-    pub initprm: DQINITPRM_416_,
-    pub sdownprm: DQSDOWNPRM_416_,
-    pub cname: DQCNAMES_416_,
-    pub eeflags: DQPRMFLAGS,
-    pub res: [uint8; 894usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_416_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_416_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_416_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_416_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_416_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).opmodeprm as *const _ as usize },
-        278usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).initprm as *const _ as usize },
-        562usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).sdownprm as *const _ as usize },
-        566usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).cname as *const _ as usize },
-        570usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).eeflags as *const _ as usize },
-        890usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_416_>())).res as *const _ as usize },
-        1150usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_416_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_416_ = *mut DEVEEPROM_416_;
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_432_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_432_,
-    pub opmodeprm: DQOPMODEPRM_432_,
-    pub initprm: DQINITPRM_432_,
-    pub sdownprm: DQSDOWNPRM_432_,
-    pub cname: DQCNAMES_432_,
-    pub eeflags: DQPRMFLAGS,
-    pub res: [uint8; 766usize],
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_432_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_432_>(),
-        2044usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_432_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_432_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_432_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).opmodeprm as *const _ as usize },
-        278usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).initprm as *const _ as usize },
-        690usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).sdownprm as *const _ as usize },
-        694usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).cname as *const _ as usize },
-        698usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).eeflags as *const _ as usize },
-        1018usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_432_>())).res as *const _ as usize },
-        1278usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_432_),
-            "::",
-            stringify!(res)
-        )
-    );
-}
-pub type pDEVEEPROM_432_ = *mut DEVEEPROM_432_;
+pub type pDQSDOWNPRM_432_ = *mut DQSDOWNPRM_432_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQDIO416DATAIN {
@@ -26140,6 +23925,7 @@ fn bindgen_test_layout_DQDIO432PWM() {
         )
     );
 }
+pub type pDQDIO432PWM = *mut DQDIO432PWM;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQDIO432CVTD {
@@ -26390,6 +24176,7 @@ fn bindgen_test_layout_DQCNAMES_449_() {
         )
     );
 }
+pub type pDQCNAMES_449_ = *mut DQCNAMES_449_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_449_ {
@@ -26473,6 +24260,7 @@ fn bindgen_test_layout_DQOPMODEPRM_449_() {
         )
     );
 }
+pub type pDQOPMODEPRM_449_ = *mut DQOPMODEPRM_449_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_449_ {
@@ -26512,6 +24300,7 @@ fn bindgen_test_layout_DQSDOWNPRM_449_() {
         )
     );
 }
+pub type pDQSDOWNPRM_449_ = *mut DQSDOWNPRM_449_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_449_ {
@@ -26573,6 +24362,7 @@ fn bindgen_test_layout_DQINITPRM_449_() {
         )
     );
 }
+pub type pDQINITPRM_449_ = *mut DQINITPRM_449_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM2_449_ {
@@ -26612,6 +24402,7 @@ fn bindgen_test_layout_DQINITPRM2_449_() {
         )
     );
 }
+pub type pDQINITPRM2_449_ = *mut DQINITPRM2_449_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_449_ {
@@ -26662,112 +24453,7 @@ fn bindgen_test_layout_DQCALSET_449_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_449_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_449_,
-    pub opmodeprm: DQOPMODEPRM_449_,
-    pub initprm: DQINITPRM_449_,
-    pub sdownprm: DQSDOWNPRM_449_,
-    pub cname: DQCNAMES_449_,
-    pub eeflags: DQPRMFLAGS,
-    pub initprm2: DQINITPRM2_449_,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_449_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_449_>(),
-        1986usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_449_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_449_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_449_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).opmodeprm as *const _ as usize },
-        886usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).initprm as *const _ as usize },
-        922usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).sdownprm as *const _ as usize },
-        1218usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).cname as *const _ as usize },
-        1230usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).eeflags as *const _ as usize },
-        1710usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_449_>())).initprm2 as *const _ as usize },
-        1970usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_449_),
-            "::",
-            stringify!(initprm2)
-        )
-    );
-}
-pub type pDEVEEPROM_449_ = *mut DEVEEPROM_449_;
+pub type pDQCALSET_449_ = *mut DQCALSET_449_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQDIO449DATAOUT {
@@ -26840,6 +24526,7 @@ fn bindgen_test_layout_DQDIO449DATAOUT() {
         )
     );
 }
+pub type pDQDIO449DATAOUT = *mut DQDIO449DATAOUT;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_462_ {
@@ -26868,6 +24555,7 @@ fn bindgen_test_layout_DQCNAMES_462_() {
         )
     );
 }
+pub type pDQCNAMES_462_ = *mut DQCNAMES_462_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_462_ {
@@ -26907,6 +24595,7 @@ fn bindgen_test_layout_DQCALSET_462_() {
         )
     );
 }
+pub type pDQCALSET_462_ = *mut DQCALSET_462_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_462_ {
@@ -27012,6 +24701,7 @@ fn bindgen_test_layout_DQOPMODEPRM_462_() {
         )
     );
 }
+pub type pDQOPMODEPRM_462_ = *mut DQOPMODEPRM_462_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_462_ {
@@ -27040,6 +24730,7 @@ fn bindgen_test_layout_DQINITPRM_462_() {
         )
     );
 }
+pub type pDQINITPRM_462_ = *mut DQINITPRM_462_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_462_ {
@@ -27068,101 +24759,7 @@ fn bindgen_test_layout_DQSDOWNPRM_462_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_462_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_462_,
-    pub opmodeprm: DQOPMODEPRM_462_,
-    pub initprm: DQINITPRM_462_,
-    pub sdownprm: DQSDOWNPRM_462_,
-    pub cname: DQCNAMES_462_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_462_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_462_>(),
-        962usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_462_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_462_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_462_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_462_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_462_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_462_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_462_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_462_>())).opmodeprm as *const _ as usize },
-        262usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_462_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_462_>())).initprm as *const _ as usize },
-        454usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_462_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_462_>())).sdownprm as *const _ as usize },
-        458usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_462_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_462_>())).cname as *const _ as usize },
-        462usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_462_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_462_>())).eeflags as *const _ as usize },
-        702usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_462_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_462_ = *mut DEVEEPROM_462_;
+pub type pDQSDOWNPRM_462_ = *mut DQSDOWNPRM_462_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQDIO462DATAIN {
@@ -27413,6 +25010,7 @@ fn bindgen_test_layout_DQMSG_501() {
         )
     );
 }
+pub type pDQMSG_501 = *mut DQMSG_501;
 #[repr(C, packed)]
 pub struct DQMSG_501_L {
     pub tstamp: uint32,
@@ -27473,6 +25071,7 @@ fn bindgen_test_layout_DQMSG_501_L() {
         )
     );
 }
+pub type pDQMSG_501_L = *mut DQMSG_501_L;
 #[repr(C, packed)]
 pub struct EV501_ID {
     pub chan: uint32,
@@ -27670,6 +25269,7 @@ fn bindgen_test_layout_DQCNAMES_501_() {
         )
     );
 }
+pub type pDQCNAMES_501_ = *mut DQCNAMES_501_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_508_ {
@@ -27698,6 +25298,7 @@ fn bindgen_test_layout_DQCNAMES_508_() {
         )
     );
 }
+pub type pDQCNAMES_508_ = *mut DQCNAMES_508_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_501_ {
@@ -27814,6 +25415,7 @@ fn bindgen_test_layout_DQOPMODEPRM_501_() {
         )
     );
 }
+pub type pDQOPMODEPRM_501_ = *mut DQOPMODEPRM_501_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_501_ {
@@ -27842,6 +25444,7 @@ fn bindgen_test_layout_DQINITPRM_501_() {
         )
     );
 }
+pub type pDQINITPRM_501_ = *mut DQINITPRM_501_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_501_ {
@@ -27870,90 +25473,7 @@ fn bindgen_test_layout_DQSDOWNPRM_501_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_501_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_501_,
-    pub initprm: DQINITPRM_501_,
-    pub sdownprm: DQSDOWNPRM_501_,
-    pub cname: DQCNAMES_508_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_501_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_501_>(),
-        578usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_501_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_501_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_501_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_501_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_501_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_501_>())).opmodeprm as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_501_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_501_>())).initprm as *const _ as usize },
-        118usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_501_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_501_>())).sdownprm as *const _ as usize },
-        122usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_501_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_501_>())).cname as *const _ as usize },
-        126usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_501_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_501_>())).eeflags as *const _ as usize },
-        318usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_501_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_501_ = *mut DEVEEPROM_501_;
+pub type pDQSDOWNPRM_501_ = *mut DQSDOWNPRM_501_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_503_ {
@@ -27982,6 +25502,7 @@ fn bindgen_test_layout_DQCNAMES_503_() {
         )
     );
 }
+pub type pDQCNAMES_503_ = *mut DQCNAMES_503_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCHNLSET_503_ {
@@ -28164,6 +25685,7 @@ fn bindgen_test_layout_DQCHNLSET_503_() {
         )
     );
 }
+pub type pDQCHNLSET_503_ = *mut DQCHNLSET_503_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_503_ {
@@ -28280,6 +25802,7 @@ fn bindgen_test_layout_DQOPMODEPRM_503_() {
         )
     );
 }
+pub type pDQOPMODEPRM_503_ = *mut DQOPMODEPRM_503_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_503_ {
@@ -28308,6 +25831,7 @@ fn bindgen_test_layout_DQINITPRM_503_() {
         )
     );
 }
+pub type pDQINITPRM_503_ = *mut DQINITPRM_503_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_503_ {
@@ -28336,90 +25860,7 @@ fn bindgen_test_layout_DQSDOWNPRM_503_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_503_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_503_,
-    pub initprm: DQINITPRM_503_,
-    pub sdownprm: DQSDOWNPRM_503_,
-    pub cname: DQCNAMES_503_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_503_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_503_>(),
-        534usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_503_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_503_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_503_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_503_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_503_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_503_>())).opmodeprm as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_503_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_503_>())).initprm as *const _ as usize },
-        138usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_503_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_503_>())).sdownprm as *const _ as usize },
-        142usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_503_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_503_>())).cname as *const _ as usize },
-        146usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_503_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_503_>())).eeflags as *const _ as usize },
-        274usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_503_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_503_ = *mut DEVEEPROM_503_;
+pub type pDQSDOWNPRM_503_ = *mut DQSDOWNPRM_503_;
 #[repr(C)]
 pub struct EV503_ID {
     pub chan: uint32,
@@ -28564,6 +26005,7 @@ fn bindgen_test_layout_DQMSG_503() {
         )
     );
 }
+pub type pDQMSG_503 = *mut DQMSG_503;
 #[repr(C, packed)]
 pub struct DQMSG_503_L {
     pub tstamp: uint32,
@@ -28635,6 +26077,7 @@ fn bindgen_test_layout_DQMSG_503_L() {
         )
     );
 }
+pub type pDQMSG_503_L = *mut DQMSG_503_L;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct SL504_SETCFG {
@@ -29354,6 +26797,7 @@ fn bindgen_test_layout_DQCNAMES_504_() {
         )
     );
 }
+pub type pDQCNAMES_504_ = *mut DQCNAMES_504_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_504_ {
@@ -29470,6 +26914,7 @@ fn bindgen_test_layout_DQOPMODEPRM_504_() {
         )
     );
 }
+pub type pDQOPMODEPRM_504_ = *mut DQOPMODEPRM_504_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_504_ {
@@ -29498,6 +26943,7 @@ fn bindgen_test_layout_DQINITPRM_504_() {
         )
     );
 }
+pub type pDQINITPRM_504_ = *mut DQINITPRM_504_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_504_ {
@@ -29526,90 +26972,7 @@ fn bindgen_test_layout_DQSDOWNPRM_504_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_504_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_504_,
-    pub initprm: DQINITPRM_504_,
-    pub sdownprm: DQSDOWNPRM_504_,
-    pub cname: DQCNAMES_504_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_504_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_504_>(),
-        484usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_504_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_504_>(),
-        4usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_504_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_504_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_504_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_504_>())).opmodeprm as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_504_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_504_>())).initprm as *const _ as usize },
-        88usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_504_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_504_>())).sdownprm as *const _ as usize },
-        92usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_504_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_504_>())).cname as *const _ as usize },
-        96usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_504_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_504_>())).eeflags as *const _ as usize },
-        224usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_504_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_504_ = *mut DEVEEPROM_504_;
+pub type pDQSDOWNPRM_504_ = *mut DQSDOWNPRM_504_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct L514_CONFIG {
@@ -29872,6 +27235,7 @@ fn bindgen_test_layout_DQCNAMES_514() {
         )
     );
 }
+pub type pDQCNAMES_514 = *mut DQCNAMES_514;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_514 {
@@ -29900,6 +27264,7 @@ fn bindgen_test_layout_DQCALSET_514() {
         )
     );
 }
+pub type pDQCALSET_514 = *mut DQCALSET_514;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_514 {
@@ -29928,6 +27293,7 @@ fn bindgen_test_layout_DQOPMODEPRM_514() {
         )
     );
 }
+pub type pDQOPMODEPRM_514 = *mut DQOPMODEPRM_514;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_514 {
@@ -29956,6 +27322,7 @@ fn bindgen_test_layout_DQINITPRM_514() {
         )
     );
 }
+pub type pDQINITPRM_514 = *mut DQINITPRM_514;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_514 {
@@ -29984,6 +27351,7 @@ fn bindgen_test_layout_DQSDOWNPRM_514() {
         )
     );
 }
+pub type pDQSDOWNPRM_514 = *mut DQSDOWNPRM_514;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct MCTPARAM {
@@ -30495,6 +27863,7 @@ fn bindgen_test_layout_DQCNAMES_534() {
         )
     );
 }
+pub type pDQCNAMES_534 = *mut DQCNAMES_534;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_534 {
@@ -30523,6 +27892,7 @@ fn bindgen_test_layout_DQCALSET_534() {
         )
     );
 }
+pub type pDQCALSET_534 = *mut DQCALSET_534;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_534 {
@@ -30551,6 +27921,7 @@ fn bindgen_test_layout_DQOPMODEPRM_534() {
         )
     );
 }
+pub type pDQOPMODEPRM_534 = *mut DQOPMODEPRM_534;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_534 {
@@ -30579,6 +27950,7 @@ fn bindgen_test_layout_DQINITPRM_534() {
         )
     );
 }
+pub type pDQINITPRM_534 = *mut DQINITPRM_534;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_534 {
@@ -30607,6 +27979,7 @@ fn bindgen_test_layout_DQSDOWNPRM_534() {
         )
     );
 }
+pub type pDQSDOWNPRM_534 = *mut DQSDOWNPRM_534;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_550_ {
@@ -30635,6 +28008,7 @@ fn bindgen_test_layout_DQCNAMES_550_() {
         )
     );
 }
+pub type pDQCNAMES_550_ = *mut DQCNAMES_550_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_550_ {
@@ -30663,6 +28037,7 @@ fn bindgen_test_layout_DQOPMODEPRM_550_() {
         )
     );
 }
+pub type pDQOPMODEPRM_550_ = *mut DQOPMODEPRM_550_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_550_ {
@@ -30691,6 +28066,7 @@ fn bindgen_test_layout_DQINITPRM_550_() {
         )
     );
 }
+pub type pDQINITPRM_550_ = *mut DQINITPRM_550_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_550_ {
@@ -30719,6 +28095,7 @@ fn bindgen_test_layout_DQSDOWNPRM_550_() {
         )
     );
 }
+pub type pDQSDOWNPRM_550_ = *mut DQSDOWNPRM_550_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ553Control {
@@ -30875,6 +28252,7 @@ fn bindgen_test_layout_DQ553DbgSel() {
         )
     );
 }
+pub type pDQ553DbgSel = *mut DQ553DbgSel;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct BCCB_Control {
@@ -31352,6 +28730,7 @@ fn bindgen_test_layout_DQBM553MessageStor() {
         )
     );
 }
+pub type pDQBM553MessageStor = *mut DQBM553MessageStor;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQBM553RTSAEntry {
@@ -31413,6 +28792,7 @@ fn bindgen_test_layout_DQBM553RTSAEntry() {
         )
     );
 }
+pub type pDQBM553RTSAEntry = *mut DQBM553RTSAEntry;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQBM553Filter {
@@ -31862,6 +29242,7 @@ fn bindgen_test_layout_DQCNAMES_553_() {
         )
     );
 }
+pub type pDQCNAMES_553_ = *mut DQCNAMES_553_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_553_ {
@@ -31978,6 +29359,7 @@ fn bindgen_test_layout_DQOPMODEPRM_553_() {
         )
     );
 }
+pub type pDQOPMODEPRM_553_ = *mut DQOPMODEPRM_553_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_553_ {
@@ -32006,6 +29388,7 @@ fn bindgen_test_layout_DQINITPRM_553_() {
         )
     );
 }
+pub type pDQINITPRM_553_ = *mut DQINITPRM_553_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_553_ {
@@ -32034,90 +29417,7 @@ fn bindgen_test_layout_DQSDOWNPRM_553_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_553_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_553_,
-    pub initprm: DQINITPRM_553_,
-    pub sdownprm: DQSDOWNPRM_553_,
-    pub cname: DQCNAMES_553_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_553_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_553_>(),
-        400usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_553_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_553_>(),
-        4usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_553_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_553_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_553_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_553_>())).opmodeprm as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_553_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_553_>())).initprm as *const _ as usize },
-        68usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_553_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_553_>())).sdownprm as *const _ as usize },
-        72usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_553_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_553_>())).cname as *const _ as usize },
-        76usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_553_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_553_>())).eeflags as *const _ as usize },
-        140usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_553_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_553_ = *mut DEVEEPROM_553_;
+pub type pDQSDOWNPRM_553_ = *mut DQSDOWNPRM_553_;
 pub const _tSL553CommandType_SL553CmdBCRT: _tSL553CommandType = 1;
 pub const _tSL553CommandType_SL553CmdRTBC: _tSL553CommandType = 2;
 pub const _tSL553CommandType_SL553CmdRTRT: _tSL553CommandType = 3;
@@ -32169,6 +29469,7 @@ fn bindgen_test_layout_DQMSG_566() {
         )
     );
 }
+pub type pDQMSG_566 = *mut DQMSG_566;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQMSG_566_L {
@@ -32219,6 +29520,7 @@ fn bindgen_test_layout_DQMSG_566_L() {
         )
     );
 }
+pub type pDQMSG_566_L = *mut DQMSG_566_L;
 #[repr(C)]
 pub struct EV566_ID {
     pub chan: uint32,
@@ -32342,6 +29644,7 @@ fn bindgen_test_layout_DQCNAMES_566_() {
         )
     );
 }
+pub type pDQCNAMES_566_ = *mut DQCNAMES_566_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_566_ {
@@ -32458,6 +29761,7 @@ fn bindgen_test_layout_DQOPMODEPRM_566_() {
         )
     );
 }
+pub type pDQOPMODEPRM_566_ = *mut DQOPMODEPRM_566_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_566_ {
@@ -32486,6 +29790,7 @@ fn bindgen_test_layout_DQINITPRM_566_() {
         )
     );
 }
+pub type pDQINITPRM_566_ = *mut DQINITPRM_566_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_566_ {
@@ -32514,90 +29819,7 @@ fn bindgen_test_layout_DQSDOWNPRM_566_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_566_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_566_,
-    pub initprm: DQINITPRM_566_,
-    pub sdownprm: DQSDOWNPRM_566_,
-    pub cname: DQCNAMES_566_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_566_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_566_>(),
-        774usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_566_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_566_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_566_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_566_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_566_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_566_>())).opmodeprm as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_566_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_566_>())).initprm as *const _ as usize },
-        122usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_566_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_566_>())).sdownprm as *const _ as usize },
-        126usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_566_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_566_>())).cname as *const _ as usize },
-        130usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_566_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_566_>())).eeflags as *const _ as usize },
-        514usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_566_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_566_ = *mut DEVEEPROM_566_;
+pub type pDQSDOWNPRM_566_ = *mut DQSDOWNPRM_566_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_516_ {
@@ -32626,6 +29848,7 @@ fn bindgen_test_layout_DQCNAMES_516_() {
         )
     );
 }
+pub type pDQCNAMES_516_ = *mut DQCNAMES_516_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_516_ {
@@ -32742,6 +29965,7 @@ fn bindgen_test_layout_DQOPMODEPRM_516_() {
         )
     );
 }
+pub type pDQOPMODEPRM_516_ = *mut DQOPMODEPRM_516_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_516_ {
@@ -32770,6 +29994,7 @@ fn bindgen_test_layout_DQINITPRM_516_() {
         )
     );
 }
+pub type pDQINITPRM_516_ = *mut DQINITPRM_516_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_516_ {
@@ -32798,90 +30023,7 @@ fn bindgen_test_layout_DQSDOWNPRM_516_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_516_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_516_,
-    pub initprm: DQINITPRM_516_,
-    pub sdownprm: DQSDOWNPRM_516_,
-    pub cname: DQCNAMES_516_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_516_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_516_>(),
-        862usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_516_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_516_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_516_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_516_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_516_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_516_>())).opmodeprm as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_516_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_516_>())).initprm as *const _ as usize },
-        210usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_516_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_516_>())).sdownprm as *const _ as usize },
-        214usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_516_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_516_>())).cname as *const _ as usize },
-        218usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_516_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_516_>())).eeflags as *const _ as usize },
-        602usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_516_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_516_ = *mut DEVEEPROM_516_;
+pub type pDQSDOWNPRM_516_ = *mut DQSDOWNPRM_516_;
 #[repr(C, packed)]
 pub struct EV601_ID {
     pub chan: uint32,
@@ -33313,6 +30455,7 @@ fn bindgen_test_layout_DQCNAMES_601_() {
         )
     );
 }
+pub type pDQCNAMES_601_ = *mut DQCNAMES_601_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_601_ {
@@ -33341,6 +30484,7 @@ fn bindgen_test_layout_DQCALSET_601_() {
         )
     );
 }
+pub type pDQCALSET_601_ = *mut DQCALSET_601_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_601_ {
@@ -33424,79 +30568,7 @@ fn bindgen_test_layout_DQOPMODEPRM_601_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_601_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_601_,
-    pub opmodeprm: DQOPMODEPRM_601_,
-    pub cname: DQCNAMES_601_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_601_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_601_>(),
-        498usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_601_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_601_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_601_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_601_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_601_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_601_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_601_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_601_>())).opmodeprm as *const _ as usize },
-        26usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_601_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_601_>())).cname as *const _ as usize },
-        110usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_601_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_601_>())).eeflags as *const _ as usize },
-        238usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_601_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_601_ = *mut DEVEEPROM_601_;
+pub type pDQOPMODEPRM_601_ = *mut DQOPMODEPRM_601_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCHNLSET_601_ {
@@ -33657,6 +30729,7 @@ fn bindgen_test_layout_DQCHNLSET_601_() {
         )
     );
 }
+pub type pDQCHNLSET_601_ = *mut DQCHNLSET_601_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQWMSET_601_ {
@@ -33696,6 +30769,7 @@ fn bindgen_test_layout_DQWMSET_601_() {
         )
     );
 }
+pub type pDQWMSET_601_ = *mut DQWMSET_601_;
 #[repr(C, packed)]
 pub struct DQMSG_601 {
     pub chnl: uint8,
@@ -33734,6 +30808,7 @@ fn bindgen_test_layout_DQMSG_601() {
         )
     );
 }
+pub type pDQMSG_601 = *mut DQMSG_601;
 #[repr(C, packed)]
 pub struct DQMSG_601_L {
     pub tstamp: uint32,
@@ -33794,6 +30869,7 @@ fn bindgen_test_layout_DQMSG_601_L() {
         )
     );
 }
+pub type pDQMSG_601_L = *mut DQMSG_601_L;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQ_M272_CFG {
@@ -34276,6 +31352,7 @@ fn bindgen_test_layout_DQCNAMES_604_() {
         )
     );
 }
+pub type pDQCNAMES_604_ = *mut DQCNAMES_604_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_604_ {
@@ -34304,6 +31381,7 @@ fn bindgen_test_layout_DQCALSET_604_() {
         )
     );
 }
+pub type pDQCALSET_604_ = *mut DQCALSET_604_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_604_ {
@@ -34387,79 +31465,7 @@ fn bindgen_test_layout_DQOPMODEPRM_604_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_604_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_604_,
-    pub opmodeprm: DQOPMODEPRM_604_,
-    pub cname: DQCNAMES_604_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_604_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_604_>(),
-        402usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_604_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_604_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_604_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_604_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_604_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_604_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_604_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_604_>())).opmodeprm as *const _ as usize },
-        26usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_604_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_604_>())).cname as *const _ as usize },
-        78usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_604_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_604_>())).eeflags as *const _ as usize },
-        142usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_604_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_604_ = *mut DEVEEPROM_604_;
+pub type pDQOPMODEPRM_604_ = *mut DQOPMODEPRM_604_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCHNLSET_604_ {
@@ -34681,6 +31687,7 @@ fn bindgen_test_layout_DQMSG_604() {
         )
     );
 }
+pub type pDQMSG_604 = *mut DQMSG_604;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_VR608_READ_DATA {
@@ -35115,6 +32122,7 @@ fn bindgen_test_layout_DQINITPRM_608_() {
         )
     );
 }
+pub type pDQINITPRM_608_ = *mut DQINITPRM_608_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct CT650_VALID_TABLE {
@@ -35969,6 +32977,7 @@ fn bindgen_test_layout_DQCNAMES_650_() {
         )
     );
 }
+pub type pDQCNAMES_650_ = *mut DQCNAMES_650_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_650_ {
@@ -36063,6 +33072,7 @@ fn bindgen_test_layout_DQOPMODEPRM_650_() {
         )
     );
 }
+pub type pDQOPMODEPRM_650_ = *mut DQOPMODEPRM_650_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_650_ {
@@ -36102,6 +33112,7 @@ fn bindgen_test_layout_DQINITPRM_650_() {
         )
     );
 }
+pub type pDQINITPRM_650_ = *mut DQINITPRM_650_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_650_ {
@@ -36130,6 +33141,7 @@ fn bindgen_test_layout_DQSDOWNPRM_650_() {
         )
     );
 }
+pub type pDQSDOWNPRM_650_ = *mut DQSDOWNPRM_650_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQEERSVD_650_ {
@@ -36160,112 +33172,6 @@ fn bindgen_test_layout_DQEERSVD_650_() {
 }
 #[repr(C)]
 #[derive(Copy, Clone)]
-pub struct DEVEEPROM_650_ {
-    pub ee: DQEECMNDEVS,
-    pub opmodeprm: DQOPMODEPRM_650_,
-    pub initprm: DQINITPRM_650_,
-    pub sdownprm: DQSDOWNPRM_650_,
-    pub cname: DQCNAMES_650_,
-    pub eeflags: DQPRMFLAGS,
-    pub reserved: DQEERSVD_650_,
-    pub eever_crc: DQEEPROMTAIL,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_650_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_650_>(),
-        2048usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_650_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_650_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_650_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).opmodeprm as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).initprm as *const _ as usize },
-        50usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).sdownprm as *const _ as usize },
-        58usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).cname as *const _ as usize },
-        62usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).eeflags as *const _ as usize },
-        94usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).reserved as *const _ as usize },
-        354usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(reserved)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_650_>())).eever_crc as *const _ as usize },
-        2042usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_650_),
-            "::",
-            stringify!(eever_crc)
-        )
-    );
-}
-pub type pDEVEEPROM_650_ = *mut DEVEEPROM_650_;
-#[repr(C)]
-#[derive(Copy, Clone)]
 pub struct DQCNAMES_651_ {
     pub cnames: [[::std::os::raw::c_char; 32usize]; 4usize],
 }
@@ -36292,6 +33198,7 @@ fn bindgen_test_layout_DQCNAMES_651_() {
         )
     );
 }
+pub type pDQCNAMES_651_ = *mut DQCNAMES_651_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_651_ {
@@ -36320,6 +33227,7 @@ fn bindgen_test_layout_DQCALSET_651_() {
         )
     );
 }
+pub type pDQCALSET_651_ = *mut DQCALSET_651_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_651_ {
@@ -36348,6 +33256,7 @@ fn bindgen_test_layout_DQINITPRM_651_() {
         )
     );
 }
+pub type pDQINITPRM_651_ = *mut DQINITPRM_651_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_651_ {
@@ -36442,6 +33351,7 @@ fn bindgen_test_layout_DQOPMODEPRM_651_() {
         )
     );
 }
+pub type pDQOPMODEPRM_651_ = *mut DQOPMODEPRM_651_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_651_ {
@@ -36470,6 +33380,7 @@ fn bindgen_test_layout_DQSDOWNPRM_651_() {
         )
     );
 }
+pub type pDQSDOWNPRM_651_ = *mut DQSDOWNPRM_651_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQPRMFLAGS_651_ {
@@ -36498,6 +33409,7 @@ fn bindgen_test_layout_DQPRMFLAGS_651_() {
         )
     );
 }
+pub type pDQPRMFLAGS_651_ = *mut DQPRMFLAGS_651_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct AR664_ARCFG {
@@ -38722,6 +35634,7 @@ fn bindgen_test_layout_DQCNAMES_801_() {
         )
     );
 }
+pub type pDQCNAMES_801_ = *mut DQCNAMES_801_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_801_ {
@@ -38750,6 +35663,7 @@ fn bindgen_test_layout_DQCALSET_801_() {
         )
     );
 }
+pub type pDQCALSET_801_ = *mut DQCALSET_801_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_801_ {
@@ -38833,79 +35747,7 @@ fn bindgen_test_layout_DQOPMODEPRM_801_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_801_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_801_,
-    pub opmodeprm: DQOPMODEPRM_801_,
-    pub cname: DQCNAMES_801_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_801_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_801_>(),
-        402usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_801_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_801_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_801_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_801_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_801_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_801_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_801_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_801_>())).opmodeprm as *const _ as usize },
-        26usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_801_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_801_>())).cname as *const _ as usize },
-        78usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_801_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_801_>())).eeflags as *const _ as usize },
-        142usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_801_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_801_ = *mut DEVEEPROM_801_;
+pub type pDQOPMODEPRM_801_ = *mut DQOPMODEPRM_801_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCHNLSET_801_ {
@@ -38967,6 +35809,7 @@ fn bindgen_test_layout_DQCHNLSET_801_() {
         )
     );
 }
+pub type pDQCHNLSET_801_ = *mut DQCHNLSET_801_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQWMSET_801_ {
@@ -39006,6 +35849,7 @@ fn bindgen_test_layout_DQWMSET_801_() {
         )
     );
 }
+pub type pDQWMSET_801_ = *mut DQWMSET_801_;
 #[repr(C, packed)]
 pub struct DQMSG_801 {
     pub chnl: uint8,
@@ -39044,6 +35888,7 @@ fn bindgen_test_layout_DQMSG_801() {
         )
     );
 }
+pub type pDQMSG_801 = *mut DQMSG_801;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQFGC {
@@ -39084,6 +35929,7 @@ fn bindgen_test_layout_DQFGC() {
         )
     );
 }
+pub type pDQFGC = *mut DQFGC;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCDU {
@@ -39151,6 +35997,7 @@ fn bindgen_test_layout_DQCDU() {
         concat!("Offset of field: ", stringify!(DQCDU), "::", stringify!(tx))
     );
 }
+pub type pDQCDU = *mut DQCDU;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_802_ {
@@ -39179,6 +36026,7 @@ fn bindgen_test_layout_DQCNAMES_802_() {
         )
     );
 }
+pub type pDQCNAMES_802_ = *mut DQCNAMES_802_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_802_ {
@@ -39207,6 +36055,7 @@ fn bindgen_test_layout_DQCALSET_802_() {
         )
     );
 }
+pub type pDQCALSET_802_ = *mut DQCALSET_802_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_802_ {
@@ -39290,79 +36139,7 @@ fn bindgen_test_layout_DQOPMODEPRM_802_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_802_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_802_,
-    pub opmodeprm: DQOPMODEPRM_802_,
-    pub cname: DQCNAMES_802_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_802_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_802_>(),
-        402usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_802_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_802_>(),
-        1usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_802_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_802_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_802_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_802_>())).calset as *const _ as usize },
-        22usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_802_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_802_>())).opmodeprm as *const _ as usize },
-        26usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_802_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_802_>())).cname as *const _ as usize },
-        78usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_802_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_802_>())).eeflags as *const _ as usize },
-        142usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_802_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_802_ = *mut DEVEEPROM_802_;
+pub type pDQOPMODEPRM_802_ = *mut DQOPMODEPRM_802_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQCHNLSET_802_ {
@@ -39424,6 +36201,7 @@ fn bindgen_test_layout_DQCHNLSET_802_() {
         )
     );
 }
+pub type pDQCHNLSET_802_ = *mut DQCHNLSET_802_;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQWMSET_802_ {
@@ -39463,6 +36241,7 @@ fn bindgen_test_layout_DQWMSET_802_() {
         )
     );
 }
+pub type pDQWMSET_802_ = *mut DQWMSET_802_;
 #[repr(C, packed)]
 pub struct DQMSG_802 {
     pub chnl: uint8,
@@ -39501,6 +36280,7 @@ fn bindgen_test_layout_DQMSG_802() {
         )
     );
 }
+pub type pDQMSG_802 = *mut DQMSG_802;
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct DQMAN {
@@ -39551,6 +36331,7 @@ fn bindgen_test_layout_DQMAN() {
         )
     );
 }
+pub type pDQMAN = *mut DQMAN;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct PL820CFG {
@@ -39740,6 +36521,7 @@ fn bindgen_test_layout_DQCNAMES_820_() {
         )
     );
 }
+pub type pDQCNAMES_820_ = *mut DQCNAMES_820_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_820_ {
@@ -39955,6 +36737,7 @@ fn bindgen_test_layout_DQINITPRM_820_() {
         )
     );
 }
+pub type pDQINITPRM_820_ = *mut DQINITPRM_820_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_820_ {
@@ -40027,6 +36810,7 @@ fn bindgen_test_layout_DQOPMODEPRM_820_() {
         )
     );
 }
+pub type pDQOPMODEPRM_820_ = *mut DQOPMODEPRM_820_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_820_ {
@@ -40242,6 +37026,7 @@ fn bindgen_test_layout_DQSDOWNPRM_820_() {
         )
     );
 }
+pub type pDQSDOWNPRM_820_ = *mut DQSDOWNPRM_820_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_820_ {
@@ -40281,101 +37066,7 @@ fn bindgen_test_layout_DQCALSET_820_() {
         )
     );
 }
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub struct DEVEEPROM_820_ {
-    pub ee: DQEECMNDEVS,
-    pub calset: DQCALSET_820_,
-    pub opmodeprm: DQOPMODEPRM_820_,
-    pub initprm: DQINITPRM_820_,
-    pub sdownprm: DQSDOWNPRM_820_,
-    pub cname: DQCNAMES_820_,
-    pub eeflags: DQPRMFLAGS,
-}
-#[test]
-fn bindgen_test_layout_DEVEEPROM_820_() {
-    assert_eq!(
-        ::std::mem::size_of::<DEVEEPROM_820_>(),
-        1300usize,
-        concat!("Size of: ", stringify!(DEVEEPROM_820_))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<DEVEEPROM_820_>(),
-        4usize,
-        concat!("Alignment of ", stringify!(DEVEEPROM_820_))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_820_>())).ee as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_820_),
-            "::",
-            stringify!(ee)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_820_>())).calset as *const _ as usize },
-        24usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_820_),
-            "::",
-            stringify!(calset)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_820_>())).opmodeprm as *const _ as usize },
-        156usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_820_),
-            "::",
-            stringify!(opmodeprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_820_>())).initprm as *const _ as usize },
-        200usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_820_),
-            "::",
-            stringify!(initprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_820_>())).sdownprm as *const _ as usize },
-        588usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_820_),
-            "::",
-            stringify!(sdownprm)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_820_>())).cname as *const _ as usize },
-        976usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_820_),
-            "::",
-            stringify!(cname)
-        )
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<DEVEEPROM_820_>())).eeflags as *const _ as usize },
-        1040usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(DEVEEPROM_820_),
-            "::",
-            stringify!(eeflags)
-        )
-    );
-}
-pub type pDEVEEPROM_820_ = *mut DEVEEPROM_820_;
+pub type pDQCALSET_820_ = *mut DQCALSET_820_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_90x_ {
@@ -40404,6 +37095,7 @@ fn bindgen_test_layout_DQCNAMES_90x_() {
         )
     );
 }
+pub type pDQCNAMES_90x_ = *mut DQCNAMES_90x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_90x_ {
@@ -40432,6 +37124,7 @@ fn bindgen_test_layout_DQOPMODEPRM_90x_() {
         )
     );
 }
+pub type pDQOPMODEPRM_90x_ = *mut DQOPMODEPRM_90x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_90x_ {
@@ -40460,6 +37153,7 @@ fn bindgen_test_layout_DQINITPRM_90x_() {
         )
     );
 }
+pub type pDQINITPRM_90x_ = *mut DQINITPRM_90x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_90x_ {
@@ -40488,6 +37182,7 @@ fn bindgen_test_layout_DQSDOWNPRM_90x_() {
         )
     );
 }
+pub type pDQSDOWNPRM_90x_ = *mut DQSDOWNPRM_90x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_91x_ {
@@ -40516,6 +37211,7 @@ fn bindgen_test_layout_DQCNAMES_91x_() {
         )
     );
 }
+pub type pDQCNAMES_91x_ = *mut DQCNAMES_91x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_470_ {
@@ -40544,6 +37240,7 @@ fn bindgen_test_layout_DQCNAMES_470_() {
         )
     );
 }
+pub type pDQCNAMES_470_ = *mut DQCNAMES_470_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_91x_ {
@@ -40649,6 +37346,7 @@ fn bindgen_test_layout_DQCALSET_91x_() {
         )
     );
 }
+pub type pDQCALSET_91x_ = *mut DQCALSET_91x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQINITPRM_91x_ {
@@ -40677,6 +37375,7 @@ fn bindgen_test_layout_DQINITPRM_91x_() {
         )
     );
 }
+pub type pDQINITPRM_91x_ = *mut DQINITPRM_91x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_91x_ {
@@ -40705,6 +37404,7 @@ fn bindgen_test_layout_DQOPMODEPRM_91x_() {
         )
     );
 }
+pub type pDQOPMODEPRM_91x_ = *mut DQOPMODEPRM_91x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQSDOWNPRM_91x_ {
@@ -40733,6 +37433,7 @@ fn bindgen_test_layout_DQSDOWNPRM_91x_() {
         )
     );
 }
+pub type pDQSDOWNPRM_91x_ = *mut DQSDOWNPRM_91x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQPRMFLAGS_91x_ {
@@ -40761,6 +37462,7 @@ fn bindgen_test_layout_DQPRMFLAGS_91x_() {
         )
     );
 }
+pub type pDQPRMFLAGS_91x_ = *mut DQPRMFLAGS_91x_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCNAMES_LAYER_ {
@@ -40789,6 +37491,7 @@ fn bindgen_test_layout_DQCNAMES_LAYER_() {
         )
     );
 }
+pub type pDQCNAMES_LAYER_ = *mut DQCNAMES_LAYER_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQCALSET_LAYER_ {
@@ -40817,6 +37520,7 @@ fn bindgen_test_layout_DQCALSET_LAYER_() {
         )
     );
 }
+pub type pDQCALSET_LAYER_ = *mut DQCALSET_LAYER_;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQOPMODEPRM_LAYER_ {
@@ -40856,6 +37560,7 @@ fn bindgen_test_layout_DQOPMODEPRM_LAYER_() {
         )
     );
 }
+pub type pDQOPMODEPRM_LAYER_ = *mut DQOPMODEPRM_LAYER_;
 pub type tUeiPalThreadProc =
     ::std::option::Option<unsafe extern "C" fn(param: *mut ::std::os::raw::c_void)>;
 pub type tUeiPalObject = *mut ::std::os::raw::c_void;
@@ -40898,6 +37603,7 @@ fn bindgen_test_layout_DQCVINFO() {
         )
     );
 }
+pub type pDQCVINFO = *mut DQCVINFO;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _DQDEVCFG {
@@ -41748,6 +38454,7 @@ fn bindgen_test_layout__DQDmapTRL() {
     );
 }
 pub type DQDmapTRL = _DQDmapTRL;
+pub type pDQDmapTRL = *mut _DQDmapTRL;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _DQDMAP {
@@ -42598,6 +39305,7 @@ fn bindgen_test_layout__DQCQHead() {
     );
 }
 pub type DQCQHEAD = _DQCQHead;
+pub type pDQCQHEAD = *mut _DQCQHead;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _DQE {
@@ -43070,6 +39778,7 @@ fn bindgen_test_layout__DQINSTE() {
     );
 }
 pub type DQINSTE = _DQINSTE;
+pub type pDQINSTE = *mut _DQINSTE;
 pub const _DqTransportType_DqTransportTypeBSDSocket: _DqTransportType = 0;
 pub const _DqTransportType_DqTransportTypeDQEngine: _DqTransportType = 1;
 pub const _DqTransportType_DqTransportTypeLocal: _DqTransportType = 2;
@@ -43347,6 +40056,7 @@ fn bindgen_test_layout_DQRTRCQUEUE() {
         )
     );
 }
+pub type pDQRTRCQUEUE = *mut DQRTRCQUEUE;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQRTRCASYNC {
@@ -43414,6 +40124,7 @@ fn bindgen_test_layout_DQRTRCASYNC() {
         )
     );
 }
+pub type pDQRTRCASYNC = *mut DQRTRCASYNC;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQXHANDLE {
@@ -44787,6 +41498,7 @@ fn bindgen_test_layout__DQRingBuf() {
     );
 }
 pub type DQRingBuf = _DQRingBuf;
+pub type pDQRingBuf = *mut _DQRingBuf;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct _DQRingBufHead {
@@ -44959,6 +41671,7 @@ fn bindgen_test_layout__DQRingBufHead() {
     );
 }
 pub type DQRingBufHead = _DQRingBufHead;
+pub type pDQRingBufHead = *mut _DQRingBufHead;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQTSREC {
@@ -45845,6 +42558,7 @@ fn bindgen_test_layout_DQly205_double() {
         )
     );
 }
+pub type pDQly205_double = *mut DQly205_double;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQly205_float {
@@ -45884,6 +42598,7 @@ fn bindgen_test_layout_DQly205_float() {
         )
     );
 }
+pub type pDQly205_float = *mut DQly205_float;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQly219_float {
@@ -45923,6 +42638,7 @@ fn bindgen_test_layout_DQly219_float() {
         )
     );
 }
+pub type pDQly219_float = *mut DQly219_float;
 extern "C" {
     pub fn DqeTest(test: ::std::os::raw::c_int, lvalue: uint32) -> ::std::os::raw::c_int;
 }
@@ -46546,6 +43262,7 @@ fn bindgen_test_layout__DQMSGQ() {
     );
 }
 pub type DQMSGQ = _DQMSGQ;
+pub type pDQMSGQ = *mut _DQMSGQ;
 extern "C" {
     pub fn DqMsgCreate(
         pDqe: pDQE,
@@ -46905,6 +43622,7 @@ fn bindgen_test_layout_DQ_AI204_DATA() {
         )
     );
 }
+pub type pDQ_AI204_DATA = *mut DQ_AI204_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AI208_DATA {
@@ -46944,6 +43662,7 @@ fn bindgen_test_layout_DQ_AI208_DATA() {
         )
     );
 }
+pub type pDQ_AI208_DATA = *mut DQ_AI208_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AI217_DATA {
@@ -46972,6 +43691,7 @@ fn bindgen_test_layout_DQ_AI217_DATA() {
         )
     );
 }
+pub type pDQ_AI217_DATA = *mut DQ_AI217_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AI222_DATA {
@@ -47044,6 +43764,7 @@ fn bindgen_test_layout_DQ_AI222_DATA() {
         )
     );
 }
+pub type pDQ_AI222_DATA = *mut DQ_AI222_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AI248_DATA {
@@ -47072,6 +43793,7 @@ fn bindgen_test_layout_DQ_AI248_DATA() {
         )
     );
 }
+pub type pDQ_AI248_DATA = *mut DQ_AI248_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AI255_DATA {
@@ -47133,6 +43855,7 @@ fn bindgen_test_layout_DQ_AI255_DATA() {
         )
     );
 }
+pub type pDQ_AI255_DATA = *mut DQ_AI255_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AI254_DATA {
@@ -47183,6 +43906,7 @@ fn bindgen_test_layout_DQ_AI254_DATA() {
         )
     );
 }
+pub type pDQ_AI254_DATA = *mut DQ_AI254_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_DMM261_DATA {
@@ -47310,6 +44034,7 @@ fn bindgen_test_layout_DQ_DMM261_DATA() {
         )
     );
 }
+pub type pDQ_DMM261_DATA = *mut DQ_DMM261_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AO318_DATA {
@@ -47338,6 +44063,7 @@ fn bindgen_test_layout_DQ_AO318_DATA() {
         )
     );
 }
+pub type pDQ_AO318_DATA = *mut DQ_AO318_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_RTD388_DATA {
@@ -47399,6 +44125,7 @@ fn bindgen_test_layout_DQ_RTD388_DATA() {
         )
     );
 }
+pub type pDQ_RTD388_DATA = *mut DQ_RTD388_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_AR664_DATA {
@@ -47504,6 +44231,7 @@ fn bindgen_test_layout_DQ_AR664_DATA() {
         )
     );
 }
+pub type pDQ_AR664_DATA = *mut DQ_AR664_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_VR608_DATA {
@@ -47532,6 +44260,7 @@ fn bindgen_test_layout_DQ_VR608_DATA() {
         )
     );
 }
+pub type pDQ_VR608_DATA = *mut DQ_VR608_DATA;
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct DQ_COMMON_DATA {
@@ -47560,6 +44289,7 @@ fn bindgen_test_layout_DQ_COMMON_DATA() {
         )
     );
 }
+pub type pDQ_COMMON_DATA = *mut DQ_COMMON_DATA;
 extern "C" {
     pub fn DqReadAIChannel(
         hd: ::std::os::raw::c_int,

@@ -47,7 +47,7 @@ async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Ve
             Some(val) => val,
             None => break,
         };
-        let transmuted = match try_cast_slice(&data[..]) {
+        let transmuted = match try_cast_slice(data.as_slice()) {
             Ok(buf) => buf,
             Err(err) => {
                 eprintln!("Failed to cast into byte slice. Error: {}", err);

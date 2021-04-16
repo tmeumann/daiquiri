@@ -59,7 +59,10 @@ impl Sampler {
 
         for config in output_configs {
             let output_board = Arc::new(Dio405::new(Arc::clone(&daq), config)?);
+            let cloned_stop = Arc::clone(&stop);
+            let cloned_board = Arc::clone(&output_board);
             outputs.push(output_board);
+            board_threads.push(thread::spawn(move || cloned_board.sample(cloned_stop)));
         }
 
         let bcbs: Vec<pDQBCB> = boards.iter().map(|board| board.bcb()).collect();

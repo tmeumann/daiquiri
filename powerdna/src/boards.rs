@@ -3,13 +3,14 @@ use crate::daq::Daq;
 use crate::engine::InterfaceType;
 use crate::results::PowerDnaError;
 use powerdna_sys::{
-    pDATACONV, pDQBCB, DQ_eBufferDone, DQ_eBufferError, DQ_eFrameDone, DQ_ePacketLost,
-    DQ_ePacketOOB, DqAcbGetScansCopy, DqAcbInitOps, DqConvRaw2ScalePdc, DqeSetEvent,
-    DqeWaitForEvent, DQACBCFG, DQ_ACBMODE_CYCLE, DQ_ACB_DATA_RAW, DQ_ACB_DIRECTION_INPUT,
-    DQ_AI201_GAIN_10_100, DQ_AI201_GAIN_1_100, DQ_AI201_GAIN_2_100, DQ_AI201_GAIN_5_100,
-    DQ_AI201_MODEFIFO, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0, DQ_LN_ENABLED, DQ_LN_GETRAW, DQ_LN_IRQEN,
-    DQ_LN_STREAMING,
+    event401_t_EV401_DI_CHANGE, pDATACONV, pDQBCB, pDQEVENT, DQ_eBufferDone, DQ_eBufferError,
+    DQ_eFrameDone, DQ_ePacketLost, DQ_ePacketOOB, DqAcbGetScansCopy, DqAcbInitOps,
+    DqConvRaw2ScalePdc, DqeSetEvent, DqeWaitForEvent, DQACBCFG, DQ_ACBMODE_CYCLE, DQ_ACB_DATA_RAW,
+    DQ_ACB_DIRECTION_INPUT, DQ_AI201_GAIN_10_100, DQ_AI201_GAIN_1_100, DQ_AI201_GAIN_2_100,
+    DQ_AI201_GAIN_5_100, DQ_AI201_MODEFIFO, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0, DQ_LN_ENABLED,
+    DQ_LN_GETRAW, DQ_LN_IRQEN, DQ_LN_STREAMING, EV401_ID,
 };
+use std::mem::size_of;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
@@ -156,7 +157,10 @@ impl Ai201 {
             for frame in scaled_data {
                 match self.out.send(frame) {
                     Ok(_) => {}
-                    Err(_) => break 'outer, // TODO log me
+                    Err(err) => {
+                        eprintln!("Failed to send frame data to muxer thread. Error: {}", err);
+                        break 'outer;
+                    }
                 };
             }
         }
@@ -249,14 +253,58 @@ impl Dio405 {
     }
 
     pub(crate) async fn trigger(&self) -> Result<(), PowerDnaError> {
-        self.daq.write(self.device, 0b1)?;
+        self.daq.write(self.device, 0xffffffff)?;
         sleep(Duration::from_millis(100)).await;
-        self.daq.write(self.device, 0b0)?;
+        self.daq.write(self.device, 0x0)?;
         Ok(())
     }
 
     pub(crate) fn sample(&self, stop: Arc<AtomicBool>) {
-        todo!();
+        let mut p_event: pDQEVENT = ptr::null_mut();
+        let mut event: u32;
+        let mut timestamp: u64;
+        let mut pos: u64;
+        let mut neg: u64;
+        let mut data_slice;
+        loop {
+            match self.daq.receive_event(&mut p_event) {
+                Err(PowerDnaError::TimeoutError) => {
+                    match stop.load(Ordering::SeqCst) {
+                        true => break,
+                        false => {
+                            continue;
+                        }
+                    };
+                }
+                Err(err) => {
+                    eprintln!("DqCmdReceiveEvent failed. Error: {:?}", err);
+                    break;
+                }
+                Ok(size) => size,
+            };
+            event = unsafe { (*p_event).event };
+            if event != event401_t_EV401_DI_CHANGE {
+                eprintln!("Unexpected event: {}", event);
+                break;
+            }
+            unsafe {
+                let data_ptr: *const u8 = (*p_event).data.as_ptr();
+                let header_ptr: *const EV401_ID = data_ptr as *const _;
+                timestamp = self.daq.to_host_repr((*header_ptr).tstamp as u64);
+                let data_size: usize = (*header_ptr).size as usize / size_of::<u32>();
+                data_slice = (*header_ptr).data.as_slice(data_size);
+            }
+            pos = self.daq.to_host_repr(data_slice[0] as u64);
+            neg = self.daq.to_host_repr(data_slice[1] as u64);
+            println!("ts: {}, pos: {}, neg: {}", timestamp, pos, neg);
+            // match self.out.send(timestamp) {
+            //     Ok(_) => (),
+            //     Err(err) => {
+            //         eprintln!("Failed to send edge detection timestamp. Error: {}", err);
+            //         break;
+            //     }
+            // };
+        }
     }
 }
 

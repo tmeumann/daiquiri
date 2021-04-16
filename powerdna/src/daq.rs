@@ -1,11 +1,12 @@
 use crate::engine::{DqEngine, InterfaceType};
 use crate::results::{PowerDnaError, PowerDnaSuccess};
 use powerdna_sys::{
-    event401_t_EV401_CLEAR, event401_t_EV401_DI_CHANGE, pDATACONV, pDQBCB, DqAcbDestroy,
-    DqAddIOMPort, DqAdv40xConfigEvents, DqAdv40xWrite, DqCloseIOM, DqCmdReadStatus, DqCmdSetCfg,
-    DqCmdSetMode, DqConvFillConvData, DqConvGetDataConv, DqOpenIOM, DqRtAsyncEnableEvents,
-    DQSETCFG, DQ_IOMODE_CFG, DQ_IOMODE_OPS, DQ_LASTDEV, DQ_LN_ACTIVE, DQ_LN_ENABLED, DQ_LN_MAPPED,
-    DQ_MAXDEVN, DQ_SS0IN, DQ_UDP_DAQ_PORT, DQ_UDP_DAQ_PORT_ASYNC, STS_FW, STS_FW_OPER_MODE,
+    event401_t_EV401_CLEAR, event401_t_EV401_DI_CHANGE, pDATACONV, pDQBCB, pDQEVENT, DqAcbDestroy,
+    DqAddIOMPort, DqAdv40xConfigEvents, DqAdv40xWrite, DqCloseIOM, DqCmdReadStatus,
+    DqCmdReceiveEvent, DqCmdSetCfg, DqCmdSetMode, DqConvFillConvData, DqConvGetDataConv, DqNtohl,
+    DqOpenIOM, DqRtAsyncEnableEvents, DQSETCFG, DQ_IOMODE_CFG, DQ_IOMODE_OPS, DQ_LASTDEV,
+    DQ_LN_ACTIVE, DQ_LN_ENABLED, DQ_LN_MAPPED, DQ_MAXDEVN, DQ_SS0IN, DQ_UDP_DAQ_PORT,
+    DQ_UDP_DAQ_PORT_ASYNC, STS_FW, STS_FW_OPER_MODE,
 };
 use std::ffi::CString;
 use std::ptr;
@@ -128,7 +129,7 @@ impl Daq {
         parse_err!(DqRtAsyncEnableEvents(self.async_handle, 0, 1 << device))?;
 
         let mut cfg: DQSETCFG = DQSETCFG {
-            dev: device,
+            dev: device | DQ_LASTDEV as u8,
             ss: DQ_SS0IN as u8,
             cfg: DQ_LN_ACTIVE | DQ_LN_ENABLED | DQ_LN_MAPPED,
         };
@@ -147,6 +148,22 @@ impl Daq {
         parse_err!(DqCmdSetMode(self.handle, DQ_IOMODE_OPS, 1 << device))?;
 
         Ok(())
+    }
+
+    pub(crate) fn receive_event(&self, event_ptr: &mut pDQEVENT) -> Result<i32, PowerDnaError> {
+        let mut size: i32 = 0;
+        parse_err!(DqCmdReceiveEvent(
+            self.async_handle,
+            0,         // reserved
+            1000000,   // timeout, microseconds
+            event_ptr, // allocated by powerdna lib
+            &mut size,
+        ))?;
+        Ok(size)
+    }
+
+    pub(crate) fn to_host_repr(&self, value: u64) -> u64 {
+        unsafe { DqNtohl(self.handle, value) }
     }
 
     pub(crate) fn teardown_edge_events(&self, device: u8) -> Result<(), PowerDnaError> {
