@@ -1,4 +1,6 @@
-use crate::boards::{Ai201, Bcb, Dio405};
+use crate::boards::ai201::Ai201;
+use crate::boards::dio405::Dio405;
+use crate::boards::Bcb;
 use crate::config::{BoardConfig, OutputConfig};
 use crate::daq::Daq;
 use crate::DaqError;
