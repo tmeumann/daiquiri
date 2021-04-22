@@ -1,0 +1,10 @@
+namespace Daiquiri;
+
+table SensorFrame {
+  channels: uint8;
+  samples: uint16;
+  timestamps: [uint32];
+  frame: [float64];
+}
+
+root_type SensorFrame;

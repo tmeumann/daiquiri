@@ -165,6 +165,7 @@ name = "daiquiri"
 version = "0.1.0"
 dependencies = [
  "bytemuck",
+ "flatbuffers",
  "powerdna",
  "rdkafka",
  "serde_json",
@@ -219,6 +220,16 @@ dependencies = [
  "log",
  "regex",
  "termcolor",
+]
+
+[[package]]
+name = "flatbuffers"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dbf606a9d6674ad82094652789cf69b0e6e598c2d3c9137c28970eec13f11644"
+dependencies = [
+ "bitflags",
+ "smallvec",
 ]
 
 [[package]]

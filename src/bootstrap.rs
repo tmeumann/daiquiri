@@ -1,4 +1,5 @@
-use bytemuck::try_cast_slice;
+use crate::dataframe_generated::daiquiri::{SensorFrame, SensorFrameArgs};
+use flatbuffers;
 use powerdna::{config::StreamConfig, daq::Daq, engine::DqEngine, DaqError, SignalManager};
 use rdkafka::producer::{FutureProducer, FutureRecord};
 use rdkafka::ClientConfig;
@@ -46,23 +47,27 @@ async fn publish(
 ) {
     // TODO clean pack-up
     loop {
-        // TODO send the timestamps
-        let (topic, data, _timestamps) = match rx.recv().await {
+        let mut builder = flatbuffers::FlatBufferBuilder::new();
+        let (topic, data, timestamps) = match rx.recv().await {
             Some(val) => val,
             None => break,
         };
-        let transmuted = match try_cast_slice(data.as_slice()) {
-            Ok(buf) => buf,
-            Err(err) => {
-                eprintln!("Failed to cast into byte slice. Error: {}", err);
-                continue;
-            }
-        };
+        let timestamps = Some(builder.create_vector(timestamps.as_slice()));
+        let frame = Some(builder.create_vector(data.as_slice()));
+        let dataframe = SensorFrame::create(
+            &mut builder,
+            &SensorFrameArgs {
+                timestamps,
+                frame,
+                ..Default::default()
+            },
+        );
+        builder.finish(dataframe, None);
         match producer
             .send(
                 FutureRecord::to(topic.as_str())
                     .key(topic.as_str())
-                    .payload(transmuted),
+                    .payload(builder.finished_data()),
                 Duration::from_secs(180),
             )
             .await
