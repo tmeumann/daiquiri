@@ -108,7 +108,7 @@ docker build -t daquiri -f Dockerfile.dev .
 Once that has compiled run the container with
 
 ```bash
-docker run --init -p 3030:3030 -p 5555:5555 -p 1234:1234 -ti --privileged --entrypoint bash --mount type=bind,source="${PWD}",target=/app daquiri
+docker run -p 3030:3030 -p 5555:5555 -p 1234:1234 -ti --mount type=bind,source="${PWD}",target=/app daiquiri
 ```
 
 This will open a shell inside the container from which you can then run

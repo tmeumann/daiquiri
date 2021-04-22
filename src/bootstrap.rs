@@ -40,10 +40,14 @@ pub enum ConfigError {
     },
 }
 
-async fn publish(producer: FutureProducer, mut rx: UnboundedReceiver<(String, Vec<f64>)>) {
+async fn publish(
+    producer: FutureProducer,
+    mut rx: UnboundedReceiver<(String, Vec<f64>, Vec<u32>)>,
+) {
     // TODO clean pack-up
     loop {
-        let (topic, data) = match rx.recv().await {
+        // TODO send the timestamps
+        let (topic, data, _timestamps) = match rx.recv().await {
             Some(val) => val,
             None => break,
         };

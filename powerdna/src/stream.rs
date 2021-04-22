@@ -4,6 +4,7 @@ use crate::boards::Bcb;
 use crate::config::{BoardConfig, OutputConfig};
 use crate::daq::Daq;
 use crate::DaqError;
+use itertools::Itertools;
 use powerdna_sys::{pDQBCB, DqeEnable};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{channel, Receiver, RecvError};
@@ -26,7 +27,7 @@ impl Sampler {
         frame_size: u32,
         board_configs: &Vec<BoardConfig>,
         output_configs: &Vec<OutputConfig>,
-        out: UnboundedSender<(String, Vec<f64>)>,
+        out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
         topic: String,
     ) -> Result<Sampler, DaqError> {
         let stop = Arc::new(AtomicBool::new(false));
@@ -89,18 +90,22 @@ impl Sampler {
 
 fn pass_through(
     topic: String,
-    input: Receiver<Vec<f64>>,
-    out: UnboundedSender<(String, Vec<f64>)>,
+    input: Receiver<(Vec<f64>, Vec<u32>)>,
+    out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
 ) {
     loop {
-        let buffer = match input.recv() {
+        let (data, timestamps) = match input.recv() {
             Ok(buf) => buf,
             Err(_) => {
                 // channel closed -- time to shut down
                 break;
             }
         };
-        match out.send((topic.clone(), buffer)) {
+        if data.len() != timestamps.len() {
+            eprintln!("Buffers differ in length.");
+            break;
+        }
+        match out.send((topic.clone(), data, timestamps)) {
             Ok(_) => (),
             Err(err) => eprintln!("Failed to push buffer to channel. Error: {}", err),
         };
@@ -110,17 +115,18 @@ fn pass_through(
 fn merge(
     topic: String,
     frames: usize,
-    inputs: Vec<(Receiver<Vec<f64>>, usize)>,
-    out: UnboundedSender<(String, Vec<f64>)>,
+    inputs: Vec<(Receiver<(Vec<f64>, Vec<u32>)>, usize)>,
+    out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
 ) {
-    // danger here! memcpy-style pointer arithmetic!
     let total_channels = inputs.iter().fold(0, |total, (_, chans)| total + chans);
     loop {
         let mut combined: Vec<f64> = vec![0.0; total_channels * frames];
 
-        let buffers: Vec<(Vec<f64>, &usize)> = match inputs
+        let messages: Vec<((Vec<f64>, Vec<u32>), &usize)> = match inputs
             .iter()
-            .map(|(input, chans)| Ok::<(Vec<f64>, &usize), RecvError>((input.recv()?, chans)))
+            .map(|(input, chans)| {
+                Ok::<((Vec<f64>, Vec<u32>), &usize), RecvError>((input.recv()?, chans))
+            })
             .collect()
         {
             Ok(bufs) => bufs,
@@ -130,17 +136,52 @@ fn merge(
             }
         };
 
+        let (data_buffers, timestamp_buffers): (Vec<(Vec<f64>, &usize)>, Vec<Vec<u32>>) = messages
+            .into_iter()
+            .map(
+                |((data, timestamps), chans)| -> ((Vec<f64>, &usize), Vec<u32>) {
+                    ((data, chans), timestamps)
+                },
+            )
+            .unzip();
+
+        if !data_buffers
+            .iter()
+            .map(|(v, chans)| v.len() / (*chans + 2)) // 2 extra channels for timestamp
+            .chain(timestamp_buffers.iter().map(|v| v.len()))
+            .all_equal()
+        {
+            eprintln!("Buffers differ in length.");
+            break;
+        }
+
+        // TODO reinstate this once we've got a synchronised clock or start trigger
+        // if !(timestamp_buffers.iter().map(|v| v[0]).all_equal()
+        //     && timestamp_buffers.iter().map(|v| v[v.len() - 1]).all_equal())
+        // {
+        //     eprintln!("Timestamp mismatch.");
+        //     break;
+        // }
+
+        let timestamps = match timestamp_buffers.into_iter().nth(0) {
+            Some(buf) => buf,
+            None => {
+                break;
+            }
+        };
+
+        // danger here! memcpy-style pointer arithmetic!
         for i in 0..frames {
             let mut dst_start = i * total_channels;
-            for (buf, &chans) in &buffers {
-                let src_start = i * chans;
+            for (buf, &chans) in &data_buffers {
+                let src_start = i * (chans + 2); // 2 extra values (timestamps)
                 let src_end = src_start + chans;
                 let dst_end = dst_start + chans;
                 &mut combined[dst_start..dst_end].copy_from_slice(&buf[src_start..src_end]);
                 dst_start += chans;
             }
         }
-        match out.send((topic.clone(), combined)) {
+        match out.send((topic.clone(), combined, timestamps)) {
             Ok(_) => (),
             Err(err) => eprintln!("Failed to push merged buffer to channel. Error: {}", err),
         };

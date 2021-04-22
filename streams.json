@@ -2,7 +2,7 @@
     "V": {
         "ip": "192.168.100.2",
         "freq": 1000,
-        "frame_size": 100,
+        "frame_size": 500,
         "boards": [
             {
                 "device": 0,

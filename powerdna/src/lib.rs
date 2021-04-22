@@ -49,7 +49,7 @@ pub struct SignalManager {
     boards: Vec<BoardConfig>,
     outputs: Vec<OutputConfig>,
     sampler: Option<Sampler>,
-    out: UnboundedSender<(String, Vec<f64>)>,
+    out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
     daq: Arc<Daq>,
 }
 
@@ -61,7 +61,7 @@ impl SignalManager {
         boards: Vec<BoardConfig>,
         outputs: Vec<OutputConfig>,
         daq: Arc<Daq>,
-        out: UnboundedSender<(String, Vec<f64>)>,
+        out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
         sampler: Option<Sampler>,
     ) -> Self {
         SignalManager {

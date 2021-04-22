@@ -11,10 +11,10 @@ use core::sync::atomic::{AtomicBool, Ordering};
 use powerdna_sys::{
     pDATACONV, pDQBCB, DQ_eBufferDone, DQ_eBufferError, DQ_eFrameDone, DQ_ePacketLost,
     DQ_ePacketOOB, DqAcbGetScansCopy, DqAcbInitOps, DqConvRaw2ScalePdc, DqeSetEvent,
-    DqeWaitForEvent, DQACBCFG, DQ_ACBMODE_CYCLE, DQ_ACB_DATA_RAW, DQ_ACB_DIRECTION_INPUT,
-    DQ_AI201_GAIN_10_100, DQ_AI201_GAIN_1_100, DQ_AI201_GAIN_2_100, DQ_AI201_GAIN_5_100,
-    DQ_AI201_MODEFIFO, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0, DQ_LN_ENABLED, DQ_LN_GETRAW, DQ_LN_IRQEN,
-    DQ_LN_STREAMING,
+    DqeWaitForEvent, DQACBCFG, DQ_ACBMODE_CYCLE, DQ_ACB_DATA_RAW, DQ_ACB_DATA_TSCOPY,
+    DQ_ACB_DIRECTION_INPUT, DQ_AI201_GAIN_10_100, DQ_AI201_GAIN_1_100, DQ_AI201_GAIN_2_100,
+    DQ_AI201_GAIN_5_100, DQ_AI201_MODEFIFO, DQ_LNCL_TIMESTAMP, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0,
+    DQ_LN_ENABLED, DQ_LN_GETRAW, DQ_LN_IRQEN, DQ_LN_STREAMING,
 };
 use std::ptr;
 use std::sync::mpsc::Sender;
@@ -35,7 +35,7 @@ pub struct Ai201 {
     acb_cfg: DQACBCFG,
     daq: Arc<Daq>,
     buffer_size: usize,
-    out: Sender<Vec<f64>>,
+    out: Sender<(Vec<f64>, Vec<u32>)>,
 }
 
 impl Ai201 {
@@ -44,7 +44,7 @@ impl Ai201 {
         freq: u32,
         frame_size: u32,
         board_config: &BoardConfig,
-        out: Sender<Vec<f64>>,
+        out: Sender<(Vec<f64>, Vec<u32>)>,
     ) -> Result<Self, PowerDnaError> {
         let BoardConfig { device, channels } = board_config;
         daq.enter_config_mode(*device)?;
@@ -62,9 +62,8 @@ impl Ai201 {
                 *id as u32 | (gain_mask << 8)
             })
             .collect();
-        // TODO sort out these weird timestamp channels
-        // channel_list.push(channels.len() as u32);
-        // channel_list.push(DQ_LNCL_TIMESTAMP);
+        channel_list.push(0);
+        channel_list.push(DQ_LNCL_TIMESTAMP);
 
         let mut acb_cfg = DQACBCFG::empty();
 
@@ -73,7 +72,7 @@ impl Ai201 {
         acb_cfg.framesize = frame_size;
         acb_cfg.frames = 12; // # of frames in circular buffer TODO
         acb_cfg.mode = DQ_ACBMODE_CYCLE;
-        acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW; // | DQ_ACB_DATA_TSCOPY;
+        acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW | DQ_ACB_DATA_TSCOPY;
 
         let mut card_cfg = CFG201;
         let mut actual_freq = freq as f32;
@@ -170,14 +169,31 @@ impl Ai201 {
         Ok(events)
     }
 
-    fn get_scaled_data(&self, raw_buffer: &mut Vec<u16>) -> Result<Vec<Vec<f64>>, PowerDnaError> {
+    fn extract_timestamps(&self, raw_buffer: &Vec<u16>, scans: usize) -> Vec<u32> {
+        let mut timestamps: Vec<u32> = Vec::with_capacity(scans as usize);
+        let num_chans = self.channels.len();
+
+        for scan in 1..(scans + 1) {
+            let upper_half = raw_buffer[(scan * num_chans) - 2] as u32; // TODO guard this
+            let lower_half = raw_buffer[(scan * num_chans) - 1] as u32;
+            let timestamp: u32 = (upper_half << 16) | lower_half;
+            timestamps.push(timestamp);
+        }
+
+        timestamps
+    }
+
+    fn get_scaled_data(
+        &self,
+        raw_buffer: &mut Vec<u16>,
+    ) -> Result<Vec<(Vec<f64>, Vec<u32>)>, PowerDnaError> {
         let framesize: u32 = self.acb_cfg.framesize;
         let mut received_scans: u32 = 0;
         let mut remaining_scans: u32 = 0;
 
         let buffer_ptr = raw_buffer.as_mut_ptr() as *mut i8;
 
-        let mut scaled_frames: Vec<Vec<f64>> = vec![];
+        let mut scaled_frames: Vec<(Vec<f64>, Vec<u32>)> = vec![];
 
         let mut data_available = true;
 
@@ -194,6 +210,8 @@ impl Ai201 {
             let chans = self.channels.len() as u32;
             let mut scaled_buffer: Vec<f64> = vec![0.0; self.buffer_size];
 
+            let timestamps = self.extract_timestamps(raw_buffer, received_scans as usize);
+
             parse_err!(DqConvRaw2ScalePdc(
                 self.pdc,
                 self.channels.as_ptr(),
@@ -203,7 +221,7 @@ impl Ai201 {
                 scaled_buffer.as_mut_ptr() as *mut f64
             ))?;
 
-            scaled_frames.push(scaled_buffer);
+            scaled_frames.push((scaled_buffer, timestamps));
 
             data_available = remaining_scans > framesize;
         }
