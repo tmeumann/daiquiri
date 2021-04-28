@@ -28,6 +28,7 @@ impl Sampler {
         board_configs: &Vec<BoardConfig>,
         output_configs: &Vec<OutputConfig>,
         out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
+        buzzer_out: UnboundedSender<(String, u32)>,
         topic: String,
     ) -> Result<Sampler, DaqError> {
         let stop = Arc::new(AtomicBool::new(false));
@@ -48,20 +49,26 @@ impl Sampler {
             receivers.push((rx, config.channels.len()));
         }
 
+        let muxer_topic = topic.clone();
         let muxer_thread = Some(if receivers.len() > 1 {
-            thread::spawn(move || merge(topic, frame_size as usize, receivers, out))
+            thread::spawn(move || merge(muxer_topic, frame_size as usize, receivers, out))
         } else {
             let (rx, _) = match receivers.pop() {
                 Some(item) => item,
                 None => return Err(DaqError::ChannelConfigError),
             };
-            thread::spawn(move || pass_through(topic, rx, out))
+            thread::spawn(move || pass_through(muxer_topic, rx, out))
         });
 
         let mut outputs: Vec<Arc<Dio405>> = Vec::new();
 
         for config in output_configs {
-            let output_board = Arc::new(Dio405::new(Arc::clone(&daq), config)?);
+            let output_board = Arc::new(Dio405::new(
+                Arc::clone(&daq),
+                topic.clone(),
+                config,
+                buzzer_out.clone(),
+            )?);
             let cloned_stop = Arc::clone(&stop);
             let cloned_board = Arc::clone(&output_board);
             outputs.push(output_board);

@@ -1,4 +1,7 @@
-use crate::dataframe_generated::daiquiri::{SensorFrame, SensorFrameArgs};
+use crate::dataframe_generated::daiquiri::{
+    BuzzerEvent, BuzzerEventArgs, DaiquiriData, DaiquiriDataArgs, Event, SensorFrame,
+    SensorFrameArgs,
+};
 use flatbuffers;
 use powerdna::{config::StreamConfig, daq::Daq, engine::DqEngine, DaqError, SignalManager};
 use rdkafka::producer::{FutureProducer, FutureRecord};
@@ -41,8 +44,42 @@ pub enum ConfigError {
     },
 }
 
-async fn publish(
-    producer: FutureProducer,
+async fn publish_buzzer_events(
+    producer: &FutureProducer,
+    mut rx: UnboundedReceiver<(String, u32)>,
+) {
+    loop {
+        let mut builder = flatbuffers::FlatBufferBuilder::new();
+        let (topic, timestamp) = match rx.recv().await {
+            Some(val) => val,
+            None => break,
+        };
+        let buzzer_event = BuzzerEvent::create(&mut builder, &BuzzerEventArgs { timestamp });
+        let data = DaiquiriData::create(
+            &mut builder,
+            &DaiquiriDataArgs {
+                event_type: Event::BuzzerEvent,
+                event: Some(buzzer_event.as_union_value()),
+            },
+        );
+        builder.finish(data, None);
+        match producer
+            .send(
+                FutureRecord::to(topic.as_str())
+                    .key(topic.as_str())
+                    .payload(builder.finished_data()),
+                Duration::from_secs(180),
+            )
+            .await
+        {
+            Ok(_) => (),
+            Err((err, _)) => eprintln!("Failed to send to Kafka. Error: {}", err),
+        };
+    }
+}
+
+async fn publish_sensor_data(
+    producer: &FutureProducer,
     mut rx: UnboundedReceiver<(String, Vec<f64>, Vec<u32>)>,
 ) {
     // TODO clean pack-up
@@ -54,7 +91,7 @@ async fn publish(
         };
         let timestamps = Some(builder.create_vector(timestamps.as_slice()));
         let frame = Some(builder.create_vector(data.as_slice()));
-        let dataframe = SensorFrame::create(
+        let sensor_frame = SensorFrame::create(
             &mut builder,
             &SensorFrameArgs {
                 timestamps,
@@ -62,7 +99,14 @@ async fn publish(
                 ..Default::default()
             },
         );
-        builder.finish(dataframe, None);
+        let data = DaiquiriData::create(
+            &mut builder,
+            &DaiquiriDataArgs {
+                event_type: Event::SensorFrame,
+                event: Some(sensor_frame.as_union_value()),
+            },
+        );
+        builder.finish(data, None);
         match producer
             .send(
                 FutureRecord::to(topic.as_str())
@@ -101,8 +145,11 @@ pub fn initialise() -> Result<Arc<Mutex<HashMap<String, SignalManager>>>, Config
         .set("message.timeout.ms", "5000")
         .create()?;
 
-    let (tx, rx) = tokio::sync::mpsc::unbounded_channel();
-    tokio::spawn(async move { publish(producer, rx).await });
+    let (sensor_tx, sensor_rx) = tokio::sync::mpsc::unbounded_channel();
+    let sensor_producer = producer.clone();
+    tokio::spawn(async move { publish_sensor_data(&sensor_producer, sensor_rx).await });
+    let (buzzer_tx, buzzer_rx) = tokio::sync::mpsc::unbounded_channel();
+    tokio::spawn(async move { publish_buzzer_events(&producer, buzzer_rx).await });
 
     let streams = config
         .drain()
@@ -122,7 +169,8 @@ pub fn initialise() -> Result<Arc<Mutex<HashMap<String, SignalManager>>>, Config
                 boards,
                 outputs,
                 daq,
-                tx.clone(),
+                sensor_tx.clone(),
+                buzzer_tx.clone(),
                 None,
             );
             Ok((name, manager))

@@ -7,7 +7,7 @@ use powerdna_sys::DQ_AI201_GAIN_2_100;
 use powerdna_sys::DQ_AI201_GAIN_5_100;
 use std::sync::Arc;
 use thiserror::Error;
-use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 
 #[macro_use]
 mod results;
@@ -50,6 +50,7 @@ pub struct SignalManager {
     outputs: Vec<OutputConfig>,
     sampler: Option<Sampler>,
     out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
+    buzzer_out: UnboundedSender<(String, u32)>,
     daq: Arc<Daq>,
 }
 
@@ -62,6 +63,7 @@ impl SignalManager {
         outputs: Vec<OutputConfig>,
         daq: Arc<Daq>,
         out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
+        buzzer_out: UnboundedSender<(String, u32)>,
         sampler: Option<Sampler>,
     ) -> Self {
         SignalManager {
@@ -72,6 +74,7 @@ impl SignalManager {
             outputs,
             daq,
             out,
+            buzzer_out,
             sampler,
         }
     }
@@ -87,6 +90,7 @@ impl SignalManager {
                     &self.boards,
                     &self.outputs,
                     self.out.clone(),
+                    self.buzzer_out.clone(),
                     self.name.clone(),
                 ) {
                     Ok(sampler) => sampler,
