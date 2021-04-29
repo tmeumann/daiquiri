@@ -166,6 +166,7 @@ version = "0.1.0"
 dependencies = [
  "bytemuck",
  "flatbuffers",
+ "flatc-rust",
  "powerdna",
  "rdkafka",
  "serde_json",
@@ -230,6 +231,15 @@ checksum = "dbf606a9d6674ad82094652789cf69b0e6e598c2d3c9137c28970eec13f11644"
 dependencies = [
  "bitflags",
  "smallvec",
+]
+
+[[package]]
+name = "flatc-rust"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57e61227926ef5b237af48bee74394cc4a5a221ebd10c5147a98e612f207851d"
+dependencies = [
+ "log",
 ]
 
 [[package]]

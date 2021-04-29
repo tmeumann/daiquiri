@@ -7,7 +7,9 @@ use tokio::sync::Mutex;
 use warp::Filter;
 
 mod bootstrap;
+
 #[allow(dead_code, unused_imports)]
+#[path = "../target/flatbuffers/dataframe_generated.rs"]
 mod dataframe_generated;
 
 type SignalStore = Arc<Mutex<HashMap<String, SignalManager>>>;

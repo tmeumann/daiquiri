@@ -1,14 +1,24 @@
 # Daiquiri
 
-So you want to query the DAQ huh?
+So you want to query the DAQ?
 
 ## Development
 
 ---
 
+You'll need to install version 1.12 of the flatbuffers compiler on whatever machine you use for compilation. On macOS
+this can be done with Homebrew:
+
+```shell
+brew install flatbuffers
+```
+
+Documentation for flatbuffers can be found here:
+[https://google.github.io/flatbuffers/index.html](https://google.github.io/flatbuffers/index.html).
+
 ### Remote Debugging (WIP)
 
-```shell script
+```shell
 docker build -f Dockerfile.dev -t gdb .
 docker run --init -p 3030:3030 -p 5555:5555 -p 1234:1234 --entrypoint bash -ti --privileged gdb:latest
 ```
@@ -19,14 +29,14 @@ docker run --init -p 3030:3030 -p 5555:5555 -p 1234:1234 --entrypoint bash -ti -
 
 Add the rust target:
 
-```shell script
+```shell
 rustup target add x86_64-unknown-linux-gnu
 ```
 
 You'll need to build a toolchain to link against native C libraries. It's easiest to use
 crosstool-NG for this. You can get it using Homebrew:
 
-```shell script
+```shell
 brew install crosstool-ng
 ```
 
@@ -36,7 +46,7 @@ volume is easiest).[^1] You can call this what you want, but I'm going to refer 
 
 Copy the crosstool-NG config to the case-sensitive file system and build your toolchain [^2]:
 
-```shell script
+```shell
 cp -r <repo-root>/ct-ng /Volumes/Toolchains/
 cd /Volumes/Toolchains/ct-ng
 ct-ng menuconfig  # optional (if you want to tweak stuff like where to install etc.)
@@ -46,13 +56,13 @@ ct-ng build  # builds & installs the toolchain
 Download the compiled PowerDNA and ZMQ Linux libraries from (here)[https://ausport.sharepoint.com/:u:/r/sites/ATISoftwareDevTEam/Shared%20Documents/02%20Projects/2020/Wetplate/UEIPAC%20Stuff/syslib.tar.gz?csf=1&web=1&e=UVUDfu],
 and extract them in the repository's root:
 
-```shell script
+```shell
 tar xzf syslib.tar.gz
 ```
 
 Update your `.profile` or `.bashrc` or whatever to include these lines and reload it:
 
-```shell script
+```shell
 export PATH="${PATH}:/Volumes/Toolchains/x-tools/x86_64-unknown-linux-gnu/bin"
 ```
 
@@ -65,7 +75,7 @@ linker = "x86_64-unknown-linux-gnu-gcc"
 
 Now this will hopefully just work:
 
-```shell script
+```shell
 CXX=x86_64-unknown-linux-gnu-g++ CC=x86_64-unknown-linux-gnu-cc cargo build
 ```
 
@@ -81,7 +91,7 @@ easiest way to do this is to compile them in the target docker container and cop
 out into the host. Example commands for ZMQ once you've downloaded and extracted the source
 tarball:
 
-```shell script
+```shell
 ./configure --prefix <some-directory-shared-with-host>
 make
 make install
