@@ -1,4 +1,5 @@
-use serde::{Deserialize};
+use crate::Gain;
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct StreamConfig {
@@ -18,7 +19,7 @@ pub struct BoardConfig {
 #[derive(Deserialize, Debug)]
 pub struct ChannelConfig {
     pub id: u8,
-    pub gain: u32,  // TODO enum here
+    pub gain: Gain,
 }
 
 #[derive(Deserialize, Debug)]

@@ -12,19 +12,60 @@ use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 #[macro_use]
 mod results;
 
+#[macro_use]
+extern crate num_derive;
+
 mod boards;
 pub mod config;
 pub mod daq;
 pub mod engine;
 mod stream;
 
-#[derive(Debug)]
+use serde::de::Visitor;
+use serde::{de, Deserialize, Deserializer};
+use std::fmt;
+use std::fmt::Formatter;
+use std::prelude::v1::Result::Ok;
+
+#[derive(Debug, ToPrimitive)]
 #[repr(u32)]
 pub enum Gain {
     One = DQ_AI201_GAIN_1_100,
     Two = DQ_AI201_GAIN_2_100,
     Five = DQ_AI201_GAIN_5_100,
     Ten = DQ_AI201_GAIN_10_100,
+}
+
+struct GainVisitor;
+
+impl<'de> Visitor<'de> for GainVisitor {
+    type Value = Gain;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("the integers 1, 2, 5 or 10")
+    }
+
+    fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        match value {
+            1 => Ok(Gain::One),
+            2 => Ok(Gain::Two),
+            5 => Ok(Gain::Five),
+            10 => Ok(Gain::Ten),
+            _ => Err(E::custom(format!("expected 1, 2, 5 or 10: {}", value))),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for Gain {
+    fn deserialize<D>(deserializer: D) -> Result<Self, <D as Deserializer<'de>>::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_i32(GainVisitor)
+    }
 }
 
 #[derive(Error, Debug)]
@@ -40,6 +81,8 @@ pub enum DaqError {
     StreamStateError,
     #[error("Unexpected number of channels.")]
     ChannelConfigError,
+    #[error("Unexpected gain value.")]
+    GainConfigError,
 }
 
 pub struct SignalManager {

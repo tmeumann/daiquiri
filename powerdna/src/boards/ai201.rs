@@ -3,11 +3,14 @@ use crate::config::{BoardConfig, ChannelConfig};
 use crate::daq::Daq;
 use crate::engine::InterfaceType;
 use crate::results::PowerDnaError;
+use crate::DaqError;
 use core::marker::{Send, Sync};
 use core::mem;
 use core::result::Result;
 use core::result::Result::{Err, Ok};
 use core::sync::atomic::{AtomicBool, Ordering};
+use num_derive::ToPrimitive;
+use num_traits::ToPrimitive;
 use powerdna_sys::{
     pDATACONV, pDQBCB, DQ_eBufferDone, DQ_eBufferError, DQ_eFrameDone, DQ_ePacketLost,
     DQ_ePacketOOB, DqAcbGetScansCopy, DqAcbInitOps, DqConvRaw2ScalePdc, DqeSetEvent,
@@ -45,23 +48,18 @@ impl Ai201 {
         frame_size: u32,
         board_config: &BoardConfig,
         out: Sender<(Vec<f64>, Vec<u32>)>,
-    ) -> Result<Self, PowerDnaError> {
+    ) -> Result<Self, DaqError> {
         let BoardConfig { device, channels } = board_config;
         daq.enter_config_mode(*device)?;
         let bcb = daq.create_acb(*device, InterfaceType::Input)?;
 
-        let mut channel_list: Vec<u32> = channels
+        let mut channel_list = channels
             .iter()
-            .map(|ChannelConfig { id, gain }| {
-                let gain_mask = match gain {
-                    &10 => DQ_AI201_GAIN_10_100,
-                    &5 => DQ_AI201_GAIN_5_100,
-                    &2 => DQ_AI201_GAIN_2_100,
-                    _ => DQ_AI201_GAIN_1_100, // TODO handle invalid values
-                };
-                *id as u32 | (gain_mask << 8)
+            .map(|ChannelConfig { id, gain }| -> Result<u32, DaqError> {
+                let gain_as_u32 = ToPrimitive::to_u32(gain).ok_or(DaqError::GainConfigError)?;
+                Ok(*id as u32 | (gain_as_u32 << 8))
             })
-            .collect();
+            .collect::<Result<Vec<u32>, DaqError>>()?;
         channel_list.push(0);
         channel_list.push(DQ_LNCL_TIMESTAMP);
 
