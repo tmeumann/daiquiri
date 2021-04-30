@@ -7,7 +7,7 @@ use powerdna_sys::DQ_AI201_GAIN_2_100;
 use powerdna_sys::DQ_AI201_GAIN_5_100;
 use std::sync::Arc;
 use thiserror::Error;
-use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
+use tokio::sync::mpsc::UnboundedSender;
 
 #[macro_use]
 mod results;
@@ -24,7 +24,6 @@ mod stream;
 use serde::de::Visitor;
 use serde::{de, Deserialize, Deserializer};
 use std::fmt;
-use std::fmt::Formatter;
 use std::prelude::v1::Result::Ok;
 
 #[derive(Debug, ToPrimitive)]
@@ -83,6 +82,8 @@ pub enum DaqError {
     ChannelConfigError,
     #[error("Unexpected gain value.")]
     GainConfigError,
+    #[error("Error decoding timestamps.")]
+    TimestampDecodeError,
 }
 
 pub struct SignalManager {

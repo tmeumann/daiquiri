@@ -162,7 +162,7 @@ fn merge(
             break;
         }
 
-        // TODO reinstate this once we've got a synchronised clock or start trigger
+        // TODO reinstate this once we've got a fully synchronised start trigger
         // if !(timestamp_buffers.iter().map(|v| v[0]).all_equal()
         //     && timestamp_buffers.iter().map(|v| v[v.len() - 1]).all_equal())
         // {

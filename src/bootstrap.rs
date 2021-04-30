@@ -82,7 +82,6 @@ async fn publish_sensor_data(
     producer: &FutureProducer,
     mut rx: UnboundedReceiver<(String, Vec<f64>, Vec<u32>)>,
 ) {
-    // TODO clean pack-up
     loop {
         let mut builder = flatbuffers::FlatBufferBuilder::new();
         let (topic, data, timestamps) = match rx.recv().await {

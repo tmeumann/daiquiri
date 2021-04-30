@@ -9,14 +9,12 @@ use core::mem;
 use core::result::Result;
 use core::result::Result::{Err, Ok};
 use core::sync::atomic::{AtomicBool, Ordering};
-use num_derive::ToPrimitive;
 use num_traits::ToPrimitive;
 use powerdna_sys::{
     pDATACONV, pDQBCB, DQ_eBufferDone, DQ_eBufferError, DQ_eFrameDone, DQ_ePacketLost,
     DQ_ePacketOOB, DqAcbGetScansCopy, DqAcbInitOps, DqConvRaw2ScalePdc, DqeSetEvent,
     DqeWaitForEvent, DQACBCFG, DQ_ACBMODE_CYCLE, DQ_ACB_DATA_RAW, DQ_ACB_DATA_TSCOPY,
-    DQ_ACB_DIRECTION_INPUT, DQ_AI201_GAIN_10_100, DQ_AI201_GAIN_1_100, DQ_AI201_GAIN_2_100,
-    DQ_AI201_GAIN_5_100, DQ_AI201_MODEFIFO, DQ_LNCL_TIMESTAMP, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0,
+    DQ_ACB_DIRECTION_INPUT, DQ_AI201_MODEFIFO, DQ_LNCL_TIMESTAMP, DQ_LN_ACTIVE, DQ_LN_CLCKSRC0,
     DQ_LN_ENABLED, DQ_LN_GETRAW, DQ_LN_IRQEN, DQ_LN_STREAMING,
 };
 use std::ptr;
@@ -68,7 +66,7 @@ impl Ai201 {
         acb_cfg.samplesz = mem::size_of::<u16>() as u32; // size of single reading
         acb_cfg.scansz = channel_list.len() as u32; // number of readings (timestamp is equivalent to 2 readings)
         acb_cfg.framesize = frame_size;
-        acb_cfg.frames = 12; // # of frames in circular buffer TODO
+        acb_cfg.frames = 12; // # of frames in circular buffer
         acb_cfg.mode = DQ_ACBMODE_CYCLE;
         acb_cfg.dirflags = DQ_ACB_DIRECTION_INPUT | DQ_ACB_DATA_RAW | DQ_ACB_DATA_TSCOPY;
 
@@ -96,7 +94,6 @@ impl Ai201 {
 
         let pdc = daq.get_data_converter(*device, &channel_list)?;
 
-        // TODO does this need to be bigger? ie. * acb_cfg.frames
         let buffer_size = (acb_cfg.framesize * acb_cfg.scansz) as usize;
 
         Ok(Ai201 {
@@ -167,18 +164,26 @@ impl Ai201 {
         Ok(events)
     }
 
-    fn extract_timestamps(&self, raw_buffer: &Vec<u16>, scans: usize) -> Vec<u32> {
+    fn extract_timestamps(
+        &self,
+        raw_buffer: &Vec<u16>,
+        scans: usize,
+    ) -> Result<Vec<u32>, DaqError> {
         let mut timestamps: Vec<u32> = Vec::with_capacity(scans as usize);
         let num_chans = self.channels.len();
 
         for scan in 1..(scans + 1) {
-            let upper_half = raw_buffer[(scan * num_chans) - 2] as u32; // TODO guard this
-            let lower_half = raw_buffer[(scan * num_chans) - 1] as u32;
+            let upper_half = *(raw_buffer
+                .get((scan * num_chans) - 2)
+                .ok_or(DaqError::TimestampDecodeError)?) as u32;
+            let lower_half = *(raw_buffer
+                .get((scan * num_chans) - 1)
+                .ok_or(DaqError::TimestampDecodeError)?) as u32;
             let timestamp: u32 = (upper_half << 16) | lower_half;
             timestamps.push(timestamp);
         }
 
-        timestamps
+        Ok(timestamps)
     }
 
     fn get_scaled_data(
@@ -208,7 +213,13 @@ impl Ai201 {
             let chans = self.channels.len() as u32;
             let mut scaled_buffer: Vec<f64> = vec![0.0; self.buffer_size];
 
-            let timestamps = self.extract_timestamps(raw_buffer, received_scans as usize);
+            let timestamps = match self.extract_timestamps(raw_buffer, received_scans as usize) {
+                Ok(val) => val,
+                Err(_) => {
+                    eprintln!("Failed to parse timestamp data. Skipping frame...");
+                    continue;
+                }
+            };
 
             parse_err!(DqConvRaw2ScalePdc(
                 self.pdc,

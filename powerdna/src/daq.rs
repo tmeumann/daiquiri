@@ -109,6 +109,7 @@ impl Daq {
     }
 
     pub(crate) fn setup_edge_events(&self, device: u8) -> Result<(), PowerDnaError> {
+        self.enter_config_mode(device)?;
         // clears any existing events
         parse_err!(DqAdv40xConfigEvents(
             self.async_handle,
@@ -143,7 +144,7 @@ impl Daq {
             &mut status,
             &mut entries
         ))?;
-        // TODO check status and entries
+        // TODO check status and entries for success/failure
 
         parse_err!(DqCmdSetMode(self.handle, DQ_IOMODE_OPS, 1 << device))?;
 

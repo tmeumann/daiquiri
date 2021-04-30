@@ -30,8 +30,7 @@ impl Dio405 {
     ) -> Result<Self, PowerDnaError> {
         let OutputConfig { device } = board_config;
 
-        daq.enter_config_mode(*device)?;
-        daq.setup_edge_events(*device)?; // TODO rationalise with above
+        daq.setup_edge_events(*device)?;
 
         Ok(Dio405 {
             device: *device,
@@ -53,7 +52,6 @@ impl Dio405 {
         let mut event: u32;
         let mut timestamp: u32;
         let mut pos: u64;
-        let mut neg: u64;
         let mut data_slice;
         loop {
             match self.daq.receive_event(&mut p_event) {
@@ -91,15 +89,17 @@ impl Dio405 {
                 data_slice = (*header_ptr).data.as_slice(data_size);
             }
             pos = self.daq.to_host_repr(data_slice[0] as u64);
-            neg = self.daq.to_host_repr(data_slice[1] as u64);
 
-            match self.out.send((self.topic.clone(), timestamp)) {
-                Ok(_) => (),
-                Err(err) => {
-                    eprintln!("Failed to send edge detection timestamp. Error: {}", err);
-                    break;
-                }
-            };
+            // only push buzzer event if positive edge detected
+            if pos != 0 {
+                match self.out.send((self.topic.clone(), timestamp)) {
+                    Ok(_) => (),
+                    Err(err) => {
+                        eprintln!("Failed to send edge detection timestamp. Error: {}", err);
+                        break;
+                    }
+                };
+            }
         }
     }
 }
