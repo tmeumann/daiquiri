@@ -4,8 +4,11 @@ use crate::boards::Bcb;
 use crate::config::{BoardConfig, OutputConfig};
 use crate::daq::Daq;
 use crate::DaqError;
+use chrono::Local;
 use itertools::Itertools;
 use powerdna_sys::{pDQBCB, DqeEnable};
+use std::fs::File;
+use std::io::Write;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{channel, Receiver, RecvError};
 use std::sync::Arc;
@@ -31,6 +34,14 @@ impl Sampler {
         buzzer_out: UnboundedSender<(String, u32)>,
         topic: String,
     ) -> Result<Sampler, DaqError> {
+        let out_dir = std::env::var("OUT_DIR").unwrap_or(String::from("/data/daiquiri"));
+        let current_time = Local::now();
+        let filename: String = format!("{}/{}.csv", out_dir, current_time.to_rfc3339());
+        let mut out_file: File = match File::create(filename) {
+            Ok(val) => val,
+            Err(_) => return Err(DaqError::FileError),
+        };
+
         let stop = Arc::new(AtomicBool::new(false));
         let mut boards = Vec::new();
         let mut board_threads = Vec::new();
@@ -51,13 +62,21 @@ impl Sampler {
 
         let muxer_topic = topic.clone();
         let muxer_thread = Some(if receivers.len() > 1 {
-            thread::spawn(move || merge(muxer_topic, frame_size as usize, receivers, out))
+            thread::spawn(move || {
+                merge(
+                    muxer_topic,
+                    frame_size as usize,
+                    receivers,
+                    out,
+                    &mut out_file,
+                )
+            })
         } else {
-            let (rx, _) = match receivers.pop() {
+            let (rx, chans) = match receivers.pop() {
                 Some(item) => item,
                 None => return Err(DaqError::ChannelConfigError),
             };
-            thread::spawn(move || pass_through(muxer_topic, rx, out))
+            thread::spawn(move || pass_through(muxer_topic, rx, out, &mut out_file, chans))
         });
 
         let mut outputs: Vec<Arc<Dio405>> = Vec::new();
@@ -95,10 +114,25 @@ impl Sampler {
     }
 }
 
+fn build_file_output(timestamps: &Vec<u32>, data: &Vec<f64>, chans: usize) -> String {
+    let mut the_string = String::with_capacity(460000);
+    for (i, timestamp) in timestamps.iter().enumerate() {
+        the_string.push_str(timestamp.to_string().as_str());
+        for j in 0..chans {
+            the_string.push(',');
+            the_string.push_str(data[i * chans + j].to_string().as_str());
+        }
+        the_string.push('\n');
+    }
+    the_string
+}
+
 fn pass_through(
     topic: String,
     input: Receiver<(Vec<f64>, Vec<u32>)>,
     out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
+    out_file: &mut File,
+    chans: usize,
 ) {
     loop {
         let (data, timestamps) = match input.recv() {
@@ -112,6 +146,10 @@ fn pass_through(
             eprintln!("Buffers differ in length.");
             break;
         }
+        match out_file.write(build_file_output(&timestamps, &data, chans).as_bytes()) {
+            Ok(_) => (),
+            Err(err) => eprintln!("Failed to write to file!! Error: {}", err),
+        };
         match out.send((topic.clone(), data, timestamps)) {
             Ok(_) => (),
             Err(err) => eprintln!("Failed to push buffer to channel. Error: {}", err),
@@ -124,6 +162,7 @@ fn merge(
     frames: usize,
     inputs: Vec<(Receiver<(Vec<f64>, Vec<u32>)>, usize)>,
     out: UnboundedSender<(String, Vec<f64>, Vec<u32>)>,
+    out_file: &mut File,
 ) {
     let total_channels = inputs.iter().fold(0, |total, (_, chans)| total + chans);
     loop {
@@ -188,6 +227,10 @@ fn merge(
                 dst_start += chans;
             }
         }
+        match out_file.write(build_file_output(&timestamps, &combined, total_channels).as_bytes()) {
+            Ok(_) => (),
+            Err(err) => eprintln!("Failed to write to file!! Error: {}", err),
+        };
         match out.send((topic.clone(), combined, timestamps)) {
             Ok(_) => (),
             Err(err) => eprintln!("Failed to push merged buffer to channel. Error: {}", err),

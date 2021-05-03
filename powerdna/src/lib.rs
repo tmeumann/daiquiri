@@ -84,6 +84,8 @@ pub enum DaqError {
     GainConfigError,
     #[error("Error decoding timestamps.")]
     TimestampDecodeError,
+    #[error("File error.")]
+    FileError,
 }
 
 pub struct SignalManager {
