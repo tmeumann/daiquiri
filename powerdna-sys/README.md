@@ -6,8 +6,8 @@ You can run the following to generate a new set of bindings (if we need to bump 
 
 ```shell script
 bindgen -o <output-file.rs> \
-        --whitelist-var '^(DQ.*|STS_.*)$' \
-        --whitelist-type '^DQ.*$' \
+        --whitelist-var '^(DQ.*|STS_.*|EV.*)$' \
+        --whitelist-type '^p?(DQ.*|EV.*)$' \
         --whitelist-function '^Dq.*$' \
         --no-debug '^.*$' \
         /pdna/PowerDNA_4.10.1/src/DAQLib/PDNA.h

@@ -1,0 +1,20 @@
+namespace Daiquiri;
+
+table SensorFrame {
+  channels: uint8;
+  samples: uint16;
+  timestamps: [uint32];
+  frame: [float64];
+}
+
+table BuzzerEvent {
+  timestamp: uint32;
+}
+
+union Event { SensorFrame, BuzzerEvent }
+
+table DaiquiriData {
+  event: Event;
+}
+
+root_type DaiquiriData;
