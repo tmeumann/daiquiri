@@ -6,7 +6,7 @@ So you want to query the DAQ?
 
 ---
 
-You'll need to install version 1.12 of the flatbuffers compiler on whatever machine you use for compilation. On macOS
+You'll need to install version 2.0 of the flatbuffers compiler on whatever machine you use for compilation. On macOS
 this can be done with Homebrew:
 
 ```shell

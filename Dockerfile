@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-RUN apt-get update && apt-get -y install build-essential
+RUN apt update && apt -y install build-essential && apt clean
 
 RUN mkdir /app && mkdir /pdna && mkdir /etc/daiquiri
 WORKDIR /pdna
