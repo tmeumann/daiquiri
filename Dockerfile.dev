@@ -17,7 +17,7 @@ RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz && \
     make install
 
 # symlink's daiquiri's config file to the shared volume
-RUN mkdir /etc/daiquiri && ln -s /app/streams.json /etc/daiquiri/streams.json
+RUN mkdir /etc/daiquiri && ln -s /workspaces/daiquiri/streams.json /etc/daiquiri/streams.json
 
 # build directory -- DO NOT MOUNT THIS TO THE HOST OS
 VOLUME /target
