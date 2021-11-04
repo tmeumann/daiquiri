@@ -8,13 +8,13 @@ So, you want to query the DAQ?
 
 Set up VSCode's [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to use `Dockerfile.dev` as a remote container.
 
-To run:
+To compile and run:
 
 ```shell script
 cargo run
 ```
 
-To compile:
+To compile only:
 
 ```shell script
 cargo build
