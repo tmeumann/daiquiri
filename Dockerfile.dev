@@ -1,31 +1,31 @@
 FROM rust:latest
 
-RUN apt update \
-    && DEBIAN_FRONTEND=noninteractive apt -y install build-essential ssh gdbserver cmake rsync \
-    && apt clean
+# builds and installs flatc, the flatbuffers compiler
+RUN apt update && \
+    DEBIAN_FRONTEND=noninteractive apt -y install cmake && \
+    git clone --branch v2.0.0 --depth 1 https://github.com/google/flatbuffers.git && \
+    cd flatbuffers && \
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && \
+    make && \
+    make install
 
-RUN git clone --depth 1 --branch v2.0.0 https://github.com/google/flatbuffers.git \
-    && cd flatbuffers \
-    && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release \
-    && make \
-    && make install \
-    && cd .. \
-    && rm -rf flatbuffers
+# builds and installs UEI's PowerDNA libraries
+COPY PowerDNA_Linux_4.10.1.14.tgz .
+RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz && \
+    cd PowerDNA_4.10.1/src && \
+    make && \
+    make install
 
-WORKDIR /pdna
-
-COPY PowerDNA_Linux_4.10.1.14.tgz /pdna/
-RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz \
-    && cd /pdna/PowerDNA_4.10.1/src \
-    && make \
-    && make install
-
+# symlink's daiquiri's config file to the shared volume
 RUN mkdir /etc/daiquiri && ln -s /app/streams.json /etc/daiquiri/streams.json
 
-VOLUME /app
+# build directory -- DO NOT MOUNT THIS TO THE HOST OS
+VOLUME /target
 
-WORKDIR /app
+# shared volume for the project directory
+VOLUME /workspaces/daiquiri
+WORKDIR /workspaces/daiquiri
 
-EXPOSE 3030 5555 1234
+EXPOSE 3030
 
-CMD ["bash"]
+CMD ["cargo", "run", "--target-dir", "/target"]
