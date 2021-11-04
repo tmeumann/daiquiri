@@ -6,9 +6,3 @@
 PowerDNA_*
 
 target/
-
-ct-ng/*
-!ct-ng/.config
-
-syslib/
-syslib.tar.gz

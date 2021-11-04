@@ -2,9 +2,3 @@
 .vscode/
 
 .DS_Store
-
-/target
-!/target/x86_64-unknown-linux-gnu/release/daiquiri
-!/target/x86_64-unknown-linux-gnu/debug/daiquiri
-
-/ct-ng
