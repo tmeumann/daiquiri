@@ -5,6 +5,7 @@ Raw PowerDNA Rust bindings.
 You can run the following to generate a new set of bindings (if we need to bump the PowerDNA version, for example):
 
 ```shell script
+cargo install bindgen
 bindgen -o <output-file.rs> \
         --whitelist-var '^(DQ.*|STS_.*|EV.*)$' \
         --whitelist-type '^p?(DQ.*|EV.*)$' \

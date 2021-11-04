@@ -1,9 +1,13 @@
 FROM rust:latest
 
-# builds and installs flatc, the flatbuffers compiler
+WORKDIR /root
+
+# dependencies for bindgen and flatbuffers
 RUN apt update && \
-    DEBIAN_FRONTEND=noninteractive apt -y install cmake && \
-    git clone --branch v2.0.0 --depth 1 https://github.com/google/flatbuffers.git && \
+    DEBIAN_FRONTEND=noninteractive apt -y install llvm-dev libclang-dev clang cmake
+
+# builds and installs flatc, the flatbuffers compiler
+RUN git clone --branch v2.0.0 --depth 1 https://github.com/google/flatbuffers.git && \
     cd flatbuffers && \
     cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && \
     make && \
@@ -16,7 +20,7 @@ RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz && \
     make && \
     make install
 
-# symlink's daiquiri's config file to the shared volume
+# symlinks daiquiri's config file to the shared volume
 RUN mkdir /etc/daiquiri && ln -s /workspaces/daiquiri/streams.json /etc/daiquiri/streams.json
 
 # build directory -- DO NOT MOUNT THIS TO THE HOST OS
