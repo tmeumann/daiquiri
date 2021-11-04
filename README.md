@@ -6,7 +6,7 @@ So, you want to query the DAQ?
 
 ---
 
-Set up VSCode's [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to use `Dockerfile.dev` as a remote container.
+Set up VSCode's [Remote - Containers plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to use `Dockerfile.dev` as a remote container.
 
 To compile and run:
 
