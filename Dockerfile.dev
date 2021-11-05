@@ -1,22 +1,36 @@
-FROM ubuntu:20.04
+FROM rust:latest
 
-RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential ssh gdbserver \
-    && apt-get clean
+WORKDIR /root
 
-RUN mkdir /etc/daiquiri && ln -s /app/streams.json /etc/daiquiri/streams.json
-WORKDIR /pdna
+# dependencies for bindgen and flatbuffers
+RUN apt update && \
+    DEBIAN_FRONTEND=noninteractive apt -y install llvm-dev libclang-dev clang cmake
 
-COPY PowerDNA_Linux_4.10.1.14.tgz /pdna/
-RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz \
-    && cd /pdna/PowerDNA_4.10.1/src \
-    && make \
-    && make install
+# builds and installs flatc, the flatbuffers compiler
+RUN git clone --branch v2.0.0 --depth 1 https://github.com/google/flatbuffers.git && \
+    cd flatbuffers && \
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && \
+    make && \
+    make install
 
-WORKDIR /app
+# builds and installs UEI's PowerDNA libraries
+COPY PowerDNA_Linux_4.10.1.14.tgz .
+RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz && \
+    cd PowerDNA_4.10.1/src && \
+    make && \
+    make install
 
-COPY . /app
+# symlinks daiquiri's config file to the shared volume
+RUN mkdir /etc/daiquiri && ln -s /workspaces/daiquiri/streams.json /etc/daiquiri/streams.json
 
-EXPOSE 3030 5555 1234
+# build directory -- DO NOT MOUNT THIS TO THE HOST OS
+VOLUME /target
+ENV CARGO_TARGET_DIR=/target
 
-CMD ["gdbserver", ":1234", "/app/target/x86_64-unknown-linux-gnu/debug/daiquiri"]
+# shared volume for the project directory
+VOLUME /workspaces/daiquiri
+WORKDIR /workspaces/daiquiri
+
+EXPOSE 3030 5555
+
+CMD ["cargo", "run"]

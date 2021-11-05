@@ -184,7 +184,7 @@ fn merge(
                 let src_start = i * (chans + 2); // 2 extra values (timestamps)
                 let src_end = src_start + chans;
                 let dst_end = dst_start + chans;
-                &mut combined[dst_start..dst_end].copy_from_slice(&buf[src_start..src_end]);
+                let _ = &mut combined[dst_start..dst_end].copy_from_slice(&buf[src_start..src_end]);
                 dst_start += chans;
             }
         }
