@@ -1,4 +1,4 @@
-FROM rust:latest
+FROM rust:1.56
 
 WORKDIR /root
 
@@ -6,21 +6,21 @@ WORKDIR /root
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt -y install llvm-dev libclang-dev clang cmake
 
-# builds and installs flatc, the flatbuffers compiler
+# build and install flatc, the flatbuffers compiler
 RUN git clone --branch v2.0.0 --depth 1 https://github.com/google/flatbuffers.git && \
     cd flatbuffers && \
     cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && \
     make && \
     make install
 
-# builds and installs UEI's PowerDNA libraries
+# build and install UEI's PowerDNA libraries
 COPY PowerDNA_Linux_4.10.1.14.tgz .
 RUN tar xzf PowerDNA_Linux_4.10.1.14.tgz && \
     cd PowerDNA_4.10.1/src && \
     make && \
     make install
 
-# symlinks daiquiri's config file to the shared volume
+# symlink daiquiri's config file to the shared volume
 RUN mkdir /etc/daiquiri && ln -s /workspaces/daiquiri/streams.json /etc/daiquiri/streams.json
 
 # build directory -- DO NOT MOUNT THIS TO THE HOST OS
@@ -31,6 +31,6 @@ ENV CARGO_TARGET_DIR=/target
 VOLUME /workspaces/daiquiri
 WORKDIR /workspaces/daiquiri
 
-EXPOSE 3030 5555
+EXPOSE 3030
 
 CMD ["cargo", "run"]
