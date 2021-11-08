@@ -1,8 +1,9 @@
 [package]
 name = "powerdna-sys"
 version = "0.1.0"
-authors = ["tmeumann <tom.meumann@ausport.gov.au>"]
-edition = "2018"
+authors = ["Tom Meumann <tmeumann@protonmail.com>"]
+edition = "2021"
+license = "MIT"
 links = "powerdna"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
