@@ -1,10 +1,12 @@
 # Daiquiri
 
-So, you want to query the DAQ?
+A REST-based microservice that controls PowerDNA DAQs. Surfaces analogue samples to Kafka.
 
 ## Development
 
 ---
+
+Download [UEI's PowerDNA software](https://www.ueidaq.com/products/powerdna-linux-drivers-and-examples-software) and place the tar file in your repository's root.
 
 Set up VSCode's [Remote - Containers plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to use `Dockerfile.dev` as a remote container.
 
@@ -20,4 +22,4 @@ To compile only:
 cargo build
 ```
 
-> ⚠️ Note that the development container has been configured to compile into a persistent volume (mounted to `/target`), instead of cargo's normal target directory. The normal target directory is `<repo-root>/target`, and is shared with the host OS by virtue of it being within the workspace's shared volume. If the target directory is shared between a docker container and its host, compilation is extremely slow. If there's any doubt about what's happening, refer to the dockerfile as the source of truth.
+The output of the build command is placed in `/target`, and isn't shared with the host OS (shared volumes have poor file IO performance).
